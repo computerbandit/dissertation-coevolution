@@ -6,14 +6,12 @@
 
 Level::Level(GameDataRef data): _data(data)
 {
-	this->_tilesize = 16;
-	this->_mapsize = sf::Vector2i(0, 0);
+	this->Cleanup();
 }
 
 bool Level::LoadLevelFromTextFile(std::string filePath)
 {
 	this->Cleanup();
-	this->_mapsize = sf::Vector2i(0, 0);
 	std::ifstream file;
 	std::string line;
 	int linenum = 0;
@@ -42,13 +40,17 @@ bool Level::LoadLevelFromTextFile(std::string filePath)
 					}
 				}
 				else {
-					_tilemap.push_back(Tile(_data, std::stoi(token), _tilesize, _mapsize, _tilemap.size()));
+					sf::Sprite spriteTile;
+					int tileID = std::stoi(token);
+					spriteTile.setPosition(sf::Vector2f(tokennum*_tilesize, (linenum-1)*_tilesize));
+					_tilemap.push_back(Tile(tileID, spriteTile,(tileID == 0)? false : true));
 				}
 				tokennum++;
 			}
 			linenum++;
 		}
 		file.close();
+		this->Init();
 		return true;
 	}
 	else {
@@ -60,24 +62,20 @@ void Level::Init()
 {
 	//in this we need to allocate all the textures to the correct tile and
 	//then assign then a position based on the index in the map.
+
+
 }
 
 void Level::Cleanup()
 {
+	this->_tilemap = std::vector<Tile>();
+	this->_mapsize = sf::Vector2i(0, 0);
+	this->_tilesize = 16;
 }
 
-void Level::Update(float dt)
+void Level::Draw()
 {
 	for (Tile tile : _tilemap) {
-		if (!tile._static) {
-			tile.Update(dt);
-		}
-	}
-}
-
-void Level::Draw(float dt)
-{
-	for (Tile tile : _tilemap) {
-		tile.Draw(dt);
+		this->_data->window.draw(tile.GetSprite());
 	}
 }

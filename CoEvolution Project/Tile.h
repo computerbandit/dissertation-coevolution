@@ -1,20 +1,17 @@
 #pragma once
-#include "IEntity.h"
-#include "Game.h"
+#include <SFML/Graphics.hpp>
 
-class Tile : virtual public IEntity{
+class Tile {
 public:
-	Tile(GameDataRef data, int tileID, float tilesize, sf::Vector2i _mapsize, int index);
+	Tile(int tileID, sf::Sprite sprite, bool solid);
 	~Tile() {}
 
-	// Inherited via IEntity
-	virtual void Init() override;
-	virtual void Update(float dt) override;
-	virtual void Draw(float dt) override;
+	const sf::Sprite& GetSprite() {
+		return _sprite;
+	}
 
-public:
-	GameDataRef _data;
+private:
+	sf::Sprite _sprite;
 	int _tileID;
-	bool _static;
-	sf::RectangleShape _rect;
+	bool _solid;
 };

@@ -4,9 +4,9 @@
 class Camera {
 public:
 	Camera() {}
+	Camera(sf::RenderWindow* window, float width, float height);
 	~Camera() {}
 
-	void Init(sf::RenderWindow* window, float width, float height);
 	void Restore();
 	void Update(sf::Vector2f point);
 

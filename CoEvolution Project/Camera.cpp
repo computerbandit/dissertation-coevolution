@@ -1,10 +1,10 @@
 #include "Camera.h"
 #include <iostream>
 
-void Camera::Init(sf::RenderWindow* window, float width, float height)
+Camera::Camera(sf::RenderWindow* window, float width, float height)
 {
 	this->_window = window;
-	this->_offset = sf::Vector2f(window->getSize().x / 2, window->getSize().y / 2);
+	this->_offset = sf::Vector2f(window->getSize().x / 2.0f, window->getSize().y / 2.0f);
 	this->_view.setSize(width, height);
 	this->_view.setCenter(200, 300);
 	this->_view.setViewport(sf::FloatRect(0, 0, 1, 1));

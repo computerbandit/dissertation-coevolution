@@ -1,6 +1,7 @@
 #pragma once
 #include <vector>
 #include "SFML/Graphics.hpp"
+#include "Game.h"
 #include "Tile.h"
 
 class Level {
@@ -10,8 +11,7 @@ public:
 	bool LoadLevelFromTextFile(std::string filePath);
 	void Init();
 	void Cleanup();
-	void Update(float dt);
-	void Draw(float dt);
+	void Draw();
 
 private:
 	GameDataRef _data;

@@ -26,6 +26,7 @@ public:
 private:
 	GameDataRef _data;
 	sf::RectangleShape _rect; //will be a sprite a some point
+	sf::Sprite _sprite;
 
 	float _speed = 400.0f;
 	float _jumpVelocity = 300.0f;

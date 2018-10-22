@@ -9,12 +9,11 @@ Level* level;
 
 GameState::GameState(GameDataRef data) : _data(data)
 {
+	this->_data->camera = Camera(&(this->_data->window), (float)this->_data->window.getSize().x, (float)(float)this->_data->window.getSize().y);
+
 	player = new Player(_data, sf::Vector2f(0, 0));
 	this->_data->entityManager.Add(player);
-	this->_data->camera.Init(&(this->_data->window), (float)(this->_data->window.getSize().x), (float)(this->_data->window.getSize().y));
-
 	level = new Level(_data);
-
 }
 
 void GameState::Init()
@@ -22,14 +21,11 @@ void GameState::Init()
 	//load backgroung in
 	this->_data->assetManager.LoadTexture("Background Test", BACKGROUND_TEST);
 	this->_background.setTexture(this->_data->assetManager.GetTexture("Background Test"));
-
-	if (level->LoadLevelFromTextFile(TEST_LEVEL)) {
-		level->Init();
-	}
-	else {
-		std::cout << "map failed to load" << std::endl;
-	}
-
+	
+	
+	
+	
+	level->LoadLevelFromTextFile(TEST_LEVEL);
 }
 
 void GameState::Cleanup()
@@ -77,7 +73,7 @@ void GameState::Draw(float dt)
 {
 	this->_data->window.clear(sf::Color::Black);
 	this->_data->window.draw(_background);
-	level->Draw(dt);
+	level->Draw();
 	this->_data->entityManager.Draw(dt);
 	this->_data->window.display();
 }
