@@ -15,3 +15,6 @@
 
 //Level 
 #define TEST_LEVEL "Resources/level/level.txt"
+
+//TILES
+#define GRASS_TILE "Resources/res/Grass_Tile.png"

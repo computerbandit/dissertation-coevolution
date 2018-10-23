@@ -40,7 +40,26 @@ bool Level::LoadLevelFromTextFile(std::string filePath)
 					}
 				}
 				else {
+					std::string texture = "";
+					switch (std::stoi(token))
+					{
+					case 0:
+						texture = "Air";
+						break;
+					case 1:
+						texture = "Grass_Tile";
+						break;
+					default:
+						texture = "Air";
+						break;
+					}
 					sf::Sprite spriteTile;
+					float scale = 1.0f;
+					if (texture != "Air") {
+						spriteTile.setTexture(this->_data->assetManager.GetTexture(texture));
+						scale = _tilesize / spriteTile.getGlobalBounds().width;
+						spriteTile.setScale(scale, scale);
+					}
 					int tileID = std::stoi(token);
 					spriteTile.setPosition(sf::Vector2f(tokennum*_tilesize, (linenum-1)*_tilesize));
 					_tilemap.push_back(Tile(tileID, spriteTile,(tileID == 0)? false : true));

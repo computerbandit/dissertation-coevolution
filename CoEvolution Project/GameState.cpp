@@ -22,7 +22,8 @@ void GameState::Init()
 	this->_data->assetManager.LoadTexture("Background Test", BACKGROUND_TEST);
 	this->_background.setTexture(this->_data->assetManager.GetTexture("Background Test"));
 	
-	
+	//load tile sprites
+	this->_data->assetManager.LoadTexture("Grass_Tile", GRASS_TILE);
 	
 	
 	level->LoadLevelFromTextFile(TEST_LEVEL);
