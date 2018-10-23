@@ -66,8 +66,6 @@ bool Level::LoadLevelFromTextFile(std::string filePath)
 					}
 					spriteTile.setPosition(sf::Vector2f(tokennum*_tilesize, (linenum - 1)*_tilesize));
 
-					//when the level is destoryed the collision map in the gameobjectmanager is pointing to nothing!!
-					//FIX;
 					_tilemap.push_back(Tile(tileID, spriteTile, solid));
 					if (_tilemap.back().IsSolid()) {
 						this->_data->gameObjectManager.AddTile(&(_tilemap.back()));

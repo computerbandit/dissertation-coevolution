@@ -6,7 +6,7 @@
 #include "StateMachine.h"
 #include "InputManager.h"
 #include "AssetManager.h"
-#include "EntityManager.h"
+#include "GameObjectManager.h"
 #include "Camera.h"
 
 struct GameData {
@@ -15,9 +15,8 @@ struct GameData {
 	Camera camera;
 	AssetManager assetManager;
 	InputManager inputManager;
-	EntityManager entityManager;
-
-	const sf::Vector2f gravity = sf::Vector2f(0.0f, 500.0f);
+	GameObjectManager gameObjectManager;
+	const sf::Vector2f gravity = sf::Vector2f(0.0f, 90.8f);
 };
 
 typedef std::shared_ptr<GameData> GameDataRef;

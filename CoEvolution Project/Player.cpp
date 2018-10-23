@@ -1,14 +1,15 @@
 #include "Player.h"
+#include "Tile.h"
+#include <iostream>
 
 Player::Player(GameDataRef data, sf::Vector2f pos): _data(data)
 {
+	this->_speed = 20.0f;
+	this->_jumpVelocity = 20.0f;
 	this->_position = pos;
 	this->Init();
 }
 
-Player::~Player()
-{
-}
 
 void Player::Init()
 {
@@ -50,10 +51,10 @@ void Player::Update(float dt)
 
 
 	if (_falling){
-		this->_velocity.y += this->_data->gravity.y * (6.50f) * dt;
+		this->_velocity.y += this->_data->gravity.y * (2.5f) * dt;
 	}
 	else if(_jumping && !_holdingJump){
-		this->_velocity.y += this->_data->gravity.y * (5.5f) * dt;
+		this->_velocity.y += this->_data->gravity.y * (2.0f) * dt;
 	}
 	else {
 		this->_velocity.y += this->_data->gravity.y * dt;
@@ -68,14 +69,20 @@ void Player::Update(float dt)
 		this->_velocity.x -= this->_velocity.x * (0.35f);
 	}
 
+
+	//check collision for each tile in the collision map of the current level
+	
+	for (Tile* tile : this->_data->gameObjectManager.CollisionMap()) {
+		std::cout << tile->GetSprite().getLocalBounds().left << tile->GetSprite().getLocalBounds().top << tile->GetSprite().getLocalBounds().width << tile->GetSprite().getLocalBounds().height << std::endl;
+		if (_rect.getLocalBounds().intersects(tile->GetSprite().getLocalBounds())) {
+			this->_velocity.y *= 0;
+			this->_velocity.x *= 0;
+		}
+	}
+	
+
 	this->_position.y += this->_velocity.y * dt;
 	this->_position.x += this->_velocity.x * dt;
-
-	//hard coded floor for the player to land on
-	if (this->_position.y > 500) {
-		this->_position.y = 500;
-		this->_velocity.y = 0.0f;
-	}
 	
 	this->_rect.setPosition(this->_position);
 }

@@ -9,11 +9,12 @@ Level* level;
 
 GameState::GameState(GameDataRef data) : _data(data)
 {
-	this->_data->camera = Camera(&(this->_data->window), (float)this->_data->window.getSize().x, (float)(float)this->_data->window.getSize().y);
-
-	player = new Player(_data, sf::Vector2f(0, 0));
-	this->_data->entityManager.Add(player);
+	//init camera, level the player and add the player to the list of entities in the level.
 	level = new Level(_data);
+	this->_data->camera = Camera(&(this->_data->window), (float)this->_data->window.getSize().x, (float)(float)this->_data->window.getSize().y);
+	player = new Player(_data, sf::Vector2f(0, 0));
+	this->_data->gameObjectManager.AddEntity(player);
+
 }
 
 void GameState::Init()
@@ -25,7 +26,7 @@ void GameState::Init()
 	//load tile sprites
 	this->_data->assetManager.LoadTexture("Grass_Tile", GRASS_TILE);
 	
-	
+	//load the level text file and set up tiles.
 	level->LoadLevelFromTextFile(TEST_LEVEL);
 }
 
@@ -40,6 +41,7 @@ void GameState::HandleEvents()
 	while (this->_data->window.pollEvent(event)) {
 		if (sf::Event::Closed == event.type) {
 			this->_data->window.close();
+			this->Cleanup();
 		}
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
@@ -66,7 +68,7 @@ void GameState::HandleEvents()
 
 void GameState::Update(float dt)
 {
-	this->_data->entityManager.Update(dt);
+	this->_data->gameObjectManager.Update(dt);
 	this->_data->camera.Update(player->GetPosition());
 }
 
@@ -75,6 +77,6 @@ void GameState::Draw(float dt)
 	this->_data->window.clear(sf::Color::Black);
 	this->_data->window.draw(_background);
 	level->Draw();
-	this->_data->entityManager.Draw(dt);
+	this->_data->gameObjectManager.Draw(dt);
 	this->_data->window.display();
 }

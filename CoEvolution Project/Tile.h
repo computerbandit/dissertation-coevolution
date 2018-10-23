@@ -6,8 +6,12 @@ public:
 	Tile(int tileID, sf::Sprite sprite, bool solid);
 	~Tile() {}
 
-	const sf::Sprite& GetSprite() {
+	sf::Sprite& GetSprite() {
 		return _sprite;
+	}
+
+	bool IsSolid() {
+		return _solid;
 	}
 
 private:
