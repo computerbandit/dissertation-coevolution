@@ -16,7 +16,7 @@ struct GameData {
 	AssetManager assetManager;
 	InputManager inputManager;
 	GameObjectManager gameObjectManager;
-	const sf::Vector2f gravity = sf::Vector2f(0.0f, 90.8f);
+	const sf::Vector2f gravity = sf::Vector2f(0.0f, 1000.0f);
 };
 
 typedef std::shared_ptr<GameData> GameDataRef;

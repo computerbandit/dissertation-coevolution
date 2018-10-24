@@ -4,7 +4,7 @@
 #include <string>
 #include <sstream>
 
-Level::Level(GameDataRef data) : _data(data)
+Level::Level(GameDataRef data): _data(data)
 {
 	this->Cleanup();
 }
@@ -28,7 +28,6 @@ bool Level::LoadLevelFromTextFile(std::string filePath)
 					{
 					case 0:
 						_tilesize = std::stof(token);
-						std::cout << _tilesize;
 						break;
 					case 1:
 						_mapsize.x = std::stoi(token);
@@ -43,13 +42,23 @@ bool Level::LoadLevelFromTextFile(std::string filePath)
 				else {
 					std::string texture = "";
 					unsigned int tileID = std::stoi(token);
+					sf::Color color = sf::Color::Transparent;
 					switch (tileID)
 					{
 					case 0:
 						texture = "Air";
 						break;
 					case 1:
-						texture = "Grass_Tile";
+						texture = "Tile";
+						color = sf::Color::Green;
+						break;
+					case 2:
+						texture = "Tile";
+						color = sf::Color::Cyan;
+						break;
+					case 3:
+						texture = "Tile";
+						color = sf::Color::Yellow;
 						break;
 					default:
 						texture = "Air";
@@ -64,14 +73,9 @@ bool Level::LoadLevelFromTextFile(std::string filePath)
 						spriteTile.setScale(scale, scale);
 						solid = true;
 					}
-					spriteTile.setPosition(sf::Vector2f(tokennum*_tilesize, (linenum - 1)*_tilesize));
-
-					//when the level is destoryed the collision map in the gameobjectmanager is pointing to nothing!!
-					//FIX;
+					spriteTile.setPosition(sf::Vector2f(tokennum*_tilesize, (linenum-1)*_tilesize));
+					spriteTile.setColor(color);
 					_tilemap.push_back(Tile(tileID, spriteTile, solid));
-					if (_tilemap.back().IsSolid()) {
-						this->_data->gameObjectManager.AddTile(&(_tilemap.back()));
-					}
 				}
 				tokennum++;
 			}
@@ -96,8 +100,7 @@ void Level::Init()
 
 void Level::Cleanup()
 {
-	this->_tilemap.clear();
-	this->_data->gameObjectManager.ClearCollisionMap();
+	this->_tilemap = std::vector<Tile>();
 	this->_mapsize = sf::Vector2i(0, 0);
 	this->_tilesize = 16;
 }
@@ -107,4 +110,17 @@ void Level::Draw()
 	for (Tile tile : _tilemap) {
 		this->_data->window.draw(tile.GetSprite());
 	}
+}
+
+bool Level::Collision(sf::FloatRect rect)
+{
+	//add some optimization or something 
+	for (Tile& tile : _tilemap) {
+		if (tile.IsSolid()) {
+			if (rect.intersects(tile.GetSprite().getGlobalBounds())) {
+				return true;
+			}
+		}
+	}
+	return false;
 }

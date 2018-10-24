@@ -6,24 +6,15 @@
 class GameObjectManager {
 public:
 	GameObjectManager() {}
-	~GameObjectManager() {}
+	~GameObjectManager();
 
 	void AddEntity(IEntity* e);
-	void AddTile(Tile* t);
-	
-	std::vector<Tile*> CollisionMap() {
-		return _collisionmap;
-	}
-	std::vector<IEntity*> Entities() {
-		return _entities;
-	}
-
 	void ClearEntities();
-	void ClearCollisionMap();
+
 
 	void Draw(float dt);
 	void Update(float dt);
 
+private:
 	std::vector<IEntity*> _entities;
-	std::vector<Tile*> _collisionmap;
 };

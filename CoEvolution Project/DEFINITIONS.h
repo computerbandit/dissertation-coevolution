@@ -12,9 +12,12 @@
 
 #define BACKGROUND_TEST "Resources/res/Background_Test.png"
 
+//Player
+#define PLAYER_SPRITE "Resources/res/Player_Sprite.png"
 
 //Level 
 #define TEST_LEVEL "Resources/level/level.txt"
 
 //TILES
+#define TILE "Resources/res/Tile.png"
 #define GRASS_TILE "Resources/res/Grass_Tile.png"

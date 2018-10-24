@@ -5,29 +5,30 @@
 #include <iostream>
 
 Player* player;
-Level* level;
 
 GameState::GameState(GameDataRef data) : _data(data)
 {
 	//init camera, level the player and add the player to the list of entities in the level.
-	level = new Level(_data);
+	this->_level = new Level(_data);
 	this->_data->camera = Camera(&(this->_data->window), (float)this->_data->window.getSize().x, (float)(float)this->_data->window.getSize().y);
-	player = new Player(_data, sf::Vector2f(0, 0));
-	this->_data->gameObjectManager.AddEntity(player);
-
 }
 
 void GameState::Init()
 {
 	//load backgroung in
 	this->_data->assetManager.LoadTexture("Background Test", BACKGROUND_TEST);
-	this->_background.setTexture(this->_data->assetManager.GetTexture("Background Test"));
-	
+
 	//load tile sprites
 	this->_data->assetManager.LoadTexture("Grass_Tile", GRASS_TILE);
-	
+	this->_data->assetManager.LoadTexture("Tile", TILE);
+
+	//init Player
+	this->_data->assetManager.LoadTexture("Player_Sprite", PLAYER_SPRITE);
+	player = new Player(_data, &_level, sf::FloatRect(0, 0, 30, 60));
+	this->_data->gameObjectManager.AddEntity(player);
+
 	//load the level text file and set up tiles.
-	level->LoadLevelFromTextFile(TEST_LEVEL);
+	this->_level->LoadLevelFromTextFile(TEST_LEVEL);
 }
 
 void GameState::Cleanup()
@@ -75,8 +76,7 @@ void GameState::Update(float dt)
 void GameState::Draw(float dt)
 {
 	this->_data->window.clear(sf::Color::Black);
-	this->_data->window.draw(_background);
-	level->Draw();
+	this->_level->Draw();
 	this->_data->gameObjectManager.Draw(dt);
 	this->_data->window.display();
 }

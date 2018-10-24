@@ -1,6 +1,7 @@
 #pragma once
 #include "State.h"
 #include "Game.h"
+#include "Level.h"
 #include <SFML/Graphics.hpp>
 
 class GameState : public State {
@@ -14,6 +15,6 @@ public:
 	virtual void Draw(float dt) override;
 private:
 	GameDataRef _data;
-
-	sf::Sprite _background;
+	Level * _level;
+	
 };

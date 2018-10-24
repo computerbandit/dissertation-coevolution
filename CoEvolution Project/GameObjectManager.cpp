@@ -1,25 +1,21 @@
 #include "GameObjectManager.h"
 
+GameObjectManager::~GameObjectManager()
+{
+	ClearEntities();
+}
+
 void GameObjectManager::AddEntity(IEntity * e)
 {
 	this->_entities.push_back(e);
 }
 
-void GameObjectManager::AddTile(Tile * t)
-{
-	this->_collisionmap.push_back(t);
-}
 
 void GameObjectManager::ClearEntities()
 {
 	this->_entities.clear();
 }
 
-
-void GameObjectManager::ClearCollisionMap()
-{
-	this->_collisionmap.clear();
-}
 
 void GameObjectManager::Draw(float dt)
 {

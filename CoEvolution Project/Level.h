@@ -4,6 +4,7 @@
 #include "Game.h"
 #include "Tile.h"
 
+typedef std::vector<Tile> Tilemap;
 
 class Level {
 public:
@@ -15,17 +16,12 @@ public:
 	void Cleanup();
 	void Draw();
 
-	const float& TileSize() {
-		return _tilesize;
-	}
-
-	const sf::Vector2i& MapSize() {
-		return _mapsize;
-	}
-
+	bool Collision(sf::FloatRect rect);
 private:
 	GameDataRef _data;
-	std::vector<Tile> _tilemap;
+	Tilemap _tilemap;
 	sf::Vector2i _mapsize;
 	float _tilesize;
+
+	sf::Sprite _background;
 };
