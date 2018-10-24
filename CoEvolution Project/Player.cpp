@@ -5,17 +5,20 @@
 Player::Player(GameDataRef data, Level** level, sf::FloatRect box): _data(data), _level(level)
 {
 	this->_speed = 300.0f;
-	this->_jumpVelocity = 850.0f;
+	this->_jumpVelocity = 450.0f;
 	this->_sprite.setTexture(this->_data->assetManager.GetTexture("Player_Sprite"));
 	this->_sprite.setPosition(box.left, box.top);
-	this->_sprite.setColor(sf::Color::Red);
-	this->_velocity = sf::Vector2f(0.0f, 0.0f);
+	this->_sprite.setScale(box.width / _sprite.getGlobalBounds().width, box.height / _sprite.getGlobalBounds().height);
+	this->_sprite.setColor(sf::Color::Blue);
 	this->Init();
 }
 
 
 void Player::Init()
 {
+
+
+	this->Respawn();
 	_jump = false;
 	_falling = true;
 	_jumping = false;
@@ -69,14 +72,15 @@ void Player::Update(float dt)
 
 	//check collision for each tile in the collision map of the current level
 
-	if (this->_velocity.y > 500.0f) {
-		this->_velocity.y = 500.0f;
+	if (this->_velocity.y > 1000.0f) {
+		this->_velocity.y = 1000.0f;
 	}
-	else if (this->_velocity.y < -400.0f){
-		this->_velocity.y = -400.0f;
+	else if (this->_velocity.y < -1000.0f){
+		this->_velocity.y = -1000.0f;
 	}
 
 
+	//collsison detection in 5 substeps with wall sliding
 	sf::Vector2f oldpos;
 	int num_steps = 5;
 
@@ -99,8 +103,19 @@ void Player::Update(float dt)
 		}
 	}
 
+	//if the player goes under the map then they die;
 	if (this->_position.y > 700) {
-		this->_position = sf::Vector2f(0, 0);
+		this->Die();
+	}
+	if ((*_level)->LastCheckpoint(_currentCheckpoint + 1)) {
+		if (this->_position.x >= (*_level)->GetCheckpoint(_currentCheckpoint + 1)->x) {
+			//player beat the level.
+			this->Finish();
+		}
+	}
+	else if (this->_position.x >= (*_level)->GetCheckpoint(_currentCheckpoint + 1)->x) {
+		std::cout << "checkpoint hit!" << std::endl;
+		_currentCheckpoint++;
 	}
 
 	this->_sprite.setPosition(this->_position);
@@ -133,6 +148,36 @@ void Player::Right()
 void Player::Stop()
 {
 	_direction = 0;
+}
+
+void Player::Die()
+{
+	_lives--;
+	if (_lives == 0) {
+		std::cout << "Game Over" << std::endl;
+		this->Deactivate();
+	}
+	else {
+		this->Respawn();
+	}
+}
+
+void Player::Respawn()
+{
+	this->_position = *(*_level)->GetCheckpoint(this->_currentCheckpoint);
+	this->_velocity = sf::Vector2f(0.0f, 0.0f);
+}
+
+void Player::Finish()
+{
+	//player has finished the level...
+	/* evaluate the player with score and time and stuff.
+	then load the next level after it has loaded or the player clicks a button or something
+	idk get off my back man*/
+	std::cout << "you won!" << std::endl;
+	_currentCheckpoint = 0;
+	(*_level)->LoadNextLevel();
+	this->Respawn();
 }
 
 

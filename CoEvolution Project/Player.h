@@ -17,6 +17,9 @@ public:
 	void Left();
 	void Right();
 	void Stop();
+	void Die();
+	void Respawn();
+	void Finish();
 
 	sf::Vector2f& GetPosition() {
 		return _position;
@@ -30,7 +33,6 @@ private:
 	Level** _level;
 
 	float _speed, _jumpVelocity;
-	int _direction = 0;
-	
+	int _direction = 0, _lives = 10, _currentCheckpoint = 0;
 	bool _falling, _jumping, _jump, _grounded;
 };

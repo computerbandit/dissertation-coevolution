@@ -26,8 +26,14 @@ void GameObjectManager::Draw(float dt)
 
 void GameObjectManager::Update(float dt)
 {
-	for (IEntity* e : _entities) {
-		e->Update(dt);
+	for(int i = 0; i < (int)_entities.size(); i++){
+		if (_entities[i]->IsActive()) {
+			_entities[i]->Update(dt);
+		}
+		else {
+			//deactivate / remove the entity;
+			_entities.erase(_entities.begin() + i);
+		}
 	}
 }
 

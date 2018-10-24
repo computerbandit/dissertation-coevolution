@@ -10,7 +10,7 @@ GameState::GameState(GameDataRef data) : _data(data)
 {
 	//init camera, level the player and add the player to the list of entities in the level.
 	this->_level = new Level(_data);
-	this->_data->camera = Camera(&(this->_data->window), (float)this->_data->window.getSize().x, (float)(float)this->_data->window.getSize().y);
+	this->_data->camera = Camera(&(this->_data->window), (float)this->_data->window.getSize().x, (float)this->_data->window.getSize().y);
 }
 
 void GameState::Init()
@@ -19,16 +19,18 @@ void GameState::Init()
 	this->_data->assetManager.LoadTexture("Background Test", BACKGROUND_TEST);
 
 	//load tile sprites
-	this->_data->assetManager.LoadTexture("Grass_Tile", GRASS_TILE);
 	this->_data->assetManager.LoadTexture("Tile", TILE);
+	this->_data->assetManager.LoadTexture("Checkpoint", CHECKPOINT);
+	this->_data->assetManager.LoadTexture("Finish_Line", FINISH_LINE);
+	//load the level text file and set up tiles.
+	this->_level->LoadLevel(1);
 
 	//init Player
 	this->_data->assetManager.LoadTexture("Player_Sprite", PLAYER_SPRITE);
 	player = new Player(_data, &_level, sf::FloatRect(0, 0, 30, 60));
 	this->_data->gameObjectManager.AddEntity(player);
 
-	//load the level text file and set up tiles.
-	this->_level->LoadLevelFromTextFile(TEST_LEVEL);
+
 }
 
 void GameState::Cleanup()
@@ -75,7 +77,7 @@ void GameState::Update(float dt)
 
 void GameState::Draw(float dt)
 {
-	this->_data->window.clear(sf::Color::Black);
+	this->_data->window.clear(sf::Color::White);
 	this->_level->Draw();
 	this->_data->gameObjectManager.Draw(dt);
 	this->_data->window.display();

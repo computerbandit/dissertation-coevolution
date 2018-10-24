@@ -10,9 +10,8 @@ public:
 	void Restore();
 	void Update(sf::Vector2f point);
 
+	const sf::FloatRect GetCameraBox();
 private:
 	sf::RenderWindow* _window;
 	sf::View _view;
-	sf::Vector2f _offset;
-	sf::Vector2f _dampening;
 };

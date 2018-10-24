@@ -11,17 +11,22 @@ public:
 	Level(GameDataRef data);
 	~Level() {}
 
-	bool LoadLevelFromTextFile(std::string filePath);
-	void Init();
-	void Cleanup();
+	void LoadLevel(int num);
+	void LoadNextLevel();
 	void Draw();
 
 	bool Collision(sf::FloatRect rect);
+	const sf::Vector2f* GetCheckpoint(int num);
+	bool LastCheckpoint(int num);
+
 private:
+	void Cleanup();
+	bool LoadLevelFromTextFile(std::string filePath);
+
+	int _currentLevel;
 	GameDataRef _data;
 	Tilemap _tilemap;
-	sf::Vector2i _mapsize;
 	float _tilesize;
-
+	std::vector<sf::Vector2f> _checkpoint;
 	sf::Sprite _background;
 };

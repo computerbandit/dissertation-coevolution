@@ -16,8 +16,11 @@
 #define PLAYER_SPRITE "Resources/res/Player_Sprite.png"
 
 //Level 
-#define TEST_LEVEL "Resources/level/level.txt"
+#define LEVEL_1 "Resources/level/level1.txt"
+#define LEVEL_2 "Resources/level/level2.txt"
 
 //TILES
 #define TILE "Resources/res/Tile.png"
 #define GRASS_TILE "Resources/res/Grass_Tile.png"
+#define CHECKPOINT "Resources/res/Checkpoint.png"
+#define FINISH_LINE "Resources/res/Finish_Line.png"

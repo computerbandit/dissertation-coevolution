@@ -9,7 +9,14 @@ public:
 	virtual void Update(float dt) = 0;
 	virtual void Draw(float dt) = 0;
 
+	bool IsActive() {
+		return _active;
+	}
+	void Deactivate() {
+		_active = false;
+	}
 protected:
 	sf::Vector2f _velocity;
 	sf::Vector2f _position;
+	bool _active = true;
 };
