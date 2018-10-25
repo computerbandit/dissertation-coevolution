@@ -10,10 +10,13 @@ public:
 		return _sprite;
 	}
 
+	
 	bool IsSolid() {
 		return _solid;
 	}
 
+	static std::string GetTexture(int id);
+	static bool GetIfSolid(int id);
 private:
 	sf::Sprite _sprite;
 	int _tileID;

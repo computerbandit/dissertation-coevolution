@@ -11,13 +11,13 @@ void MainMenuState::Init()
 {
 	//Loading in assets for the main menu
 	//Background
-	this->_data->assetManager.LoadTexture("Main Menu Background", MAIN_MENU_BACKGROUND_FILEPATH);
+	this->_data->assetManager.LoadTexture("Main Menu Background", MAIN_MENU_BACKGROUND_PATH);
 	_background.setTexture(this->_data->assetManager.GetTexture("Main Menu Background"));
 	//Play Button
-	this->_data->assetManager.LoadTexture("Main Menu Play Button", MAIN_MENU_PLAY_BUTTON_FILEPATH);
+	this->_data->assetManager.LoadTexture("Main Menu Play Button", MAIN_MENU_PLAY_BUTTON_PATH);
 	_playButton.setTexture(this->_data->assetManager.GetTexture("Main Menu Play Button"));
 	//Exit Button 
-	this->_data->assetManager.LoadTexture("Main Menu Exit Button", MAIN_MENU_EXIT_BUTTON_FILEPATH);
+	this->_data->assetManager.LoadTexture("Main Menu Exit Button", MAIN_MENU_EXIT_BUTTON_PATH);
 	_exitButton.setTexture(this->_data->assetManager.GetTexture("Main Menu Exit Button"));
 
 	//push the references of the loaded sprites onto the button vector

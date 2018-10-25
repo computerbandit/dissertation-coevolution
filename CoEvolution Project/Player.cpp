@@ -176,7 +176,7 @@ void Player::Finish()
 	idk get off my back man*/
 	std::cout << "you won!" << std::endl;
 	_currentCheckpoint = 0;
-	(*_level)->LoadNextLevel();
+	//(*_level)->LoadNextLevel();
 	this->Respawn();
 }
 

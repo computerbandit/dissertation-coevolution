@@ -149,12 +149,14 @@
     <ClInclude Include="IEntity.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="Level.h" />
+    <ClInclude Include="LoadAssetsState.h" />
     <ClInclude Include="MainMenuState.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="SplashState.h" />
     <ClInclude Include="State.h" />
     <ClInclude Include="StateMachine.h" />
     <ClInclude Include="Tile.h" />
+    <ClInclude Include="TILE_DEFINITIONS.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

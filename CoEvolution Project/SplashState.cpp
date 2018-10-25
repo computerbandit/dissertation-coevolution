@@ -11,7 +11,7 @@ SplashState::SplashState(GameDataRef data) : _data(data)
 
 void SplashState::Init()
 {
-	this->_data->assetManager.LoadTexture("Splash State Background", SPLASH_STATE_BACKGROUND_FILEPATH);
+	this->_data->assetManager.LoadTexture("Splash State Background", SPLASH_STATE_BACKGROUND_PATH);
 	_background.setTexture(this->_data->assetManager.GetTexture("Splash State Background"));
 }
 

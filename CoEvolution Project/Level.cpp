@@ -41,59 +41,24 @@ bool Level::LoadLevelFromTextFile(std::string filePath)
 						linenum = 0;
 						break;
 					}
-					std::string texture = "";
+
 					unsigned int tileID = std::stoi(token);
-					sf::Color color = sf::Color::Transparent;
-					switch (tileID)
-					{
-					case 0:
-						texture = "Air";
-						break;
+					std::string texture = Tile::GetTexture(tileID);	
 
-					case 101:
-						texture = "Checkpoint";
-						break;
-
-					case 999:
-						texture = "Finish_Line";
-						break;
-					case 1:
-						texture = "Tile";
-						//green
-						color = sf::Color(109,190,48);
-						break;
-					case 2:
-						texture = "Tile";
-						//
-						color = sf::Color(172, 50, 50);
-						break;
-					case 3:
-						texture = "Tile";
-						color = sf::Color(251,242, 54);
-						break;
-					default:
-						texture = "Air";
-						break;
-					}
-					sf::Sprite spriteTile;
-					float scale = 1.0f;
-					bool solid = false;
-					if (texture != "Air") {
+					if (tileID != AIR_TILE) {
+						sf::Sprite spriteTile;
+						bool solid = Tile::GetIfSolid(tileID);
 						spriteTile.setTexture(this->_data->assetManager.GetTexture(texture));
-						scale = _tilesize / spriteTile.getGlobalBounds().width;
+						float scale = _tilesize / spriteTile.getGlobalBounds().width;
 						spriteTile.setScale(scale, scale);
-						if (texture == "Tile") {
-							solid = true;
-							spriteTile.setColor(color);
-						}
-					
-					}
-					spriteTile.setPosition(sf::Vector2f(
-						(tokennum + totalLength)*_tilesize,
-						linenum*_tilesize));
+						
+						spriteTile.setPosition(sf::Vector2f(
+							(tokennum + totalLength)*_tilesize,
+							linenum*_tilesize));
 
+						_tilemap.push_back(Tile(tileID, spriteTile, solid));
+					}
 					
-					_tilemap.push_back(Tile(tileID, spriteTile, solid));
 					if (tokennum > sectionLength) sectionLength = tokennum;
 					if (tokennum == 0 && newCheckpoint) {
 						if (tileID == 101 || tileID == 999) {
@@ -139,7 +104,7 @@ void Level::LoadLevel(int num)
 
 void Level::LoadNextLevel()
 {
-	std::cout << "Hello starting new Level" << std::endl;
+	std::cout << "starting next Level" << std::endl;
  	this->LoadLevel(_currentLevel + 1);
 }
 

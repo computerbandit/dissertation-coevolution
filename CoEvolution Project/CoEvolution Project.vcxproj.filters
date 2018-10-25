@@ -101,5 +101,11 @@
     <ClInclude Include="GameObjectManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="LoadAssetsState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="TILE_DEFINITIONS.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
