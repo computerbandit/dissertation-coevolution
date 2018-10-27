@@ -4,7 +4,9 @@
 Game::Game(int width, int height, std::string title)
 {
 	this->_data->window.create(sf::VideoMode(width, height), title);
+	this->_data->window.setVerticalSyncEnabled(true);
 	this->_data->stateMachine.PushState(StateRef(new SplashState(this->_data)));
+	this->_data->camera = Camera(&(this->_data->window), this->_data->window.getSize(), sf::Vector2f(this->_data->window.getSize().x/2, this->_data->window.getSize().y/2));
 	this->Run();
 }
 

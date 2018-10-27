@@ -30,3 +30,8 @@ sf::Font & AssetManager::GetFont(std::string name)
 {
 	return this->_fonts.at(name);
 }
+
+void AssetManager::Rescale(sf::Sprite & sprite, sf::Vector2f newSize)
+{
+	sprite.setScale(newSize.x / sprite.getGlobalBounds().width, newSize.y / sprite.getGlobalBounds().height);
+}

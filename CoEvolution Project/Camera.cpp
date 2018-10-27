@@ -1,11 +1,11 @@
 #include "Camera.h"
 #include <iostream>
 
-Camera::Camera(sf::RenderWindow* window, float width, float height)
+Camera::Camera(sf::RenderWindow* window, sf::Vector2u wh, sf::Vector2f offset): _offset(offset)
 {
 	this->_window = window;
-	this->_view.setSize(width, height);
-	this->_view.setCenter(width/2, height/4);
+	this->_view.setSize((float)wh.x, (float)wh.y);
+	this->_view.setCenter(_offset);
 	this->_window->setView(_view);
 }
 
@@ -18,7 +18,8 @@ void Camera::Update(sf::Vector2f point)
 {
 	if (this->GetCameraBox().contains(point)) {
 		float dampx = ((point.x - (_view.getCenter().x - _view.getSize().x / 4)) / 100)*6.0f;
-		float dampy = ((point.y - (_view.getCenter().y)) / 100)*20.0f;
+		float dampy = ((point.y - (_view.getCenter().y + _view.getSize().y / 8)) / 100)*20.0f;
+		//could do some sort of zooming out while the player is moving but that is hard :(
 		_view.move(dampx, dampy);
 	}
 	else {
@@ -30,4 +31,16 @@ void Camera::Update(sf::Vector2f point)
 const sf::FloatRect Camera::GetCameraBox()
 {
 	return  sf::FloatRect(_view.getCenter() - (_view.getSize() / 2.0f), _view.getSize());
+}
+
+void Camera::Resize(sf::Event event){
+
+	int newWidth = event.size.width;
+	int newHeight = (newWidth/ASPECT_RATIO_WIDTH) * ASPECT_RATIO_HEIGHT;
+	//maintain aspect ratio
+	_window->setSize(sf::Vector2u(newWidth, newHeight));
+	
+	sf::FloatRect visibleArea(0, 0, newWidth, newHeight);
+	_view = sf::View(visibleArea);
+	_window->setView(_view);
 }

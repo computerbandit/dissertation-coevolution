@@ -13,6 +13,7 @@ void MainMenuState::Init()
 	//Background
 	this->_data->assetManager.LoadTexture("Main Menu Background", MAIN_MENU_BACKGROUND_PATH);
 	_background.setTexture(this->_data->assetManager.GetTexture("Main Menu Background"));
+	AssetManager::Rescale(_background, sf::Vector2f(this->_data->window.getSize()));
 	//Play Button
 	this->_data->assetManager.LoadTexture("Main Menu Play Button", MAIN_MENU_PLAY_BUTTON_PATH);
 	_playButton.setTexture(this->_data->assetManager.GetTexture("Main Menu Play Button"));
@@ -41,6 +42,11 @@ void MainMenuState::HandleEvents()
 		if (sf::Event::Closed == event.type) {
 			this->_data->window.close();
 		}
+
+		if (sf::Event::Resized == event.type) {
+			this->_data->camera.Resize(event);
+			AssetManager::Rescale(_background, sf::Vector2f(this->_data->window.getSize()));
+		}
 		if (sf::Event::MouseButtonPressed == event.type) {
 			for (sf::Uint16 i = 0; i < _buttons.size(); i++) {
 				if (this->_data->inputManager.IsSpriteClicked(*(_buttons[i]), sf::Mouse::Button::Left, this->_data->window)) {
@@ -52,6 +58,10 @@ void MainMenuState::HandleEvents()
 						this->_data->stateMachine.PushState(StateRef(new GameState(_data)));
 						break;
 					case 1:
+						//Help - this is like what the user needs to know and how to play the game 
+						this->_data->window.close();
+						break;
+					case 2:
 						//Exit Button action -> Close the game
 						this->_data->window.close();
 						break;

@@ -82,7 +82,7 @@ void Player::Update(float dt)
 
 	//collsison detection in 5 substeps with wall sliding
 	sf::Vector2f oldpos;
-	int num_steps = 5;
+	int num_steps = 1;
 
 	for (int i = 0; i < num_steps; i++) {
 		oldpos = sf::Vector2f(this->_position);

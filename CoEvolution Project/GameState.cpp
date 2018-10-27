@@ -10,7 +10,8 @@ GameState::GameState(GameDataRef data) : _data(data)
 {
 	//init camera, level the player and add the player to the list of entities in the level.
 	this->_level = new Level(_data);
-	this->_data->camera = Camera(&(this->_data->window), (float)this->_data->window.getSize().x, (float)this->_data->window.getSize().y);
+
+	this->_data->camera = Camera(&(this->_data->window), this->_data->window.getSize(), sf::Vector2f(0, 0));
 }
 
 void GameState::Init()
@@ -43,7 +44,10 @@ void GameState::HandleEvents()
 			this->_data->window.close();
 			this->Cleanup();
 		}
+		if (sf::Event::Resized == event.type) {
+			this->_data->camera.Resize(event);
 
+		}
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
 			player->Left();
 		}
