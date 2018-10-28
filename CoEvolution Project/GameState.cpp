@@ -17,17 +17,19 @@ GameState::GameState(GameDataRef data) : _data(data)
 void GameState::Init()
 {
 	//load tile sprites
+	//TODO put this into a function
 	this->_data->assetManager.LoadTexture(GRASS_TILE_TEX, GRASS_TILE_TEX_PATH);
 	this->_data->assetManager.LoadTexture(CHECKPOINT_TILE_TEX, CHECKPOINT_TILE_TEX_PATH);
 	this->_data->assetManager.LoadTexture(FINISH_LINE_TILE_TEX, FINISH_LINE_TILE_TEX_PATH);
+	
+	
 	//load the level text file and set up tiles.
 	this->_level->LoadLevel(1);
 
 	//init Player
 	this->_data->assetManager.LoadTexture("Player_Sprite", PLAYER_TEX_PATH);
-	player = new Player(_data, &_level, sf::FloatRect(0, 0, 30, 60));
+	player = new Player(_data, &_level, sf::Vector2f(30,60));
 	this->_data->gameObjectManager.AddEntity(player);
-
 
 }
 
