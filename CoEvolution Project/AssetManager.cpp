@@ -35,3 +35,8 @@ void AssetManager::Rescale(sf::Sprite & sprite, sf::Vector2f newSize)
 {
 	sprite.setScale(newSize.x / sprite.getGlobalBounds().width, newSize.y / sprite.getGlobalBounds().height);
 }
+
+void AssetManager::Rescale(sf::Sprite & sprite, float factor)
+{
+	sprite.setScale(factor, factor);
+}

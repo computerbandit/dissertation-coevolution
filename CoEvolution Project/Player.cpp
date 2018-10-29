@@ -1,14 +1,14 @@
 #include "Player.h"
 #include "Tile.h"
+#include "MainMenuState.h"
 #include <iostream>
 
-Player::Player(GameDataRef data, Level** level, sf::FloatRect box): _data(data), _level(level)
+Player::Player(GameDataRef data, Level** level, sf::Vector2f wh): _data(data), _level(level)
 {
 	this->_speed = 300.0f;
 	this->_jumpVelocity = 450.0f;
 	this->_sprite.setTexture(this->_data->assetManager.GetTexture("Player_Sprite"));
-	this->_sprite.setPosition(box.left, box.top);
-	this->_sprite.setScale(box.width / _sprite.getGlobalBounds().width, box.height / _sprite.getGlobalBounds().height);
+	AssetManager::Rescale(_sprite, wh);
 	this->_sprite.setColor(sf::Color::Blue);
 	this->Init();
 }
@@ -16,14 +16,12 @@ Player::Player(GameDataRef data, Level** level, sf::FloatRect box): _data(data),
 
 void Player::Init()
 {
-
-
-	this->Respawn();
 	_jump = false;
 	_falling = true;
 	_jumping = false;
 	_holdingJump = false; 
 	_grounded = false;
+	this->Respawn();
 }
 
 void Player::Update(float dt)
@@ -154,7 +152,7 @@ void Player::Die()
 {
 	_lives--;
 	if (_lives == 0) {
-		std::cout << "Game Over" << std::endl;
+		this->_data->stateMachine.PushState(StateRef(new MainMenuState(_data)));
 		this->Deactivate();
 	}
 	else {
@@ -174,9 +172,9 @@ void Player::Finish()
 	/* evaluate the player with score and time and stuff.
 	then load the next level after it has loaded or the player clicks a button or something
 	idk get off my back man*/
-	std::cout << "you won!" << std::endl;
+	std::cout << "You won the level!" << std::endl;
 	_currentCheckpoint = 0;
-	//(*_level)->LoadNextLevel();
+	(*_level)->LoadNextLevel();
 	this->Respawn();
 }
 

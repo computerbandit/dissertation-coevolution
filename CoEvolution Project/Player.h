@@ -6,7 +6,7 @@
 class Player : virtual public IEntity {
 
 public:
-	Player(GameDataRef data, Level** level, sf::FloatRect box);
+	Player(GameDataRef data, Level** level, sf::Vector2f wh);
 	~Player(){}
 
 	virtual void Init() override;

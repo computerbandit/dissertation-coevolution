@@ -15,10 +15,7 @@ bool Level::LoadLevelFromTextFile(std::string filePath)
 	this->Cleanup();
 	std::ifstream file;
 	std::string line;
-	int linenum = 0;
-	int section = 0;
-	int sectionLength = 0;
-	int totalLength = 0;
+	int linenum = 0, sectionLength = 0, totalLength = 0;
 	bool newCheckpoint = false;
 	file.open(filePath);
 	if (file.is_open()) {
@@ -26,50 +23,33 @@ bool Level::LoadLevelFromTextFile(std::string filePath)
 			std::getline(file, line);
 			std::stringstream ss(line);
 			std::string token;
-			int tokennum = 0;
+			int tokennum = 1;
+
 			while (std::getline(ss, token, ',')) {
-				if (linenum == 0) {
-					_tilesize = std::stof(token);
+				if (token == "#") {
+					totalLength += sectionLength;
+					sectionLength = 0;
+					linenum = 0;
+					tokennum++;
+					break;
 				}
-				else {
-					//if it is the start of a new section we need to add a checkpoint at the start
-					if (token == "#") {
-						newCheckpoint = true;
-						section++;
-						totalLength += sectionLength;
-						sectionLength = 0;
-						linenum = 0;
-						break;
-					}
 
-					unsigned int tileID = std::stoi(token);
-					std::string texture = Tile::GetTexture(tileID);	
+				unsigned int tileID = std::stoi(token);
+				std::string texture = Tile::GetTexture(tileID);	
 
-					if (tileID != AIR_TILE) {
-						sf::Sprite spriteTile;
-						bool solid = Tile::GetIfSolid(tileID);
-						spriteTile.setTexture(this->_data->assetManager.GetTexture(texture));
-						float scale = _tilesize / spriteTile.getGlobalBounds().width;
-						spriteTile.setScale(scale, scale);
-						
-						spriteTile.setPosition(sf::Vector2f(
-							(tokennum + totalLength)*_tilesize,
-							linenum*_tilesize));
+				if (texture != AIR_TILE_TEX) {
+					sf::Sprite spriteTile;
+					spriteTile.setTexture(this->_data->assetManager.GetTexture(texture));
+					AssetManager::Rescale(spriteTile, sf::Vector2f(64, 64));
 
-						_tilemap.push_back(Tile(tileID, spriteTile, solid));
-					}
-					
-					if (tokennum > sectionLength) sectionLength = tokennum;
-					if (tokennum == 0 && newCheckpoint) {
-						if (tileID == 101 || tileID == 999) {
-							//if the tile is a starting tile then spawn the player there
-							_checkpoint.push_back(sf::Vector2f((
-								tokennum + totalLength)*_tilesize,
-								linenum*_tilesize));
-							newCheckpoint = false;
-						}
+					sf::Vector2f pos((tokennum + totalLength)*spriteTile.getGlobalBounds().width,linenum*spriteTile.getGlobalBounds().height);
+					spriteTile.setPosition(pos);
+					_tilemap.push_back(Tile(tileID, spriteTile, Tile::GetIfSolid(tileID)));
+					if (tileID == 101 || tileID == 102) {
+						_checkpoint.push_back(pos);
 					}
 				}
+				sectionLength = tokennum;
 				tokennum++;
 			}
 			linenum++;
@@ -90,9 +70,6 @@ void Level::LoadLevel(int num)
 	case 1:
 		this->LoadLevelFromTextFile(LEVEL_1);
 		
-		break;
-	case 2:
-		this->LoadLevelFromTextFile(LEVEL_2);
 		break;
 
 	default:

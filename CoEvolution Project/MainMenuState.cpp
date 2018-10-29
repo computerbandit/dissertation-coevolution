@@ -9,6 +9,7 @@ MainMenuState::MainMenuState(GameDataRef data) : _data(data)
 
 void MainMenuState::Init()
 {
+	this->_data->camera = Camera(&(this->_data->window), this->_data->window.getSize(), sf::Vector2f(this->_data->window.getSize().x / 2, this->_data->window.getSize().y / 2));
 	//Loading in assets for the main menu
 	//Background
 	this->_data->assetManager.LoadTexture("Main Menu Background", MAIN_MENU_BACKGROUND_PATH);
