@@ -28,7 +28,7 @@ void GameState::Init()
 
 	//init Player
 	this->_data->assetManager.LoadTexture("Player_Sprite", PLAYER_TEX_PATH);
-	player = new Player(_data, &_level, sf::Vector2f(30,60));
+	player = new Player(_data, &_level, sf::Vector2f(24,42));
 	this->_data->gameObjectManager.AddEntity(player);
 
 }

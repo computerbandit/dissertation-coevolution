@@ -15,6 +15,7 @@ public:
 	sf::Font &GetFont(std::string name);
 
 	static void Rescale(sf::Sprite& sprite, sf::Vector2f newSize);
+	static void Rescale(sf::Sprite& sprite, float factor);
 private:
 	std::map<std::string, sf::Texture> _textures;
 	std::map<std::string, sf::Font> _fonts;

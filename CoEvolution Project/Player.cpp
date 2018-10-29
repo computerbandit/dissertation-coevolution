@@ -1,5 +1,6 @@
 #include "Player.h"
 #include "Tile.h"
+#include "MainMenuState.h"
 #include <iostream>
 
 Player::Player(GameDataRef data, Level** level, sf::Vector2f wh): _data(data), _level(level)
@@ -15,14 +16,12 @@ Player::Player(GameDataRef data, Level** level, sf::Vector2f wh): _data(data), _
 
 void Player::Init()
 {
-
-
-	this->Respawn();
 	_jump = false;
 	_falling = true;
 	_jumping = false;
 	_holdingJump = false; 
 	_grounded = false;
+	this->Respawn();
 }
 
 void Player::Update(float dt)
@@ -153,7 +152,7 @@ void Player::Die()
 {
 	_lives--;
 	if (_lives == 0) {
-		std::cout << "Game Over" << std::endl;
+		this->_data->stateMachine.PushState(StateRef(new MainMenuState(_data)));
 		this->Deactivate();
 	}
 	else {

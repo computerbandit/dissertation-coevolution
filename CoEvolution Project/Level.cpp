@@ -24,35 +24,32 @@ bool Level::LoadLevelFromTextFile(std::string filePath)
 			std::stringstream ss(line);
 			std::string token;
 			int tokennum = 1;
+
 			while (std::getline(ss, token, ',')) {
-				if (linenum == 0) {
-					_tilesize = std::stof(token);
+				if (token == "#") {
+					totalLength += sectionLength;
+					sectionLength = 0;
+					linenum = 0;
+					tokennum++;
+					break;
 				}
-				else {
-					if (token == "#") {
-						totalLength += sectionLength;
-						sectionLength = 0;
-						linenum = 0;
-						tokennum++;
-						break;
-					}
 
-					unsigned int tileID = std::stoi(token);
-					std::string texture = Tile::GetTexture(tileID);	
+				unsigned int tileID = std::stoi(token);
+				std::string texture = Tile::GetTexture(tileID);	
 
-					if (texture != AIR_TILE_TEX) {
-						sf::Sprite spriteTile;
-						spriteTile.setTexture(this->_data->assetManager.GetTexture(texture));
-						AssetManager::Rescale(spriteTile, sf::Vector2f(_tilesize, _tilesize));
-						sf::Vector2f pos((tokennum + totalLength)*_tilesize,linenum*_tilesize);
-						spriteTile.setPosition(pos);
-						_tilemap.push_back(Tile(tileID, spriteTile, Tile::GetIfSolid(tileID)));
-						if (tileID == 101 || tileID == 102) {
-							_checkpoint.push_back(pos);
-						}
+				if (texture != AIR_TILE_TEX) {
+					sf::Sprite spriteTile;
+					spriteTile.setTexture(this->_data->assetManager.GetTexture(texture));
+					AssetManager::Rescale(spriteTile, sf::Vector2f(64, 64));
+
+					sf::Vector2f pos((tokennum + totalLength)*spriteTile.getGlobalBounds().width,linenum*spriteTile.getGlobalBounds().height);
+					spriteTile.setPosition(pos);
+					_tilemap.push_back(Tile(tileID, spriteTile, Tile::GetIfSolid(tileID)));
+					if (tileID == 101 || tileID == 102) {
+						_checkpoint.push_back(pos);
 					}
-					sectionLength = tokennum;
 				}
+				sectionLength = tokennum;
 				tokennum++;
 			}
 			linenum++;
