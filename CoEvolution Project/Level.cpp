@@ -35,17 +35,19 @@ bool Level::LoadLevelFromTextFile(std::string filePath)
 				}
 
 				unsigned int tileID = std::stoi(token);
-				std::string texture = Tile::GetTexture(tileID);	
 
-				if (texture != AIR_TILE_TEX) {
+				if (tileID != AIR_TILE) {
 					sf::Sprite spriteTile;
-					spriteTile.setTexture(this->_data->assetManager.GetTexture(texture));
-					AssetManager::Rescale(spriteTile, sf::Vector2f(64, 64));
+					spriteTile.setTexture(this->_data->assetManager.GetTexturesheet(TILES).GetTexture(tileID));
+					AssetManager::Rescale(spriteTile, sf::Vector2f(TILE_SIZE, TILE_SIZE));
+					
 
-					sf::Vector2f pos((tokennum + totalLength)*spriteTile.getGlobalBounds().width,linenum*spriteTile.getGlobalBounds().height);
+					//change the width and height scaling
+					sf::Vector2f pos(
+						(tokennum + totalLength)*TILE_SIZE,linenum*TILE_SIZE);
 					spriteTile.setPosition(pos);
 					_tilemap.push_back(Tile(tileID, spriteTile, Tile::GetIfSolid(tileID)));
-					if (tileID == 101 || tileID == 102) {
+					if (tileID == CHECKPOINT_TILE || tileID == FINISH_LINE_TILE) {
 						_checkpoint.push_back(pos);
 					}
 				}

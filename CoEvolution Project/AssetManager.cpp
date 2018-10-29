@@ -1,5 +1,6 @@
 #include "AssetManager.h"
 
+
 void AssetManager::LoadTexture(std::string name, std::string fileName)
 {
 	sf::Texture texture;
@@ -10,12 +11,22 @@ void AssetManager::LoadTexture(std::string name, std::string fileName)
 
 sf::Texture & AssetManager::GetTexture(std::string name)
 {
-	return this->_textures.at(name);
+	return this->_textures[name];
 }
 
-void AssetManager::UnloadTexture(std::string name)
+void AssetManager::LoadTexturesheet(std::string name, std::string fileName, sf::Vector2u texturesize)
 {
-	this->_textures.erase(name);
+	sf::Image image;
+	if (image.loadFromFile(fileName)) {
+		Texturesheet texturesheet(image, texturesize);
+		this->_texturesheets[name] = texturesheet;
+	}
+
+}
+
+Texturesheet & AssetManager::GetTexturesheet(std::string name)
+{
+	return this->_texturesheets.at(name);
 }
 
 void AssetManager::LoadFont(std::string name, std::string fileName)

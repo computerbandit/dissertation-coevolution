@@ -1,13 +1,14 @@
 #include "Player.h"
 #include "Tile.h"
 #include "MainMenuState.h"
+#include "DEFINITIONS.h"
 #include <iostream>
 
 Player::Player(GameDataRef data, Level** level, sf::Vector2f wh): _data(data), _level(level)
 {
 	this->_speed = 300.0f;
 	this->_jumpVelocity = 450.0f;
-	this->_sprite.setTexture(this->_data->assetManager.GetTexture("Player_Sprite"));
+	this->_sprite.setTexture(this->_data->assetManager.GetTexturesheet(PLAYER).GetTexture(0));
 	AssetManager::Rescale(_sprite, wh);
 	this->_sprite.setColor(sf::Color::Blue);
 	this->Init();

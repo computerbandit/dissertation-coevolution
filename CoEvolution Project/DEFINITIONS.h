@@ -4,6 +4,8 @@
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
 
+#define TILE_SIZE 64
+
 #define SPLASH_STATE_SHOW_TIME 3.0
 #define SPLASH_STATE_BACKGROUND_PATH "Resources/res/Splash_Background.png"
 
@@ -19,7 +21,8 @@
 #define LEVEL_1 "Resources/level/level1.txt"
 #define LEVEL_2 "Resources/level/level2.txt"
 
-//TILES
-#define GRASS_TILE_TEX_PATH "Resources/res/Grass_Tile.png"
-#define CHECKPOINT_TILE_TEX_PATH "Resources/res/Checkpoint.png"
-#define FINISH_LINE_TILE_TEX_PATH "Resources/res/Finish_Line.png"
+//Spritesheets
+#define TILES "Tile_Sheet"
+#define TILE_SHEET "Resources/res/Tile_Sheet.png"
+#define PLAYER "Player_Sheet"
+#define PLAYER_SHEET "Resources/res/Player_Sheet.png"
