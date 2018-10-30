@@ -39,7 +39,7 @@ bool Level::LoadLevelFromTextFile(std::string filePath)
 				if (tileID != AIR_TILE) {
 					sf::Sprite spriteTile;
 					spriteTile.setTexture(this->_data->assetManager.GetTexturesheet(TILES).GetTexture(tileID));
-					AssetManager::Rescale(spriteTile, sf::Vector2f(TILE_SIZE, TILE_SIZE));
+					AssetManager::Rescale(spriteTile, SCALE_FACTOR);
 					
 
 					//change the width and height scaling

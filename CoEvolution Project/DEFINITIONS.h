@@ -4,7 +4,10 @@
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
 
+
+#define TEXTURE_SIZE 16
 #define TILE_SIZE 64
+#define SCALE_FACTOR TILE_SIZE/TEXTURE_SIZE
 
 #define SPLASH_STATE_SHOW_TIME 3.0
 #define SPLASH_STATE_BACKGROUND_PATH "Resources/res/Splash_Background.png"
