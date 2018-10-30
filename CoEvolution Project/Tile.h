@@ -6,6 +6,10 @@ public:
 	Tile(int tileID, sf::Sprite sprite, bool solid);
 	~Tile() {}
 
+	int& GetTileID() {
+		return _tileID;
+	}
+
 	sf::Sprite& GetSprite() {
 		return _sprite;
 	}

@@ -6,7 +6,7 @@
 
 
 #define TEXTURE_SIZE 16
-#define TILE_SIZE 64
+#define TILE_SIZE 64.0f
 #define SCALE_FACTOR TILE_SIZE/TEXTURE_SIZE
 
 #define SPLASH_STATE_SHOW_TIME 3.0
@@ -27,5 +27,7 @@
 //Spritesheets
 #define TILES "Tile_Sheet"
 #define TILE_SHEET "Resources/res/Tile_Sheet.png"
+#define PLATFORMS "Platform_Sheet"
+#define PLATFORM_SHEET "Resources/res/Platform_Sheet.png"
 #define PLAYER "Player_Sheet"
 #define PLAYER_SHEET "Resources/res/Player_Sheet.png"

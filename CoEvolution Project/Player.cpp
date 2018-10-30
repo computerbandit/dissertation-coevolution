@@ -87,7 +87,8 @@ void Player::Update(float dt)
 		oldpos = sf::Vector2f(this->_position);
 		this->_position.x += this->_velocity.x * (dt/num_steps);
 		_sprite.setPosition(this->_position);
-		if ((*_level)->Collision(_sprite.getGlobalBounds())) {
+		Tile* collisionTile = (*_level)->Collision(_sprite.getGlobalBounds());
+		if (collisionTile) {
 			this->_position = oldpos;
 			_sprite.setPosition(this->_position);
 		}
@@ -95,7 +96,8 @@ void Player::Update(float dt)
 		oldpos = sf::Vector2f(this->_position);
 		this->_position.y += this->_velocity.y * (dt/num_steps);
 		_sprite.setPosition(this->_position);
-		if ((*_level)->Collision(_sprite.getGlobalBounds())) {
+		collisionTile = (*_level)->Collision(_sprite.getGlobalBounds());
+		if (collisionTile) {
 			this->_position = oldpos;
 			this->_velocity.y = 0;
 			_sprite.setPosition(this->_position);
@@ -106,13 +108,14 @@ void Player::Update(float dt)
 	if (this->_position.y > 700) {
 		this->Die();
 	}
+
 	if ((*_level)->LastCheckpoint(_currentCheckpoint + 1)) {
 		if (this->_position.x >= (*_level)->GetCheckpoint(_currentCheckpoint + 1)->x) {
 			//player beat the level.
 			this->Finish();
 		}
 	}
-	else if (this->_position.x >= (*_level)->GetCheckpoint(_currentCheckpoint + 1)->x) {
+	else if (this->_position.x >= (*_level)->GetCheckpoint(_currentCheckpoint + 1)->x ) {
 		std::cout << "checkpoint hit!" << std::endl;
 		_currentCheckpoint++;
 	}

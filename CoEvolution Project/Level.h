@@ -15,7 +15,7 @@ public:
 	void LoadNextLevel();
 	void Draw();
 
-	bool Collision(sf::FloatRect rect);
+	Tile* Collision(sf::FloatRect rect);
 	const sf::Vector2f* GetCheckpoint(int num);
 	bool LastCheckpoint(int num);
 

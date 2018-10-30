@@ -38,7 +38,15 @@ bool Level::LoadLevelFromTextFile(std::string filePath)
 
 				if (tileID != AIR_TILE) {
 					sf::Sprite spriteTile;
-					spriteTile.setTexture(this->_data->assetManager.GetTexturesheet(TILES).GetTexture(tileID));
+					std::string sheetname = "";
+					if (tileID < 100) {
+						sheetname = TILES;
+					}
+					else if (tileID >= 100) {
+						sheetname = PLATFORMS;
+						tileID -= 100;
+					}
+					spriteTile.setTexture(this->_data->assetManager.GetTexturesheet(sheetname).GetTexture(tileID));
 					AssetManager::Rescale(spriteTile, SCALE_FACTOR);
 					
 
@@ -104,17 +112,18 @@ void Level::Draw()
 }
 
 
-bool Level::Collision(sf::FloatRect rect)
+Tile* Level::Collision(sf::FloatRect rect)
 {
-	//add some optimization or something 
+	//add some optimization or something
+	//only check the tiles near the player maybe some how
 	for (Tile& tile : _tilemap) {
-		if (this->_data->camera.GetCameraBox().intersects(tile.GetSprite().getGlobalBounds()) && tile.IsSolid()) {
+		if (tile.IsSolid() && this->_data->camera.GetCameraBox().intersects(tile.GetSprite().getGlobalBounds())) {
 			if (rect.intersects(tile.GetSprite().getGlobalBounds())) {
-				return true;
+				return &tile;
 			}
 		}
 	}
-	return false;
+	return nullptr;
 }
 
 const sf::Vector2f* Level::GetCheckpoint(int num)

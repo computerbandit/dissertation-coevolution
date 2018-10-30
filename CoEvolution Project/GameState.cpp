@@ -17,8 +17,8 @@ GameState::GameState(GameDataRef data) : _data(data)
 void GameState::Init()
 {
 	//load the texturesheet
-	this->_data->assetManager.LoadTexturesheet("Tile_Sheet", TILE_SHEET, sf::Vector2u(16, 16));
-
+	this->_data->assetManager.LoadTexturesheet(TILES, TILE_SHEET, sf::Vector2u(16, 16));
+	this->_data->assetManager.LoadTexturesheet(PLATFORMS, PLATFORM_SHEET, sf::Vector2u(16, 4));
 	
 	
 	//load the level text file and set up tiles.

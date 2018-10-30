@@ -40,7 +40,7 @@ void Camera::Resize(sf::Event event){
 	//maintain aspect ratio
 	_window->setSize(sf::Vector2u(newWidth, newHeight));
 	
-	sf::FloatRect visibleArea(0, 0, newWidth, newHeight);
+	sf::FloatRect visibleArea(0, 0, (float)newWidth, (float)newHeight);
 	_view = sf::View(visibleArea);
 	_window->setView(_view);
 }
