@@ -39,6 +39,7 @@ bool Level::LoadLevelFromTextFile(std::string filePath)
 				if (tileID != AIR_TILE) {
 					sf::Sprite spriteTile;
 					std::string sheetname = "";
+					bool topTile = Tile::GetIfTop(tileID);
 					if (tileID < 100) {
 						sheetname = TILES;
 					}
@@ -54,7 +55,7 @@ bool Level::LoadLevelFromTextFile(std::string filePath)
 					sf::Vector2f pos(
 						(tokennum + totalLength)*TILE_SIZE,linenum*TILE_SIZE);
 					spriteTile.setPosition(pos);
-					_tilemap.push_back(Tile(tileID, spriteTile, Tile::GetIfSolid(tileID)));
+					_tilemap.push_back(Tile(tileID, spriteTile, Tile::GetIfSolid(tileID), topTile));
 					if (tileID == CHECKPOINT_TILE || tileID == FINISH_LINE_TILE) {
 						_checkpoint.push_back(pos);
 					}
@@ -118,7 +119,7 @@ Tile* Level::Collision(sf::FloatRect rect)
 	//only check the tiles near the player maybe some how
 	for (Tile& tile : _tilemap) {
 		if (tile.IsSolid() && this->_data->camera.GetCameraBox().intersects(tile.GetSprite().getGlobalBounds())) {
-			if (rect.intersects(tile.GetSprite().getGlobalBounds())) {
+			if (rect.intersects(tile.GetHitBox())) {
 				return &tile;
 			}
 		}

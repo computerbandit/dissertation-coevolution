@@ -11,7 +11,7 @@ GameState::GameState(GameDataRef data) : _data(data)
 	//init camera, level the player and add the player to the list of entities in the level.
 	this->_level = new Level(_data);
 
-	this->_data->camera = Camera(&(this->_data->window), this->_data->window.getSize(), sf::Vector2f(0, 0));
+
 }
 
 void GameState::Init()
@@ -28,6 +28,8 @@ void GameState::Init()
 	this->_data->assetManager.LoadTexturesheet(PLAYER, PLAYER_SHEET, sf::Vector2u(16, 16));
 	player = new Player(_data, &_level, sf::Vector2f(16,16));
 	this->_data->gameObjectManager.AddEntity(player);
+
+	this->_data->camera = Camera(&(this->_data->window), this->_data->window.getSize(), sf::Vector2f(0, 0));
 
 }
 
