@@ -7,6 +7,7 @@ class NeuralNetwork {
 public:
 
 	NeuralNetwork(std::vector<int> nodesPerLayer);
+	NeuralNetwork(std::string filePath);
 	~NeuralNetwork() {}
 
 	void PrintNetwork();

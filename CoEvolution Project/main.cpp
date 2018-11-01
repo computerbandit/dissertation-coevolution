@@ -5,11 +5,11 @@
 #include <vector>
 
 int main() {
-	std::vector<int> layers = { 4, 8, 6, 3 };
+	std::vector<int> layers = { 1, 2, 3, 4 };
 	NeuralNetwork network(layers);
 
 	network.PrintNetwork();
 
-	//Game(SCREEN_WIDTH, SCREEN_HEIGHT, "CoEvil Prototype");
+	Game(SCREEN_WIDTH, SCREEN_HEIGHT, "CoEvil Prototype");
 	return EXIT_SUCCESS;
 }
