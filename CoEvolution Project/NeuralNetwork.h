@@ -11,9 +11,9 @@ public:
 	~NeuralNetwork() {}
 
 	std::string ToString();
+	void SaveNetwork();
 
-
-	void SaveNetwork(std::string filePath);
+	
 
 private:
 	std::vector<std::vector<Node>> _nodeLayer;

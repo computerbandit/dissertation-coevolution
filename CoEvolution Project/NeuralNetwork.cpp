@@ -20,7 +20,12 @@ NeuralNetwork::NeuralNetwork(std::vector<int> nodesPerLayer, std::string filePat
 	for (int i = 0; i < (int)nodesPerLayer.size(); i++) {
 		_nodeLayer.push_back(std::vector<Node>());
 		for (int j = 0; j < nodesPerLayer[i]; j++) {
-			_nodeLayer[i].push_back(Node(0.5f));
+			if (i == (int)nodesPerLayer.size() - 1) {
+				_nodeLayer[i].push_back(Node(ActivationFunction::HARDLIM, 0.5f));
+			}
+			else {
+				_nodeLayer[i].push_back(Node(ActivationFunction::SIGMOID, 0.5f));
+			}
 		}
 	}
 
@@ -44,19 +49,66 @@ NeuralNetwork::NeuralNetwork(std::vector<int> nodesPerLayer, std::string filePat
 NeuralNetwork::NeuralNetwork(std::string filePath): _filePath(filePath)
 {
 	//we can load a nn from a text file that has been saved. all it will be is the 
+	_nodeLayer = std::vector<std::vector<Node>>();
+	_connectionLayer = std::vector<std::vector<NodeConnection>>();
+
 
 	std::ifstream file;
 	std::string line;
-	
 	file.open(_filePath);
+	int linenum = 0;
+	std::vector<int> nodesPerLayer;
+	std::vector<float> connectionWeights;
+	std::vector<std::vector<float>> connectionLayers;
 	if (file.is_open()) {
 		while (!file.eof()) {
 			std::getline(file, line);
 			std::stringstream ss(line);
 			std::string token;
 			while (std::getline(ss, token, ',')) {
-				
-				//load the file and read each line and out that stuff in the node and connection vectors
+				if (linenum == 0) {
+					_epoch = std::stoi(token);
+				}
+				else if(linenum == 1){
+					nodesPerLayer.push_back(std::stoi(token));
+				}
+				else {
+					connectionWeights.push_back(std::stof(token));
+				}
+			}
+			if (linenum >= 2) {
+				connectionLayers.push_back(connectionWeights);
+				connectionWeights.clear();
+			}
+			linenum++;
+		}
+	}
+
+	//init nodes and layers
+	for (int i = 0; i < (int)nodesPerLayer.size(); i++) {
+		_nodeLayer.push_back(std::vector<Node>());
+		for (int j = 0; j < nodesPerLayer[i]; j++) {
+			if (i == (int)nodesPerLayer.size() - 1) {
+				_nodeLayer[i].push_back(Node(ActivationFunction::HARDLIM, 0.5f));
+			}
+			else {
+				_nodeLayer[i].push_back(Node(ActivationFunction::SIGMOID, 0.5f));
+			}
+		}
+	}
+
+	//connect the nodes up in each layer to the next excluding the last layer
+	for (int i = 0; i < (int)nodesPerLayer.size() - 1; i++) {
+		_connectionLayer.push_back(std::vector<NodeConnection>());
+		for (int j = 0; j < nodesPerLayer[i]; j++) {
+			for (int k = 0; k < nodesPerLayer[i + 1]; k++) {
+				//make a connection from the current node to all the nodes in the next layer;
+				NodeConnection c = NodeConnection(
+					&_nodeLayer[i][j],
+					&_nodeLayer[i + 1][k],
+					connectionLayers[i][k]);
+				//push the connection onto the the correct layer.
+				_connectionLayer[i].push_back(c);
 			}
 		}
 	}
@@ -90,7 +142,10 @@ std::string NeuralNetwork::ToString()
 	return networkString;
 }
 
-void NeuralNetwork::SaveNetwork(std::string filePath)
+void NeuralNetwork::SaveNetwork()
 {
-
+	std::ofstream file;
+	file.open(_filePath);
+	file << this->ToString();
+	file.close();
 }

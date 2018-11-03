@@ -6,11 +6,15 @@
 
 int main() {
 
-	std::vector<int> layers = { 1, 2, 3, 4 };
-	NeuralNetwork network(layers, std::string("Resources/nns/test.txt"));
+	std::vector<int> layers = { 2, 2, 1 };
+	NeuralNetwork network(std::string("Resources/neural_network/test.txt"));
 
 	std::cout << network.ToString() << std::endl;
+	//network.SaveNetwork();
+
 
 	Game(SCREEN_WIDTH, SCREEN_HEIGHT, "CoEvil Prototype");
 	return EXIT_SUCCESS;
+
+	
 }

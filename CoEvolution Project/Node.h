@@ -1,22 +1,28 @@
 #pragma once
 #include <vector>
 
+enum ActivationFunction {
+	SIGMOID , HARDLIM
+};
+
 class Node {
 public:
-	Node(float activationFunction);
+	Node(ActivationFunction functionType, float theta);
 	~Node() {}
 
-	void ProcessNode();
-
 	void AddInput(float value);
-	float GetOutput();
-
-	float& GetActivationFunction() {
-		return _activationFunction;
-	}
+	void ClearInput();
+	float Output();
 
 private:
-	float _activationFunction;
+
+	float SumInputs();
+
+	float SigmoidFunction();
+	float HardLimFunction();
+
 	std::vector<float> _inputs;
+	ActivationFunction _functionType;
+	float _theta;
 };
 
