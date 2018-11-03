@@ -5,6 +5,7 @@
 
 class Camera {
 public:
+	Camera() {}
 	Camera(sf::RenderWindow* window, sf::Vector2u wh, sf::Vector2f offset);
 	~Camera() {}
 
