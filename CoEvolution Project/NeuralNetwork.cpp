@@ -32,16 +32,14 @@ NeuralNetwork::NeuralNetwork(std::vector<int> nodesPerLayer, std::string filePat
 	//connect the nodes up in each layer to the next excluding the last layer
 	for (int i = 0; i < (int)nodesPerLayer.size() - 1; i++) {
 		_connectionLayer.push_back(std::vector<NodeConnection>());
-		for (int j = 0; j < nodesPerLayer[i]; j++) {
-			for (int k = 0; k < nodesPerLayer[i + 1]; k++) {
-				//make a connection from the current node to all the nodes in the next layer;
-				NodeConnection c = NodeConnection(
-					&_nodeLayer[i][j],
-					&_nodeLayer[i + 1][k],
-					((float(rand()) / float(RAND_MAX)) * (1 - (-1))) + (-1));
-				//push the connection onto the the correct layer.
-				_connectionLayer[i].push_back(c);
-			}
+		for (int j = 0; j < (nodesPerLayer[i] * nodesPerLayer[i + 1]); j++) {
+			//make a connection from the current node to all the nodes in the next layer;
+			NodeConnection c = NodeConnection(
+				&_nodeLayer[i+1][j%nodesPerLayer[i + 1]],
+				&_nodeLayer[i][j / nodesPerLayer[i]],
+				((float(rand()) / float(RAND_MAX)) * (1 - (0))) + (0));
+			//push the connection onto the the correct layer.
+			_connectionLayer[i].push_back(c);
 		}
 	}
 }
@@ -100,16 +98,17 @@ NeuralNetwork::NeuralNetwork(std::string filePath): _filePath(filePath)
 	//connect the nodes up in each layer to the next excluding the last layer
 	for (int i = 0; i < (int)nodesPerLayer.size() - 1; i++) {
 		_connectionLayer.push_back(std::vector<NodeConnection>());
-		for (int j = 0; j < nodesPerLayer[i]; j++) {
-			for (int k = 0; k < nodesPerLayer[i + 1]; k++) {
-				//make a connection from the current node to all the nodes in the next layer;
-				NodeConnection c = NodeConnection(
-					&_nodeLayer[i][j],
-					&_nodeLayer[i + 1][k],
-					connectionLayers[i][k]);
-				//push the connection onto the the correct layer.
-				_connectionLayer[i].push_back(c);
-			}
+		for (int j = 0; j < (nodesPerLayer[i] * nodesPerLayer[i + 1]); j++) {
+
+			//make a connection from the current node to all the nodes in the next layer;
+			NodeConnection c = NodeConnection(
+				&_nodeLayer[i + 1][j%nodesPerLayer[i + 1]],
+				&_nodeLayer[i][j / nodesPerLayer[i]],
+				connectionLayers[i][j]);
+		
+			//push the connection onto the the correct layer.
+			_connectionLayer[i].push_back(c);
+			
 		}
 	}
 }
@@ -148,4 +147,36 @@ void NeuralNetwork::SaveNetwork()
 	file.open(_filePath);
 	file << this->ToString();
 	file.close();
+}
+
+std::vector<float> NeuralNetwork::Update(std::vector<float> inputs, bool train)
+{
+	//we need to take the inputs then get the output of the corrosponding node
+	/*if (inputs.size != (int)_nodeLayer[0].size()) {
+		std::cout << "There are not enough inputs for the first layer of nodes" << std::endl;
+	}*/
+
+	//add the inputs on the first layer.
+	
+	std::vector<float> old_outputs, current_outputs;
+	for (int i = 0; i < (int)_nodeLayer.size(); i++) {
+		for (int j = 0; j < (int)_nodeLayer[i].size(); j++){
+			if (i == 0) {
+				_nodeLayer[i][j].AddInput(inputs[j]);
+			}
+			else {
+				//if its not the input layer then we need to add inputs by outputs * connection weight
+				for (int k = 0; k < (int)old_outputs.size(); k++) {
+					_nodeLayer[i][j].AddInput(old_outputs[k] * _connectionLayer[i-1][k * ((int)_nodeLayer[i].size())].GetWeight());
+				}
+			}
+			current_outputs.push_back(_nodeLayer[i][j].Output());
+		}
+		old_outputs = current_outputs;
+		current_outputs.clear();
+	}
+	//get the output of the current layer
+	for (float value : old_outputs)
+		std::cout << value << std::endl;
+	return old_outputs;
 }

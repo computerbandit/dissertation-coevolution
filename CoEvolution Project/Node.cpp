@@ -29,18 +29,29 @@ float Node::Output()
 		return this->HardLimFunction();
 		break;
 	}
+	this->ClearInput();
+}
+
+void Node::SetIn(NodeConnection * in)
+{
+	_in = in;
+}
+
+void Node::SetOut(NodeConnection * out)
+{
+	_out = out;
 }
 
 float Node::SumInputs()
 {
 	float sum = 0.0f;
-	for (float in : _inputs) sum += in;
+	for (float in : _inputs) { sum += in; }
 	return 	sum;
 }
 
 float Node::SigmoidFunction()
 {
-	return (1 / (1 + (std::exp(-(SumInputs() / _theta)))));
+	return (1 / (1 + (std::exp(-(SumInputs() - _theta)))));
 }
 
 float Node::HardLimFunction()

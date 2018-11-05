@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+class NodeConnection;
 
 enum ActivationFunction {
 	SIGMOID , HARDLIM
@@ -11,15 +12,25 @@ public:
 	~Node() {}
 
 	void AddInput(float value);
-	void ClearInput();
 	float Output();
 
+	void SetIn(NodeConnection *in);
+	void SetOut(NodeConnection *out);
+
+	NodeConnection * GetOutgoing() {
+		return _out;
+	}
+	NodeConnection * GetIncoming() {
+		return _in;
+	}
+
 private:
-
+	void ClearInput();
 	float SumInputs();
-
 	float SigmoidFunction();
 	float HardLimFunction();
+
+	NodeConnection *_in, *_out;
 
 	std::vector<float> _inputs;
 	ActivationFunction _functionType;

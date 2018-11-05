@@ -4,7 +4,7 @@
 class NodeConnection {
 public:
 
-	NodeConnection(Node * a, Node * b, float weight);
+	NodeConnection(Node * next, Node * prev, float weight);
 	~NodeConnection() {}
 
 	float& GetWeight() {
@@ -12,6 +12,6 @@ public:
 	}
 
 private:
-	Node * A, * B;
+	Node * _next, * _prev;
 	float _weight;
 };
