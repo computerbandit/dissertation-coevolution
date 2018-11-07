@@ -3,6 +3,7 @@
 #include "Node.h"
 #include "ConnectionWeight.h"
 
+
 typedef std::vector<Node> NodeArray;
 typedef std::vector<NodeArray> NodeNetwork;
 typedef std::vector<ConnectionWeight> ConnectionArray;
@@ -22,12 +23,10 @@ public:
 	std::vector<float> Update(std::vector<float> inputs, bool train = false);
 
 
-private:
+protected:
 	void BuildNetwork(std::vector<int> nodesPerLayer, std::vector<std::vector<float>> layersOfWeights);
 
 	void AddLayer(const NodeArray& nodeArray, std::vector<float> weights);
-
-
 
 	float RandomNumber(float Min, float Max);
 
@@ -36,3 +35,4 @@ private:
 	Epoch _epoch;
 	std::string _filePath;
 };
+

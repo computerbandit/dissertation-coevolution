@@ -1,5 +1,5 @@
 #include "NeuralNetwork.h"
-#include <cstdlib>
+#include <random>
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -21,7 +21,7 @@ NeuralNetwork::NeuralNetwork(std::vector<int> nodesPerLayer, std::string filePat
 	for (int i = 1; i < (int)nodesPerLayer.size(); i++) {
 		randWeights.push_back(std::vector<float>());
 		for (int j = 0; j < nodesPerLayer[i-1] * nodesPerLayer[i]; j++){
-			randWeights[i-1].push_back(this->RandomNumber(-1, 1));
+			randWeights[i-1].push_back(this->RandomNumber(-0.1f, 0.1f));
 		}
 	}
 	//build the network with the nodes this format and the weights given
@@ -69,7 +69,6 @@ NeuralNetwork::NeuralNetwork(std::string filePath): _filePath(filePath)
 
 std::string NeuralNetwork::ToString()
 {
-	
 	std::string networkString = "";
 	//what is the epoch and the topology of the network
 	networkString.append(std::to_string(_epoch) + "\n");
@@ -109,7 +108,6 @@ void NeuralNetwork::SaveNetwork(std::string filePath)
 */
 std::vector<float> NeuralNetwork::Update(std::vector<float> inputs, bool train)
 {
-
 	std::vector<float> output = std::vector<float>();
 
 	//first pass the inputs to the first layer of the network
@@ -138,7 +136,6 @@ std::vector<float> NeuralNetwork::Update(std::vector<float> inputs, bool train)
 
 void NeuralNetwork::BuildNetwork(std::vector<int> nodesPerLayer, std::vector<std::vector<float>> weights)
 {
-
 	weights.insert(weights.begin(), std::vector<float>());
 	for (int i = 0; i < (int)nodesPerLayer.size(); i++) {
 		//we need to make the NodeArray based on the size of each layer
@@ -148,7 +145,7 @@ void NeuralNetwork::BuildNetwork(std::vector<int> nodesPerLayer, std::vector<std
 				layer.push_back(Node(ActivationFunction::HARDLIM, 0.5f));
 			}
 			else {
-				layer.push_back(Node(ActivationFunction::SIGMOID, 0.5f));
+				layer.push_back(Node(ActivationFunction::SIGMOID, 0.0f));
 			}
 		}
 		//after we have made the layer we need to add to the network.

@@ -52,7 +52,8 @@ float Node::SumInputs()
 
 float Node::SigmoidFunction()
 {
-	return (1 / (1 + (std::exp(-(SumInputs() - _theta)))));
+	float sum = SumInputs();
+	return (std::exp(sum - _theta) - std::exp(-(sum - _theta))) / (std::exp(sum - _theta) + std::exp(-(sum - _theta)));
 }
 
 float Node::HardLimFunction()

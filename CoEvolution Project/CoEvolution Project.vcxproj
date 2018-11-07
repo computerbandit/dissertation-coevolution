@@ -130,6 +130,7 @@
     <ClCompile Include="GameObjectManager.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameState.cpp" />
+    <ClCompile Include="GeneticNN.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="Level.cpp" />
     <ClCompile Include="main.cpp" />
@@ -146,10 +147,13 @@
   <ItemGroup>
     <ClInclude Include="AssetManager.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Chromeosome.h" />
     <ClInclude Include="DEFINITIONS.h" />
     <ClInclude Include="GameObjectManager.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameState.h" />
+    <ClInclude Include="GeneticAlgorithm.h" />
+    <ClInclude Include="GeneticNN.h" />
     <ClInclude Include="IEntity.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="Level.h" />
