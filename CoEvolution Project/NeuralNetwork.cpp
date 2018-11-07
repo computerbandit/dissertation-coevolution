@@ -8,56 +8,38 @@
 
 NeuralNetwork::NeuralNetwork(std::vector<int> nodesPerLayer, std::string filePath): _filePath(filePath)
 {
-	_nodeLayer = std::vector<std::vector<Node>>();
-	_connectionLayer = std::vector<std::vector<NodeConnection>>();
-	_epoch = 0;
-
-	if (nodesPerLayer.size() < 3) {
-		std::cout << "There are not enought layers to make network" << std::endl;
+	if ((int)nodesPerLayer.size() < 2) {
+		std::cout << "can't make a network out of the nodes that you have given" << std::endl;
 	}
 	
-	//init nodes and layers
-	for (int i = 0; i < (int)nodesPerLayer.size(); i++) {
-		_nodeLayer.push_back(std::vector<Node>());
-		for (int j = 0; j < nodesPerLayer[i]; j++) {
-			if (i == (int)nodesPerLayer.size() - 1) {
-				_nodeLayer[i].push_back(Node(ActivationFunction::HARDLIM, 0.5f));
-			}
-			else {
-				_nodeLayer[i].push_back(Node(ActivationFunction::SIGMOID, 0.5f));
-			}
-		}
-	}
+	this->_nodeNetwork = NodeNetwork();
+	this->_connectionNetwork = ConnectionNetwork();
+	this->_epoch = 0;
 
-	//connect the nodes up in each layer to the next excluding the last layer
-	for (int i = 0; i < (int)nodesPerLayer.size() - 1; i++) {
-		_connectionLayer.push_back(std::vector<NodeConnection>());
-		for (int j = 0; j < (nodesPerLayer[i] * nodesPerLayer[i + 1]); j++) {
-			//make a connection from the current node to all the nodes in the next layer;
-			NodeConnection c = NodeConnection(
-				&_nodeLayer[i+1][j%nodesPerLayer[i + 1]],
-				&_nodeLayer[i][j / nodesPerLayer[i]],
-				((float(rand()) / float(RAND_MAX)) * (1 - (0))) + (0));
-			//push the connection onto the the correct layer.
-			_connectionLayer[i].push_back(c);
+	std::vector<std::vector<float>> randWeights = std::vector<std::vector<float>>();
+
+	for (int i = 1; i < (int)nodesPerLayer.size(); i++) {
+		randWeights.push_back(std::vector<float>());
+		for (int j = 0; j < nodesPerLayer[i-1] * nodesPerLayer[i]; j++){
+			randWeights[i-1].push_back(this->RandomNumber(-1, 1));
 		}
 	}
+	//build the network with the nodes this format and the weights given
+	this->BuildNetwork(nodesPerLayer, randWeights);
 }
 
 NeuralNetwork::NeuralNetwork(std::string filePath): _filePath(filePath)
 {
-	//we can load a nn from a text file that has been saved. all it will be is the 
-	_nodeLayer = std::vector<std::vector<Node>>();
-	_connectionLayer = std::vector<std::vector<NodeConnection>>();
-
+	this->_nodeNetwork = NodeNetwork();
+	this->_connectionNetwork = ConnectionNetwork();
+	this->_epoch = 0;
 
 	std::ifstream file;
 	std::string line;
 	file.open(_filePath);
 	int linenum = 0;
 	std::vector<int> nodesPerLayer;
-	std::vector<float> connectionWeights;
-	std::vector<std::vector<float>> connectionLayers;
+	std::vector<std::vector<float>> fileWeights = std::vector<std::vector<float>>();
 	if (file.is_open()) {
 		while (!file.eof()) {
 			std::getline(file, line);
@@ -71,46 +53,18 @@ NeuralNetwork::NeuralNetwork(std::string filePath): _filePath(filePath)
 					nodesPerLayer.push_back(std::stoi(token));
 				}
 				else {
-					connectionWeights.push_back(std::stof(token));
+					fileWeights[linenum - 2].push_back(std::stof(token));
 				}
 			}
-			if (linenum >= 2) {
-				connectionLayers.push_back(connectionWeights);
-				connectionWeights.clear();
-			}
 			linenum++;
-		}
-	}
-
-	//init nodes and layers
-	for (int i = 0; i < (int)nodesPerLayer.size(); i++) {
-		_nodeLayer.push_back(std::vector<Node>());
-		for (int j = 0; j < nodesPerLayer[i]; j++) {
-			if (i == (int)nodesPerLayer.size() - 1) {
-				_nodeLayer[i].push_back(Node(ActivationFunction::HARDLIM, 0.5f));
-			}
-			else {
-				_nodeLayer[i].push_back(Node(ActivationFunction::SIGMOID, 0.5f));
+			if (linenum > 1) {
+				fileWeights.push_back(std::vector<float>());
 			}
 		}
 	}
-
-	//connect the nodes up in each layer to the next excluding the last layer
-	for (int i = 0; i < (int)nodesPerLayer.size() - 1; i++) {
-		_connectionLayer.push_back(std::vector<NodeConnection>());
-		for (int j = 0; j < (nodesPerLayer[i] * nodesPerLayer[i + 1]); j++) {
-
-			//make a connection from the current node to all the nodes in the next layer;
-			NodeConnection c = NodeConnection(
-				&_nodeLayer[i + 1][j%nodesPerLayer[i + 1]],
-				&_nodeLayer[i][j / nodesPerLayer[i]],
-				connectionLayers[i][j]);
-		
-			//push the connection onto the the correct layer.
-			_connectionLayer[i].push_back(c);
-			
-		}
-	}
+	
+	//init network nodes and weights
+	this->BuildNetwork(nodesPerLayer, fileWeights);
 }
 
 std::string NeuralNetwork::ToString()
@@ -119,19 +73,19 @@ std::string NeuralNetwork::ToString()
 	std::string networkString = "";
 	//what is the epoch and the topology of the network
 	networkString.append(std::to_string(_epoch) + "\n");
-	for (int i = 0; i < (int)_nodeLayer.size();i++) {
-		networkString.append(std::to_string(_nodeLayer[i].size()));
-		if (i != (int)_nodeLayer.size() - 1) {
+	for (int i = 0; i < (int)_nodeNetwork.size();i++) {
+		networkString.append(std::to_string(_nodeNetwork[i].size()));
+		if (i != (int)_nodeNetwork.size() - 1) {
 			networkString.append(",");
 		}
 	}
 	networkString.append("\n");
 	//all the wieghts of the connections in order
 
-	for (int i = 0; i < (int)_connectionLayer.size(); i++) {
-		for (int j = 0; j < (int)_connectionLayer[i].size(); j++) {
-			networkString.append(std::to_string(_connectionLayer[i][j].GetWeight()));
-			if (j != (int)_connectionLayer[i].size() - 1) {
+	for (int i = 0; i < (int)_connectionNetwork.size(); i++) {
+		for (int j = 0; j < (int)_connectionNetwork[i].size(); j++) {
+			networkString.append(std::to_string(_connectionNetwork[i][j].GetWeight()));
+			if (j != (int)_connectionNetwork[i].size() - 1) {
 				networkString.append(",");
 			}
 		}
@@ -141,42 +95,98 @@ std::string NeuralNetwork::ToString()
 	return networkString;
 }
 
-void NeuralNetwork::SaveNetwork()
+void NeuralNetwork::SaveNetwork(std::string filePath)
 {
 	std::ofstream file;
-	file.open(_filePath);
+	file.open((filePath == "")? this->_filePath: filePath);
 	file << this->ToString();
 	file.close();
 }
 
+/*This function will take in an set of inputs then pass them to the input layer and feed forward to the next until its at the output layer and those values will be returned.
+
+	if the train bool is active then the after the parse the network will alter itself based on the something that has changed.
+*/
 std::vector<float> NeuralNetwork::Update(std::vector<float> inputs, bool train)
 {
-	//we need to take the inputs then get the output of the corrosponding node
-	/*if (inputs.size != (int)_nodeLayer[0].size()) {
-		std::cout << "There are not enough inputs for the first layer of nodes" << std::endl;
-	}*/
 
-	//add the inputs on the first layer.
-	
-	std::vector<float> old_outputs, current_outputs;
-	for (int i = 0; i < (int)_nodeLayer.size(); i++) {
-		for (int j = 0; j < (int)_nodeLayer[i].size(); j++){
-			if (i == 0) {
-				_nodeLayer[i][j].AddInput(inputs[j]);
+	std::vector<float> output = std::vector<float>();
+
+	//first pass the inputs to the first layer of the network
+	for (int i = 0; i < (int)_nodeNetwork[0].size(); i++) {
+		_nodeNetwork[0][i].SetRawInput(inputs[i]);
+	}
+
+	//here the feed forward process beings
+	for (int i = 1; i < (int)_nodeNetwork.size(); i++) {
+		for (int j = 0; j < (int)_nodeNetwork[i].size(); j++)
+		{
+			_nodeNetwork[i][j].GenOutput();
+			output.push_back(_nodeNetwork[i][j].Output());
+		}
+		//clear the output unless its that last layer
+		if (i != (int)_nodeNetwork.size() - 1) {	
+			output.clear();
+		}
+	}
+
+	if (train) {
+		_epoch++;
+	}
+	return output;
+}
+
+void NeuralNetwork::BuildNetwork(std::vector<int> nodesPerLayer, std::vector<std::vector<float>> weights)
+{
+
+	weights.insert(weights.begin(), std::vector<float>());
+	for (int i = 0; i < (int)nodesPerLayer.size(); i++) {
+		//we need to make the NodeArray based on the size of each layer
+		NodeArray layer = NodeArray();
+		for (int j = 0; j < nodesPerLayer[i]; j++) {
+			if (i == (int)nodesPerLayer.size() - 1) {
+				layer.push_back(Node(ActivationFunction::HARDLIM, 0.5f));
 			}
 			else {
-				//if its not the input layer then we need to add inputs by outputs * connection weight
-				for (int k = 0; k < (int)old_outputs.size(); k++) {
-					_nodeLayer[i][j].AddInput(old_outputs[k] * _connectionLayer[i-1][k * ((int)_nodeLayer[i].size())].GetWeight());
-				}
+				layer.push_back(Node(ActivationFunction::SIGMOID, 0.5f));
 			}
-			current_outputs.push_back(_nodeLayer[i][j].Output());
 		}
-		old_outputs = current_outputs;
-		current_outputs.clear();
+		//after we have made the layer we need to add to the network.
+		AddLayer(layer, weights[i]);
 	}
-	//get the output of the current layer
-	for (float value : old_outputs)
-		std::cout << value << std::endl;
-	return old_outputs;
+}
+
+/*This function adds the next layer of the network to the main framework, this will link the new layer with the previous layer if it's not the input layer. This also handles how the network is like a doubly linked list between all the weighted connections. This is because the */
+void NeuralNetwork::AddLayer(const NodeArray& nodeArray, std::vector<float> weightValues)
+{
+	_nodeNetwork.push_back(nodeArray);
+	//if the network has more than one layer then 
+	if ((int)_nodeNetwork.size() > 1) {
+		//now we need to make the connectionWeight create the and then assign the 
+		//we need to pass pointers of the nodes that are to be connected (next and prev Node).
+
+		NodeArray& prevLayer = _nodeNetwork[_nodeNetwork.size() - 2];
+		NodeArray& currentLayer = _nodeNetwork[_nodeNetwork.size() - 1];
+
+		ConnectionArray connectionLayer = ConnectionArray();
+		int i = 0;
+		for (Node& cnode : currentLayer) {
+			for (Node& pnode : prevLayer) {
+				ConnectionWeight c(&cnode, &pnode, weightValues[i++]);
+				connectionLayer.push_back(c);
+			}
+		}
+		_connectionNetwork.push_back(connectionLayer);
+		i = 0;
+		for (Node& cnode : currentLayer) {
+			for (int j = 0; j < (int)prevLayer.size(); j++) {
+				cnode.AssignInput(&(_connectionNetwork.back()[i++]));
+			}
+		}
+	}
+}
+
+float NeuralNetwork::RandomNumber(float Min, float Max)
+{
+	return ((float(rand()) / float(RAND_MAX)) * (Max - Min)) + Min;
 }

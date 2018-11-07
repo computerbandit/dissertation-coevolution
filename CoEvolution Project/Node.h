@@ -1,6 +1,6 @@
 #pragma once
 #include <vector>
-class NodeConnection;
+class ConnectionWeight;
 
 enum ActivationFunction {
 	SIGMOID , HARDLIM
@@ -11,29 +11,26 @@ public:
 	Node(ActivationFunction functionType, float theta);
 	~Node() {}
 
-	void AddInput(float value);
-	float Output();
+	void GenOutput();
 
-	void SetIn(NodeConnection *in);
-	void SetOut(NodeConnection *out);
+	void SetRawInput(float input) {
+		this->_rawInput = input;
+	}
 
-	NodeConnection * GetOutgoing() {
-		return _out;
+	const float& Output() {
+		return _output;
 	}
-	NodeConnection * GetIncoming() {
-		return _in;
-	}
+
+	void AssignInput(ConnectionWeight* ipnut);
 
 private:
-	void ClearInput();
+
 	float SumInputs();
 	float SigmoidFunction();
 	float HardLimFunction();
 
-	NodeConnection *_in, *_out;
-
-	std::vector<float> _inputs;
+	std::vector<ConnectionWeight*> _inputs;
 	ActivationFunction _functionType;
-	float _theta;
+	float _theta, _output, _rawInput;
 };
 

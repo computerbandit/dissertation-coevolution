@@ -1,52 +1,53 @@
 #include "Node.h"
+#include "ConnectionWeight.h"
 #include <cmath>
 
 Node::Node(ActivationFunction functionType, float theta): _functionType(functionType), _theta(theta)
 {
+	this->_rawInput = 0.0f;
+	this->_inputs = std::vector<ConnectionWeight*>();
+	this->_output = 0.0f;
 }
 
-void Node::AddInput(float value)
+void Node::AssignInput(ConnectionWeight * input)
 {
-	this->_inputs.push_back(value);
+	this->_inputs.push_back(input);
 }
 
-void Node::ClearInput()
-{
-	this->_inputs.clear();
-}
 
-float Node::Output()
+void Node::GenOutput()
 {
+	float out = 0.0f;
 	switch (_functionType)
 	{
 	case SIGMOID:
-		return this->SigmoidFunction();
+		out = this->SigmoidFunction();
 		break;
 	case HARDLIM:
-		return this->HardLimFunction();
+		out = this->HardLimFunction();
 		break;
 	default:
-		return this->HardLimFunction();
+		out = this->HardLimFunction();
 		break;
 	}
-	this->ClearInput();
+	this->_output = out;
 }
 
-void Node::SetIn(NodeConnection * in)
-{
-	_in = in;
-}
-
-void Node::SetOut(NodeConnection * out)
-{
-	_out = out;
-}
 
 float Node::SumInputs()
 {
 	float sum = 0.0f;
-	for (float in : _inputs) { sum += in; }
-	return 	sum;
+
+	if (!_inputs.empty()) {
+		for (ConnectionWeight * input : _inputs) {
+			sum += input->GetWeight() * input->GetPrevNode().Output();
+		}
+	}
+	else {
+		sum = this->_rawInput;
+	}
+
+	return sum;
 }
 
 float Node::SigmoidFunction()
@@ -56,7 +57,6 @@ float Node::SigmoidFunction()
 
 float Node::HardLimFunction()
 {
-
 	if (SumInputs() >= _theta) {
 		return 1.0f;
 	}

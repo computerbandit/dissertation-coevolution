@@ -136,7 +136,7 @@
     <ClCompile Include="MainMenuState.cpp" />
     <ClCompile Include="NeuralNetwork.cpp" />
     <ClCompile Include="Node.cpp" />
-    <ClCompile Include="NodeConnection.cpp" />
+    <ClCompile Include="ConnectionWeight.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="SplashState.cpp" />
     <ClCompile Include="StateMachine.cpp" />
@@ -157,7 +157,7 @@
     <ClInclude Include="MainMenuState.h" />
     <ClInclude Include="NeuralNetwork.h" />
     <ClInclude Include="Node.h" />
-    <ClInclude Include="NodeConnection.h" />
+    <ClInclude Include="ConnectionWeight.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="SplashState.h" />
     <ClInclude Include="Texturesheet.h" />

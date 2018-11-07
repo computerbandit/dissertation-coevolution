@@ -1,7 +1,13 @@
 #pragma once
 #include <vector>
 #include "Node.h"
-#include "NodeConnection.h"
+#include "ConnectionWeight.h"
+
+typedef std::vector<Node> NodeArray;
+typedef std::vector<NodeArray> NodeNetwork;
+typedef std::vector<ConnectionWeight> ConnectionArray;
+typedef std::vector<ConnectionArray> ConnectionNetwork;
+typedef unsigned int Epoch;
 
 class NeuralNetwork {
 public:
@@ -11,14 +17,22 @@ public:
 	~NeuralNetwork() {}
 
 	std::string ToString();
-	void SaveNetwork();
+	void SaveNetwork(std::string filePath = "");
 
 	std::vector<float> Update(std::vector<float> inputs, bool train = false);
 
-private:
-	std::vector<std::vector<Node>> _nodeLayer;
-	std::vector<std::vector<NodeConnection>> _connectionLayer;
 
+private:
+	void BuildNetwork(std::vector<int> nodesPerLayer, std::vector<std::vector<float>> layersOfWeights);
+
+	void AddLayer(const NodeArray& nodeArray, std::vector<float> weights);
+
+
+
+	float RandomNumber(float Min, float Max);
+
+	NodeNetwork _nodeNetwork;
+	ConnectionNetwork _connectionNetwork;
+	Epoch _epoch;
 	std::string _filePath;
-	int _epoch;
 };
