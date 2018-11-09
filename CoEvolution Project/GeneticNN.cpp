@@ -12,5 +12,5 @@ Chromeosome<float> GeneticNN::ConvertConnectionNetworkToChromosome()
 
 void GeneticNN::LoadConnectionNetworkFromChromosome(const Chromeosome<float>& chromesome)
 {
-	_connectionNetwork = ConnectionNetwork();
+
 }
