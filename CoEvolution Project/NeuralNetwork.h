@@ -13,6 +13,7 @@ typedef unsigned int Epoch;
 class NeuralNetwork {
 public:
 
+	NeuralNetwork() {}
 	NeuralNetwork(std::vector<int> nodesPerLayer, std::string filePath);
 	NeuralNetwork(std::string filePath);
 	~NeuralNetwork() {}
