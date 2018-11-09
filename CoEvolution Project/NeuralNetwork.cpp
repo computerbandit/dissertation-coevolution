@@ -183,6 +183,7 @@ void NeuralNetwork::AddLayer(const NodeArray& nodeArray, std::vector<float> weig
 	}
 }
 
+
 float NeuralNetwork::RandomNumber(float Min, float Max)
 {
 	return ((float(rand()) / float(RAND_MAX)) * (Max - Min)) + Min;

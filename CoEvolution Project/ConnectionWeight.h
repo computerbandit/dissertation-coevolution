@@ -10,6 +10,9 @@ public:
 	float& GetWeight() {
 		return _weight;
 	}
+	void SetWeight(float weight) {
+		this->_weight = weight;
+	}
 
 	Node& GetNextNode() {
 		return *_next;
