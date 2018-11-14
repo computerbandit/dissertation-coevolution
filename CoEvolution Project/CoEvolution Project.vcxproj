@@ -130,14 +130,10 @@
     <ClCompile Include="GameObjectManager.cpp" />
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameState.cpp" />
-    <ClCompile Include="GeneticNN.cpp" />
     <ClCompile Include="InputManager.cpp" />
     <ClCompile Include="Level.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainMenuState.cpp" />
-    <ClCompile Include="NeuralNetwork.cpp" />
-    <ClCompile Include="Node.cpp" />
-    <ClCompile Include="ConnectionWeight.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="SplashState.cpp" />
     <ClCompile Include="StateMachine.cpp" />
@@ -147,21 +143,15 @@
   <ItemGroup>
     <ClInclude Include="AssetManager.h" />
     <ClInclude Include="Camera.h" />
-    <ClInclude Include="Chromeosome.h" />
     <ClInclude Include="DEFINITIONS.h" />
     <ClInclude Include="GameObjectManager.h" />
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameState.h" />
-    <ClInclude Include="GeneticAlgorithm.h" />
-    <ClInclude Include="GeneticNN.h" />
     <ClInclude Include="IEntity.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="Level.h" />
     <ClInclude Include="LoadAssetsState.h" />
     <ClInclude Include="MainMenuState.h" />
-    <ClInclude Include="NeuralNetwork.h" />
-    <ClInclude Include="Node.h" />
-    <ClInclude Include="ConnectionWeight.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="SplashState.h" />
     <ClInclude Include="Texturesheet.h" />
