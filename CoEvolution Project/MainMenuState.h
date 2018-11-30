@@ -6,6 +6,7 @@
 
 class MainMenuState : public State {
 public:
+
 	MainMenuState(GameDataRef data);
 	// Inherited via State
 	virtual void Init() override;
@@ -21,5 +22,6 @@ private:
 	std::vector<sf::Sprite*> _buttons;
 
 	sf::Sprite _playButton;
+	sf::Sprite _trainButton;
 	sf::Sprite _exitButton;
 };

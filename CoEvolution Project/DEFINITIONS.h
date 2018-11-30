@@ -15,6 +15,7 @@
 //textures
 #define MAIN_MENU_BACKGROUND_PATH "Resources/res/MainMenu_Background.png"
 #define MAIN_MENU_PLAY_BUTTON_PATH "Resources/res/Play_Button.png"
+#define MAIN_MENU_TRAIN_BUTTON_PATH "Resources/res/Train_Button.png"
 #define MAIN_MENU_EXIT_BUTTON_PATH "Resources/res/Exit_Button.png"
 
 //Player

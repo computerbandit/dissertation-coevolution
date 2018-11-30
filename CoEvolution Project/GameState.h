@@ -2,6 +2,7 @@
 #include "State.h"
 #include "Game.h"
 #include "Level.h"
+#include "Player.h"
 #include <SFML/Graphics.hpp>
 
 class GameState : public State {
@@ -16,5 +17,5 @@ public:
 private:
 	GameDataRef _data;
 	Level * _level;
-	
+	Player * _player;
 };

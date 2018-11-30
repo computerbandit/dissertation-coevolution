@@ -16,8 +16,9 @@ public:
 	void Draw();
 
 	Tile* Collision(sf::FloatRect rect);
-	const sf::Vector2f* GetCheckpoint(int num);
+	const sf::Vector2f& GetCheckpoint(int num) const;
 	bool LastCheckpoint(int num);
+	const sf::Vector2f& GetFinishFlagPosition() const;
 
 private:
 	void Cleanup();

@@ -6,7 +6,7 @@
 class Player : virtual public IEntity {
 
 public:
-	Player(GameDataRef data, Level** level, sf::Vector2f wh);
+	Player(GameDataRef data, Level** level, sf::Vector2f wh, bool networkContolled = false);
 	~Player(){}
 
 	virtual void Init() override;
@@ -17,9 +17,16 @@ public:
 	void Left();
 	void Right();
 	void Stop();
-	void Die();
+	virtual void Die();
 	void Respawn();
 	void Finish();
+
+	void SetProgress(float progress);
+	const float& GetProgress() const;
+
+	bool IsAlive();
+
+	float PercentageOfLevelCompleted();
 
 	sf::Vector2f& GetPosition() {
 		return _position;
@@ -27,12 +34,13 @@ public:
 	
 	bool _holdingJump;
 
-private:
+protected:
 	GameDataRef _data;
 	sf::Sprite _sprite;
 	Level** _level;
 
 	float _speed, _jumpVelocity;
 	int _direction = 0, _lives = 3, _currentCheckpoint = 0;
-	bool _falling, _jumping, _jump, _grounded;
+	bool _falling, _jumping, _jump, _grounded, _networkControlled;
+	float _progress = 0.0f;
 };

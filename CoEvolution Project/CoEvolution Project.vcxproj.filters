@@ -57,6 +57,18 @@
     <ClCompile Include="Texturesheet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="TrainNetworkState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NNControlledPlayer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NeuralNetworkGA.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="NeuralNetwork.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AssetManager.h">
@@ -104,14 +116,26 @@
     <ClInclude Include="GameObjectManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="LoadAssetsState.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="TILE_DEFINITIONS.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Texturesheet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TrainNetworkState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NNControlledPlayer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NeuralNetworkGA.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="NeuralNetwork.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Resources\level\level1.txt" />
   </ItemGroup>
 </Project>

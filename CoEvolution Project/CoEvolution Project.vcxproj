@@ -134,11 +134,15 @@
     <ClCompile Include="Level.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainMenuState.cpp" />
+    <ClCompile Include="NeuralNetwork.cpp" />
+    <ClCompile Include="NeuralNetworkGA.cpp" />
+    <ClCompile Include="NNControlledPlayer.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="SplashState.cpp" />
     <ClCompile Include="StateMachine.cpp" />
     <ClCompile Include="Texturesheet.cpp" />
     <ClCompile Include="Tile.cpp" />
+    <ClCompile Include="TrainNetworkState.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AssetManager.h" />
@@ -150,8 +154,10 @@
     <ClInclude Include="IEntity.h" />
     <ClInclude Include="InputManager.h" />
     <ClInclude Include="Level.h" />
-    <ClInclude Include="LoadAssetsState.h" />
     <ClInclude Include="MainMenuState.h" />
+    <ClInclude Include="NeuralNetwork.h" />
+    <ClInclude Include="NeuralNetworkGA.h" />
+    <ClInclude Include="NNControlledPlayer.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="SplashState.h" />
     <ClInclude Include="Texturesheet.h" />
@@ -159,6 +165,10 @@
     <ClInclude Include="StateMachine.h" />
     <ClInclude Include="Tile.h" />
     <ClInclude Include="TILE_DEFINITIONS.h" />
+    <ClInclude Include="TrainNetworkState.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="Resources\level\level1.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

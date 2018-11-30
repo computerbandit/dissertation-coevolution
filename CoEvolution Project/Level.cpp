@@ -127,14 +127,9 @@ Tile* Level::Collision(sf::FloatRect rect)
 	return nullptr;
 }
 
-const sf::Vector2f* Level::GetCheckpoint(int num)
+const sf::Vector2f& Level::GetCheckpoint(int num) const 
 {
-	if (num < (int)_checkpoint.size()) {
-		return &_checkpoint[num];
-	}
-	else {
-		return nullptr;
-	}
+	return _checkpoint.at(num);
 }
 
 bool Level::LastCheckpoint(int num)
@@ -145,4 +140,9 @@ bool Level::LastCheckpoint(int num)
 	else {
 		return false;
 	}
+}
+
+const sf::Vector2f & Level::GetFinishFlagPosition() const
+{
+	return this->_checkpoint.back();
 }

@@ -4,7 +4,7 @@
 #include "DEFINITIONS.h"
 #include <iostream>
 
-Player::Player(GameDataRef data, Level** level, sf::Vector2f wh): _data(data), _level(level)
+Player::Player(GameDataRef data, Level** level, sf::Vector2f wh, bool networkControlled): _data(data), _level(level), _networkControlled(networkControlled)
 {
 	this->_speed = 300.0f;
 	this->_jumpVelocity = 450.0f;
@@ -110,17 +110,18 @@ void Player::Update(float dt)
 	}
 
 	if ((*_level)->LastCheckpoint(_currentCheckpoint + 1)) {
-		if (this->_position.x >= (*_level)->GetCheckpoint(_currentCheckpoint + 1)->x) {
+		if (this->_position.x >= (*_level)->GetCheckpoint(_currentCheckpoint + 1).x) {
 			//player beat the level.
 			this->Finish();
 		}
 	}
-	else if (this->_position.x >= (*_level)->GetCheckpoint(_currentCheckpoint + 1)->x ) {
+	else if (this->_position.x >= (*_level)->GetCheckpoint(_currentCheckpoint + 1).x ) {
 		std::cout << "checkpoint hit!" << std::endl;
 		_currentCheckpoint++;
 	}
 
 	this->_sprite.setPosition(this->_position);
+	this->SetProgress(PercentageOfLevelCompleted());
 }
 
 void Player::Draw(float dt)
@@ -155,7 +156,11 @@ void Player::Stop()
 void Player::Die()
 {
 	_lives--;
-	if (_lives == 0) {
+	if (_networkControlled) {
+		this->SetProgress(PercentageOfLevelCompleted());
+		this->Deactivate();
+	}	
+	else if (_lives == 0) {
 		this->_data->stateMachine.PushState(StateRef(new MainMenuState(_data)));
 		this->Deactivate();
 	}
@@ -166,7 +171,7 @@ void Player::Die()
 
 void Player::Respawn()
 {
-	this->_position = *(*_level)->GetCheckpoint(this->_currentCheckpoint);
+	this->_position = (*_level)->GetCheckpoint(this->_currentCheckpoint);
 	this->_velocity = sf::Vector2f(0.0f, 0.0f);
 }
 
@@ -182,5 +187,24 @@ void Player::Finish()
 	this->Respawn();
 }
 
+void Player::SetProgress(float progress)
+{
+	this->_progress = progress;
+}
 
+const float & Player::GetProgress() const
+{
+	return this->_progress;
+}
+
+bool Player::IsAlive()
+{
+	return (_lives > 0);
+}
+
+float Player::PercentageOfLevelCompleted()
+{
+	//find the position of the player and compare it to the position of the final checkpoint
+	return  (this->_position.x / ((*_level)->GetFinishFlagPosition().x - (*_level)->GetCheckpoint(0).x)) * 100.0f;
+}
 
