@@ -19,6 +19,7 @@ public:
 	void Stop();
 	virtual void Die();
 	void Respawn();
+	void Restart();
 	virtual void Finish();
 
 	void SetProgress(float progress);

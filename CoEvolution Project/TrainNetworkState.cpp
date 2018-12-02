@@ -6,7 +6,7 @@
 
 TrainNetworkState::TrainNetworkState(GameDataRef data, float timetolive, float speedMultiplier, bool display): _data(data), _display(display), _ttl(timetolive)
 {
-	_ga = NeuralNetworkGA(NeuralNetwork::GeneratePopulation(DEFUALT_TRAINNING_POPULATION_SIZE, {2, 3, 4, 3}), 0.1f);
+	_ga = NeuralNetworkGA(NeuralNetwork::GeneratePopulation(DEFUALT_TRAINNING_POPULATION_SIZE, {1,3}), 0.1f);
 	this->_level = new Level(_data);
 	this->_data->gameSpeedMultiplier = speedMultiplier;
 }
@@ -31,7 +31,7 @@ void TrainNetworkState::Init()
 	for (int i = 0; i < (int)_ga.GetPopulation().size(); i++) {
 		_playerPopulation.push_back(NNControlledPlayer(_data, &_level, sf::Vector2f(16, 16), &gapop.at(i)));
 	}
-	for (auto& n : _playerPopulation) {
+	for (NNControlledPlayer& n : _playerPopulation) {
 		this->_data->gameObjectManager.AddEntity(&n);
 	}
 
@@ -77,9 +77,7 @@ void TrainNetworkState::Update(float dt)
 			NeuralNetwork* controller = nnplayer.GetNetworkController();
 			//need to get a set of inputs from the ray cast info from each of the players
 
-
-
-			std::vector<float> inputs = { 1.0f , 0.5,1.0f,0.0f};
+			std::vector<float> inputs = { 1.0f, 0.5f, 1.0f, 0.0f};
 			controller->Run(inputs);
 			std::vector<float> output = controller->GetOutput();
 			//given the outputs of the network 
@@ -105,7 +103,6 @@ void TrainNetworkState::Update(float dt)
 	//find the nnplayer that has made the most progess if we are displaying then set th cameras postition to the best controller
 	float mostProgress = 0.0f;
 	NNControlledPlayer* bestController = nullptr;
-
 	for (NNControlledPlayer& nnplayer : this->_playerPopulation) {
 		if (nnplayer.GetProgress() > mostProgress) {
 			bestController = &nnplayer;
@@ -116,16 +113,19 @@ void TrainNetworkState::Update(float dt)
 	if (bestController != nullptr) {
 		if (_ttl < 1.0f && mostProgress > 0.0f) {
 			_ttl = DEFUALT_TRAINNGNG_TIME_TO_LIVE;
-
 		}
-		bestController->SetColor(sf::Color::Red);
-		this->_data->camera.Update(bestController->GetPosition());
+		if(_display) {
+			bestController->SetColor(sf::Color::Red);
+			this->_data->camera.Update(bestController->GetPosition());
+		}
 	}
 	else {
-		this->_data->camera.Update(_level->GetCheckpoint(0));
+		if (_display) {
+			this->_data->camera.Update(_level->GetCheckpoint(0));
+		}
 	}
 
-	if (this->_clock.getElapsedTime().asSeconds() > (this->_ttl/this->_data->gameSpeedMultiplier) || !stillAlive) {
+	if (this->_clock.getElapsedTime().asSeconds() > (this->_ttl) || !stillAlive) {
 		this->_clock.restart();
 			//set the fitnessScore for the each of the controllers now that they are all updated position wise
 		for (NNControlledPlayer& nnplayer : this->_playerPopulation) {
@@ -140,17 +140,13 @@ void TrainNetworkState::Update(float dt)
 		std::cout << "Generation [" << this->_ga.GetGeneration() << "] -> Percentage Progress: " << this->_ga.AverageFitness() << "% average, " << this->_ga.FittestNetwork().GetFitnessScore() << "% best controller" << "\r";
 
 		if(!_ga.isSolved()) {
-			this->_ga.SaveFittestNetwork();
+			//this->_ga.SaveFittestNetwork();
 			this->_ga.NextGeneration();
-			this->_data->gameObjectManager.ClearEntities();
-			bestController = nullptr;
-			this->_playerPopulation = std::vector<NNControlledPlayer>();
 			std::vector<NeuralNetwork>& gapop = this->_ga.GetPopulation();
-			for (int i = 0; i < (int)this->_ga.GetPopulation().size(); i++) {
-				this->_playerPopulation.push_back(NNControlledPlayer(this->_data, &_level, sf::Vector2f(16, 16), &gapop.at(i)));
-			}
-			for (auto& n : this->_playerPopulation) {
-				this->_data->gameObjectManager.AddEntity(&n);
+			for (int i = 0; i < (int)gapop.size(); i++) {
+				NNControlledPlayer& nnplayer = this->_playerPopulation.at(i);
+				nnplayer.Restart();
+				nnplayer.SetNNController(&gapop.at(i));
 			}
 		}
 		else {
@@ -164,12 +160,12 @@ void TrainNetworkState::Update(float dt)
 
 void TrainNetworkState::Draw(float dt)
 {
+	this->_data->window.clear(sf::Color::White);
 	if (this->_display) {
-		this->_data->window.clear(sf::Color::White);
 		this->_level->Draw();
 		this->_data->gameObjectManager.Draw(dt);
-		this->_data->window.display();
 	}
+	this->_data->window.display();
 }
 
 bool TrainNetworkState::EvaluateNNControlledPlayer(NNControlledPlayer& nnplayer)

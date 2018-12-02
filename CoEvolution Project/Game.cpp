@@ -29,12 +29,11 @@ void Game::Run()
 		accumulator += frameTime;
 
 		while (accumulator >= dt) {
-
 			this->_data->stateMachine.GetAvtiveState()->HandleEvents();
-			this->_data->stateMachine.GetAvtiveState()->Update(dt*this->_data->gameSpeedMultiplier);
-
+			this->_data->stateMachine.GetAvtiveState()->Update(dt);
 			accumulator -= dt;
 		}
+
 		interpolation = accumulator / dt;
 		this->_data->stateMachine.GetAvtiveState()->Draw(interpolation);
 	}

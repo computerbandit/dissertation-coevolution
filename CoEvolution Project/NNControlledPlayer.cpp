@@ -30,6 +30,11 @@ NeuralNetwork * NNControlledPlayer::GetNetworkController()
 	return this->_networkController;
 }
 
+void NNControlledPlayer::SetNNController(NeuralNetwork * network)
+{
+	this->_networkController = network;
+}
+
 
 bool NNControlledPlayer::Finished()
 {

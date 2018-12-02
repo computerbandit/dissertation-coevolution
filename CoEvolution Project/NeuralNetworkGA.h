@@ -17,7 +17,6 @@ class NeuralNetworkGA{
 	int MAX_GENERATIONS = 10;
 	bool _solution = false;
 
-	static std::vector<Matrix> ChromeosomeToMatrices(std::vector<int> topology, std::vector<float> chromeosome);
 public:
 
 	NeuralNetworkGA() {}
@@ -32,11 +31,11 @@ public:
 	void Solved();
 	const bool& isSolved() const;
 
-	const NeuralNetwork& SelectParent();
+	NeuralNetwork& SelectParent();
 	void EvalutePopulation();
 	void NextGeneration();
 	void Mutate(NeuralNetwork& network);
-	CrossoverProduct Crossover(const NeuralNetwork& A, const NeuralNetwork& B);
+	CrossoverProduct Crossover(NeuralNetwork& A, NeuralNetwork& B);
 	void SaveFittestNetwork();
 	float AverageFitness();
 	const NeuralNetwork& FittestNetwork();

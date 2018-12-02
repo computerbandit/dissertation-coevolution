@@ -34,7 +34,7 @@ NeuralNetwork::NeuralNetwork(std::vector<int> topology) {
 		}
 		_layer.push_back(m);
 	}
-
+	this->_chromeosome = this->MatricesToChromesome();
 }
 /*
 NeuralNetwork::NeuralNetwork(std::string filePath) : _filePath(filePath)
@@ -68,8 +68,11 @@ NeuralNetwork::NeuralNetwork(std::string filePath) : _filePath(filePath)
 	}
 }
 */
-NeuralNetwork::NeuralNetwork(std::vector<Matrix> layers): _layer(layers)
-{}
+NeuralNetwork::NeuralNetwork(std::vector<int> topology, std::vector<float> chromeosome): _chromeosome(chromeosome)
+{
+	_layer = NeuralNetwork::ChromeosomeToMatrices(topology, _chromeosome);
+
+}
 
 std::string NeuralNetwork::ToString() const
 {
@@ -191,7 +194,7 @@ void NeuralNetwork::SetFitnessRatio(float fitnessRatio)
 }
 
 
-const std::vector<Matrix>& NeuralNetwork::GetLayers() const 
+std::vector<Matrix>& NeuralNetwork::GetLayers() 
 {
 	return _layer;
 }
@@ -201,14 +204,37 @@ void NeuralNetwork::SetLayers(std::vector<Matrix> newLayers)
 	_layer = newLayers;
 }
 
-const bool & NeuralNetwork::Selected() const
+const bool & NeuralNetwork::IsSelected() const
 {
-	return selected;
+	return _selected;
 }
 
-void NeuralNetwork::ToggleSelected()
+void NeuralNetwork::SetSelected(bool selected)
 {
-	selected = !selected;
+	_selected = !selected;
+}
+
+const std::vector<float>& NeuralNetwork::GetChromeosome() const
+{
+	return this->_chromeosome;
+}
+
+std::vector<Matrix> NeuralNetwork::ChromeosomeToMatrices(std::vector<int> topology, std::vector<float> chromeosome)
+{
+	std::vector<Matrix> layers = std::vector<Matrix>();
+	int chromeosomeNum = 0;
+	for (int i = 1; i < (int)topology.size(); i++) {
+		Matrix m = Matrix();
+		for (int j = 0; j < topology.at(i - 1); j++) {
+			std::vector<float> row = std::vector<float>();
+			for (int k = 0; k < topology.at(i); k++) {
+				row.push_back(chromeosome.at(chromeosomeNum++));
+			}
+			m.push_back(row);
+		}
+		layers.push_back(m);
+	}
+	return layers;
 }
 
 std::vector<NeuralNetwork> NeuralNetwork::GeneratePopulation(int populationSize, std::vector<int> topology)

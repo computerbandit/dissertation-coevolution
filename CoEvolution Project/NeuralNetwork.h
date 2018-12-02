@@ -11,11 +11,12 @@ enum ActivationFunction {
 static int _networkCount = 0;
 
 class NeuralNetwork {
-
+private:
 	std::vector<Matrix> _layer;
 	std::vector<float> _output;
 	float _fitnessScore = 0.0f, _fitnessRatio = 0.0f;
-	bool selected = false;
+	bool _selected = false;
+	std::vector<float> _chromeosome;
 
 	float Sigmoid(float sum, float theta);
 	float HardLimit(float sum, float theta);
@@ -24,7 +25,7 @@ public:
 
 	NeuralNetwork() {}
 	NeuralNetwork(std::vector<int> topology);
-	NeuralNetwork(std::vector<Matrix> layers);
+	NeuralNetwork(std::vector<int> topology, std::vector<float> chromeosome);
 	~NeuralNetwork() {}
 
 	std::string ToString() const;
@@ -41,17 +42,18 @@ public:
 	const float& GetFitnessRatio() const;
 	void SetFitnessRatio(float fitnessRatio);
 
-	const std::vector<Matrix>& GetLayers() const;
+	std::vector<Matrix>& GetLayers();
 	void SetLayers(std::vector<Matrix> newLayers);
 
-	const bool& Selected() const;
-	void ToggleSelected();
+	const bool& IsSelected() const;
+	void SetSelected(bool selected);
 
+	const std::vector<float>& GetChromeosome() const;
+
+	static std::vector<Matrix> ChromeosomeToMatrices(std::vector<int> topology, std::vector<float> chromeosome);
 	static std::vector<NeuralNetwork> GeneratePopulation(int populationSize, std::vector<int> topology);
 	static float RandomFloat(float Min, float Max);
 	static int RandomInt(int Min, int Max);
-
 	static float RandomFloatNromalDist(float mean, float stddev);
-
 	static int NewNetworkId();
 };

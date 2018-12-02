@@ -170,6 +170,12 @@ void Player::Respawn()
 	this->_velocity = sf::Vector2f(0.0f, 0.0f);
 }
 
+void Player::Restart()
+{
+	this->_currentCheckpoint = 0;
+	this->Respawn();
+}
+
 void Player::Finish()
 {
 	//player has finished the level...

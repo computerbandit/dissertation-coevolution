@@ -14,6 +14,7 @@ public:
 	void ParseDataToNNController();
 
 	NeuralNetwork* GetNetworkController();
+	void SetNNController(NeuralNetwork* network);
 	bool Finished();
 
 private:
