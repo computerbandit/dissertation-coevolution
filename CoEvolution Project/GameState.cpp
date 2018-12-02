@@ -43,6 +43,7 @@ void GameState::HandleEvents()
 			this->_data->camera.Resize(event);
 
 		}
+
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
 			_player->Left();
 		}

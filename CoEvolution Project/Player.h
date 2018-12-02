@@ -6,7 +6,7 @@
 class Player : virtual public IEntity {
 
 public:
-	Player(GameDataRef data, Level** level, sf::Vector2f wh, bool networkContolled = false);
+	Player(GameDataRef data, Level** level, sf::Vector2f wh);
 	~Player(){}
 
 	virtual void Init() override;
@@ -19,10 +19,12 @@ public:
 	void Stop();
 	virtual void Die();
 	void Respawn();
-	void Finish();
+	virtual void Finish();
 
 	void SetProgress(float progress);
 	const float& GetProgress() const;
+
+	void SetColor(sf::Color color);
 
 	bool IsAlive();
 
@@ -41,6 +43,6 @@ protected:
 
 	float _speed, _jumpVelocity;
 	int _direction = 0, _lives = 3, _currentCheckpoint = 0;
-	bool _falling, _jumping, _jump, _grounded, _networkControlled;
+	bool _falling, _jumping, _jump, _grounded;
 	float _progress = 0.0f;
 };

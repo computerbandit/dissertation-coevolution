@@ -8,7 +8,7 @@
 
 class TrainNetworkState : public State {
 public:
-	TrainNetworkState(GameDataRef data);
+	TrainNetworkState(GameDataRef data, float timetolive,  float speedMultiplier, bool display = false);
 	// Inherited via State
 	virtual void Init() override;
 	virtual void Cleanup() override;
@@ -22,7 +22,9 @@ private:
 	NeuralNetworkGA _ga;
 	Level * _level;
 	std::vector<NNControlledPlayer> _playerPopulation;
+	bool _display;
 	sf::Clock _clock;
+	float _ttl;
 
 	//given a players distance from the final checkpoint what is the fitness of the network that is controlling
 	bool EvaluateNNControlledPlayer(NNControlledPlayer& nnplayer);

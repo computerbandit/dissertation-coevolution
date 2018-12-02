@@ -4,9 +4,9 @@
 
 class Texturesheet {
 public:
-	Texturesheet() {};
+	Texturesheet() {}
 	Texturesheet(sf::Image texturesheet, sf::Vector2u spritesize);
-	~Texturesheet() {};
+	~Texturesheet() {}
 	sf::Texture &GetTexture(int index);
 
 private:

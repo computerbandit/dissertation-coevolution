@@ -19,7 +19,6 @@ void Game::Run()
 
 	while (this->_data->window.isOpen()) {
 		this->_data->stateMachine.ProcessStateChanges();
-
 		newTime = this->_clock.getElapsedTime().asSeconds();
 
 		frameTime = newTime - currentTime;
@@ -30,8 +29,9 @@ void Game::Run()
 		accumulator += frameTime;
 
 		while (accumulator >= dt) {
+
 			this->_data->stateMachine.GetAvtiveState()->HandleEvents();
-			this->_data->stateMachine.GetAvtiveState()->Update(dt);
+			this->_data->stateMachine.GetAvtiveState()->Update(dt*this->_data->gameSpeedMultiplier);
 
 			accumulator -= dt;
 		}

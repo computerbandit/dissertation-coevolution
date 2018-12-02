@@ -21,8 +21,6 @@ float NeuralNetwork::HardLimit(float sum, float theta)
 
 
 NeuralNetwork::NeuralNetwork(std::vector<int> topology) {
-
-
 	_layer = std::vector<Matrix>();
 	for (int i = 1; i < (int)topology.size(); i++) {
 		Matrix m = Matrix();
@@ -71,11 +69,7 @@ NeuralNetwork::NeuralNetwork(std::string filePath) : _filePath(filePath)
 }
 */
 NeuralNetwork::NeuralNetwork(std::vector<Matrix> layers): _layer(layers)
-{
-
-}
-
-
+{}
 
 std::string NeuralNetwork::ToString() const
 {

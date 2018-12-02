@@ -1,6 +1,4 @@
 #include "NeuralNetworkGA.h"
-#include "NeuralNetworkGA.h"
-#include "NeuralNetworkGA.h"
 #include <algorithm>
 #include <iostream>
 #include <string>
@@ -148,7 +146,11 @@ void NeuralNetworkGA::Mutate(NeuralNetwork & network)
 		int coloumn = NeuralNetwork::RandomInt(0, layers.at(layernum).at(row).size() - 1);
 
 		//mutate this random weight that we have selected
-		layers.at(layernum).at(row).at(coloumn) += NeuralNetwork::RandomFloatNromalDist(0.0f, 0.2f);
+		float& wieght = layers.at(layernum).at(row).at(coloumn);
+		wieght += NeuralNetwork::RandomFloatNromalDist(0.0f, 0.2f);
+		if (wieght > 1.0f || wieght < -1.0f) {
+			wieght = std::max(-1.0f, std::min(wieght, 1.0f));
+		}
 	}
 	network.SetLayers(layers);
 }

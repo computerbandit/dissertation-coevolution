@@ -64,7 +64,7 @@ void MainMenuState::HandleEvents()
 						break;
 					case 1:
 						//Train - the player network
-						this->_data->stateMachine.PushState(StateRef(new TrainNetworkState(_data)));
+						this->_data->stateMachine.PushState(StateRef(new TrainNetworkState(_data, DEFUALT_TRAINNGNG_TIME_TO_LIVE, DEFUALT_TRAINNING_SPEED_MULTIPLIER, false)));
 						break;
 					case 2:
 						//Exit Button action -> Close the game

@@ -4,7 +4,7 @@
 #include "DEFINITIONS.h"
 #include <iostream>
 
-Player::Player(GameDataRef data, Level** level, sf::Vector2f wh, bool networkControlled): _data(data), _level(level), _networkControlled(networkControlled)
+Player::Player(GameDataRef data, Level** level, sf::Vector2f wh): _data(data), _level(level)
 {
 	this->_speed = 300.0f;
 	this->_jumpVelocity = 450.0f;
@@ -116,7 +116,6 @@ void Player::Update(float dt)
 		}
 	}
 	else if (this->_position.x >= (*_level)->GetCheckpoint(_currentCheckpoint + 1).x ) {
-		std::cout << "checkpoint hit!" << std::endl;
 		_currentCheckpoint++;
 	}
 
@@ -156,11 +155,7 @@ void Player::Stop()
 void Player::Die()
 {
 	_lives--;
-	if (_networkControlled) {
-		this->SetProgress(PercentageOfLevelCompleted());
-		this->Deactivate();
-	}	
-	else if (_lives == 0) {
+	if (_lives == 0) {
 		this->_data->stateMachine.PushState(StateRef(new MainMenuState(_data)));
 		this->Deactivate();
 	}
@@ -178,10 +173,6 @@ void Player::Respawn()
 void Player::Finish()
 {
 	//player has finished the level...
-	/* evaluate the player with score and time and stuff.
-	then load the next level after it has loaded or the player clicks a button or something
-	idk get off my back man*/
-	std::cout << "You won the level!" << std::endl;
 	_currentCheckpoint = 0;
 	(*_level)->LoadNextLevel();
 	this->Respawn();
@@ -197,6 +188,11 @@ const float & Player::GetProgress() const
 	return this->_progress;
 }
 
+void Player::SetColor(sf::Color color)
+{
+	this->_sprite.setColor(color);
+}
+
 bool Player::IsAlive()
 {
 	return (_lives > 0);
@@ -205,6 +201,13 @@ bool Player::IsAlive()
 float Player::PercentageOfLevelCompleted()
 {
 	//find the position of the player and compare it to the position of the final checkpoint
-	return  (this->_position.x / ((*_level)->GetFinishFlagPosition().x - (*_level)->GetCheckpoint(0).x)) * 100.0f;
+	float start = (*_level)->GetCheckpoint(0).x;
+	float end = (*_level)->GetFinishFlagPosition().x;
+	float ratio = (this->_position.x - start) / (end - start);
+	float percentage = ratio * 100.0f;
+	if (percentage > 100.0f || percentage < 0.0f) {
+		percentage = std::max(0.0f, std::min(percentage, 100.0f));
+	}
+	return  percentage;
 }
 
