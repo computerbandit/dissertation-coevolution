@@ -16,29 +16,39 @@ void MainMenuState::Init()
 	this->_data->assetManager.LoadTexture("Main Menu Background", MAIN_MENU_BACKGROUND_PATH);
 	_background.setTexture(this->_data->assetManager.GetTexture("Main Menu Background"));
 	AssetManager::Rescale(_background, sf::Vector2f(this->_data->window.getSize()));
-	//Play Button
-	this->_data->assetManager.LoadTexture("Main Menu Play Button", MAIN_MENU_PLAY_BUTTON_PATH);
-	_playButton.setTexture(this->_data->assetManager.GetTexture("Main Menu Play Button"));
-	//Exit Button 
-	this->_data->assetManager.LoadTexture("Main Menu Exit Button", MAIN_MENU_EXIT_BUTTON_PATH);
-	_exitButton.setTexture(this->_data->assetManager.GetTexture("Main Menu Exit Button"));
-	//Train Button
-	this->_data->assetManager.LoadTexture("Main Menu Train Button", MAIN_MENU_TRAIN_BUTTON_PATH);
-	_trainButton.setTexture(this->_data->assetManager.GetTexture("Main Menu Train Button"));
+	//Menu Button
+	this->_data->assetManager.LoadTexture("Menu Button", MENU_BUTTON_PATH);
+	sf::Sprite buttonSprite;
+	buttonSprite.setTexture(this->_data->assetManager.GetTexture("Menu Button"));
+	this->_data->assetManager.LoadFont("Menu Font", MENU_FONT_PATH);
 
-	//push the references of the loaded sprites onto the button vector
-	_buttons.push_back(&_playButton);
-	_buttons.push_back(&_trainButton);
-	_buttons.push_back(&_exitButton);
+	sf::Text text;
+	text.setFont(this->_data->assetManager.GetFont("Menu Font"));
+	text.setCharacterSize(20);
+	text.setFillColor(sf::Color::Black);
 
-	//change the position of the buttons 
-	_playButton.setPosition(SCREEN_WIDTH / 2.0f - _playButton.getGlobalBounds().width / 2.0f, (int)_playButton.getGlobalBounds().height * 3.0f);
-	_trainButton.setPosition(SCREEN_WIDTH / 2.0f - _playButton.getGlobalBounds().width / 2.0f, (int)_playButton.getGlobalBounds().height * 4.5f);
-	_exitButton.setPosition(SCREEN_WIDTH / 2.0f - _exitButton.getGlobalBounds().width / 2.0f, (int)_exitButton.getGlobalBounds().height * 6.0f);
+	_strings = std::vector<std::string>();
+	_strings.push_back("Play");
+	_strings.push_back("Train");
+	_strings.push_back("Exit");
+
+	sf::Vector2f pos((this->_data->window.getSize().x / 2) - buttonSprite.getLocalBounds().width/2, 250.0f);
+
+
+	for (std::string s : _strings) {
+		text.setString(s);
+
+		//set position of the button and text;
+		buttonSprite.setPosition(pos);
+		text.setPosition(sf::Vector2f(pos.x + (buttonSprite.getLocalBounds().width / 4), pos.y + (buttonSprite.getLocalBounds().height / 4)));
+		pos.y += buttonSprite.getLocalBounds().height + 25;
+		_buttons[s] = Button(buttonSprite, text );
+	}
 }
 
 void MainMenuState::Cleanup()
 {
+
 }
 
 void MainMenuState::HandleEvents()
@@ -54,27 +64,18 @@ void MainMenuState::HandleEvents()
 			AssetManager::Rescale(_background, sf::Vector2f(this->_data->window.getSize()));
 		}
 		if (sf::Event::MouseButtonPressed == event.type) {
-			for (int i = 0; i < _buttons.size(); i++) {
-				if (this->_data->inputManager.IsSpriteClicked(*(_buttons[i]), sf::Mouse::Button::Left, this->_data->window)) {
-					switch (i)
-					{
-					case 0:
-						//Play Button action -> move to the play game state
-						this->_data->stateMachine.PushState(StateRef(new GameState(_data)), false);
-						break;
-					case 1:
-						//Train - the player network
-						this->_data->stateMachine.PushState(StateRef(new TrainNetworkState(_data, DEFUALT_TRAINNGNG_TIME_TO_LIVE, DEFUALT_TRAINNING_SPEED_MULTIPLIER, DISPLAY_TRAINNING)));
-						break;
-					case 2:
-						//Exit Button action -> Close the game
-						this->_data->window.close();
-						break;
-					default:
-						break;
-					}
-					break;
-				}
+			
+			if (this->_data->inputManager.IsSpriteClicked(_buttons[_strings[0]]._sprite, sf::Mouse::Button::Left, this->_data->window))
+			{
+				this->_data->stateMachine.PushState(StateRef(new GameState(_data)), false);
+			}
+			else if (this->_data->inputManager.IsSpriteClicked(_buttons[_strings[1]]._sprite, sf::Mouse::Button::Left, this->_data->window))
+			{
+				this->_data->stateMachine.PushState(StateRef(new TrainNetworkState(_data, DEFUALT_TRAINNGNG_TIME_TO_LIVE, DEFUALT_TRAINNING_SPEED_MULTIPLIER, DISPLAY_TRAINNING)));
+			}
+			else if (this->_data->inputManager.IsSpriteClicked(_buttons[_strings[2]]._sprite, sf::Mouse::Button::Left, this->_data->window))
+			{
+				this->_data->window.close();
 			}
 		}
 	}
@@ -91,8 +92,9 @@ void MainMenuState::Draw(float dt)
 	this->_data->window.draw(_background);
 	//draw buttons
 
-	for (sf::Sprite* button : _buttons) {
-		this->_data->window.draw(*button);
+	for (std::string s : _strings) {
+		this->_data->window.draw(_buttons[s]._sprite);
+		this->_data->window.draw(_buttons[s]._text);
 	}
 
 	this->_data->window.display();
