@@ -36,15 +36,15 @@ NeuralNetwork::NeuralNetwork(std::vector<int> topology) {
 	}
 	this->_chromeosome = this->MatricesToChromesome();
 }
-/*
-NeuralNetwork::NeuralNetwork(std::string filePath) : _filePath(filePath)
-{
 
+
+NeuralNetwork::NeuralNetwork(std::string filePath) 
+{
 	_layer = std::vector<Matrix>();
 
 	std::ifstream file;
 	std::string line;
-	file.open(_filePath);
+	file.open(filePath);
 	int coloumn = 0;
 	if (file.is_open()) {
 		while (!file.eof()) {
@@ -67,7 +67,7 @@ NeuralNetwork::NeuralNetwork(std::string filePath) : _filePath(filePath)
 		}
 	}
 }
-*/
+
 NeuralNetwork::NeuralNetwork(std::vector<int> topology, std::vector<float> chromeosome): _chromeosome(chromeosome)
 {
 	_layer = NeuralNetwork::ChromeosomeToMatrices(topology, _chromeosome);

@@ -1,44 +1,9 @@
 #include "NNControlledPlayer.h"
+#include "DEFINITIONS.h";
 #include <iostream>
 
 NNControlledPlayer::NNControlledPlayer(GameDataRef data, std::vector<Level>& levels, int& currentLevel, sf::Vector2f wh, NeuralNetwork* networkController): Player::Player(data, levels, currentLevel, wh), _networkController(networkController)
 {
-}
-
-void NNControlledPlayer::Die()
-{
-	_lives = 0;
-	this->SetProgress(this->PercentageOfLevelCompleted());
-	this->Deactivate();
-}
-
-void NNControlledPlayer::Finish()
-{
-	//player has finished the level...
-	this->_finished = true;
-	//could start a clock and have the next level after like 2 secs;
-	//and display you finished in overlay text or something;
-	this->NextLevel();
-	this->Restart();
-}
-
-void NNControlledPlayer::Restart()
-{
-	this->_lives = 1;
-	this->_currentCheckpoint = 0;
-	this->Respawn();
-}
-
-void NNControlledPlayer::NextLevel()
-{
-	if (_currentLevel + 1 < this->_levels.size()) {
-		this->_currentLevel++;
-	}
-	else {
-		std::cout << "Player has beaten the game, well done!\n" << std::endl;
-		this->_data->stateMachine.PopState();
-	}
-	this->_currentCheckpoint = 0;
 }
 
 void NNControlledPlayer::ParseDataToNNController()
@@ -67,4 +32,17 @@ bool NNControlledPlayer::Finished()
 	else {
 		return false;
 	}
+}
+
+//given the position and current level the the entity is currently in return a list of values regarding the solid state of the tiles around around the entity
+std::vector<float> NNControlledPlayer::ConrollersViewOfLevel(int tileDiameter) const
+{
+	float diameter = TILE_SIZE * tileDiameter;
+	sf::FloatRect view = sf::FloatRect(this->_position.x - (diameter /2), this->_position.y - (diameter / 2), diameter, diameter);
+	std::vector<float> tileSolidState = std::vector<float>();
+	//get to the pos of the entity in the grid position of the level
+	for (Tile* t : this->_levels.at(this->_currentLevel).GetTilesInArea(view)) {
+		tileSolidState.push_back((t->IsSolid())? 1.0f : 0.0f);
+	}
+	return tileSolidState;
 }

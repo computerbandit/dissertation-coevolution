@@ -1,5 +1,6 @@
 #include "MainMenuState.h"
 #include "TrainNetworkState.h"
+#include "TestNetworkState.h"
 #include "GameState.h"
 #include "DEFINITIONS.h"
 #include <iostream>
@@ -30,6 +31,7 @@ void MainMenuState::Init()
 	_strings = std::vector<std::string>();
 	_strings.push_back("Play");
 	_strings.push_back("Train");
+	_strings.push_back("Test");
 	_strings.push_back("Exit");
 
 	sf::Vector2f pos((this->_data->window.getSize().x / 2) - buttonSprite.getLocalBounds().width/2, 250.0f);
@@ -42,7 +44,7 @@ void MainMenuState::Init()
 		buttonSprite.setPosition(pos);
 		text.setPosition(sf::Vector2f(pos.x + (buttonSprite.getLocalBounds().width / 4), pos.y + (buttonSprite.getLocalBounds().height / 4)));
 		pos.y += buttonSprite.getLocalBounds().height + 25;
-		_buttons[s] = Button(buttonSprite, text );
+		_buttons[s] = Button(buttonSprite, text);
 	}
 }
 
@@ -72,6 +74,10 @@ void MainMenuState::HandleEvents()
 			else if (this->_data->inputManager.IsSpriteClicked(_buttons[_strings[1]]._sprite, sf::Mouse::Button::Left, this->_data->window))
 			{
 				this->_data->stateMachine.PushState(StateRef(new TrainNetworkState(_data, DEFUALT_TRAINNGNG_TIME_TO_LIVE, DEFUALT_TRAINNING_SPEED_MULTIPLIER, DISPLAY_TRAINNING)));
+			}
+			else if (this->_data->inputManager.IsSpriteClicked(_buttons["Test"]._sprite, sf::Mouse::Button::Left, this->_data->window))
+			{
+				this->_data->stateMachine.PushState(StateRef(new TestNetworkState(this->_data)));
 			}
 			else if (this->_data->inputManager.IsSpriteClicked(_buttons[_strings[2]]._sprite, sf::Mouse::Button::Left, this->_data->window))
 			{

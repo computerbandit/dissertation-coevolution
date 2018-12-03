@@ -24,7 +24,8 @@ private:
 public:
 
 	NeuralNetwork() {}
-	NeuralNetwork(std::vector<int> topology);
+	NeuralNetwork(std::vector<int> topology); 
+	NeuralNetwork(std::string filePath);
 	NeuralNetwork(std::vector<int> topology, std::vector<float> chromeosome);
 	~NeuralNetwork() {}
 

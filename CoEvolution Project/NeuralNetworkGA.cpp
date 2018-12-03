@@ -147,7 +147,7 @@ CrossoverProduct NeuralNetworkGA::Crossover(NeuralNetwork & A,NeuralNetwork & B)
 	std::vector<float> newChromeosomeA = std::vector<float>(connections);
 	std::vector<float> newChromeosomeB = std::vector<float>(connections);
 
-	int numOfCrossoverPoints = NeuralNetwork::RandomInt(1, (int)A.GetTopology().size());
+	int numOfCrossoverPoints = NeuralNetwork::RandomInt(1, 5);
 
 	std::vector<int> crossoverPoints = std::vector<int>(numOfCrossoverPoints);
 

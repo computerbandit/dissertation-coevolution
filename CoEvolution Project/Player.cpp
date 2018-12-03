@@ -119,7 +119,9 @@ void Player::Update(float dt)
 	if (this->_levels.at(this->_currentLevel).LastCheckpoint(_currentCheckpoint + 1)) {
 		if (this->_position.x >= this->_levels.at(this->_currentLevel).GetCheckpoint(_currentCheckpoint + 1).x) {
 			//player beat the level.
-			this->Finish();
+			//fireworks and stop the player;
+			this->Stop();
+			this->_finished = true;
 		}
 	}
 	//if it is no the last check point then when the player passes it, it just sets that as the current checkpoint
@@ -184,7 +186,7 @@ void Player::Respawn()
 
 void Player::Restart()
 {
-	this->_lives = 3;
+	this->_lives = _startingLives;
 	this->_currentCheckpoint = 0;
 	this->Respawn();
 }
@@ -195,21 +197,6 @@ void Player::Finish()
 	this->_finished = true;
 	//could start a clock and have the next level after like 2 secs;
 	//and display you finished in overlay text or something;
-	this->NextLevel();
-	this->Restart();
-}
-
-void Player::NextLevel()
-{
-	//go to the next level or finish the game as the player beat the last level
-	if (_currentLevel + 1 < this->_levels.size()) {
-		this->_currentLevel++;
-	}
-	else {
-		std::cout << "Player has beaten the game, well done!\n" << std::endl;
-		this->_data->stateMachine.PopState();
-	}
-	this->_currentCheckpoint = 0;
 }
 
 void Player::SetProgress(float progress)

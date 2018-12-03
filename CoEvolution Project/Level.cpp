@@ -53,6 +53,10 @@ void Level::LoadLevelFromTextFile(std::string filePath)
 
 Tile * Level::TileAt(int i, int j)
 {
+	if (i < 0) i = 0;
+	if (i > this->_width - 1) i = this->_width - 1;
+	if (j < 0) j = 0;
+	if (j > this->_height - 1) j = this->_height - 1;
 	return &_tilemap.at((j * this->_width) + i);
 }
 
@@ -74,24 +78,39 @@ bool Level::Collision(sf::FloatRect rect)
 	int top_tile = (int)rect.top / TILE_SIZE;
 	int bottom_tile = (int)(rect.top + rect.height) / TILE_SIZE;
 	
-	if (left_tile < 0) left_tile = 0;
-	if (right_tile > this->_width - 1) right_tile = this->_width - 1;
-	if (top_tile < 0) top_tile = 0;
-	if (bottom_tile > this->_height - 1) bottom_tile = this->_height - 1;
-	
 	//only check the tiles near the player maybe some how
 	bool any_collision = false;
-		for (int i = left_tile; i <= right_tile; i++)
+	for (int i = left_tile; i <= right_tile; i++)
+	{
+		for (int j = top_tile; j <= bottom_tile; j++)
 		{
-			for (int j = top_tile; j <= bottom_tile; j++)
+			if (this->TileAt(i, j)->IsSolid())
 			{
-				if (this->TileAt(i, j)->IsSolid())
-				{
-					any_collision = true;
-				}
+				any_collision = true;
 			}
 		}
-		return any_collision;
+	}
+	return any_collision;
+}
+
+std::vector<Tile*> Level::GetTilesInArea(sf::FloatRect rect)
+{
+	int left_tile = (int)rect.left / TILE_SIZE;
+	int right_tile = (int)(rect.left + rect.width) / TILE_SIZE;
+	int top_tile = (int)rect.top / TILE_SIZE;
+	int bottom_tile = (int)(rect.top + rect.height) / TILE_SIZE;
+
+	std::vector<Tile*> tilesInArea = std::vector<Tile*>();
+
+	for (int i = left_tile; i <= right_tile; i++)
+	{
+		for (int j = top_tile; j <= bottom_tile; j++)
+		{
+			tilesInArea.push_back(this->TileAt(i, j));
+		}
+	}
+	return tilesInArea;
+
 }
 
 const sf::Vector2f& Level::GetCheckpoint(int num) const 

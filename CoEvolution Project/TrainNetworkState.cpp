@@ -3,10 +3,11 @@
 #include <string>
 #include <iostream>
 #include "DEFINITIONS.h"
+#include "TestNetworkState.h"
 
 TrainNetworkState::TrainNetworkState(GameDataRef data, float timetolive, float speedMultiplier, bool display): _data(data), _display(display), _ttl(timetolive)
 {
-	_ga = NeuralNetworkGA(NeuralNetwork::GeneratePopulation(DEFUALT_TRAINNING_POPULATION_SIZE, {2, 2,3}), 0.1f);
+	_ga = NeuralNetworkGA(NeuralNetwork::GeneratePopulation(DEFUALT_TRAINNING_POPULATION_SIZE, {INPUT_LAYER_SIZE, 4, 4, 3}), 0.5f);
 	this->_levels = std::vector<Level>();
 	this->_data->gameSpeedMultiplier = speedMultiplier;
 }
@@ -19,10 +20,14 @@ void TrainNetworkState::Init()
 
 	//load the levels in the order to play them;
 	_levels.push_back(Level(_data, TRAINNING_LEVEL_1));
-	_levels.push_back(Level(_data, TRAINNING_LEVEL_2));
+	//_levels.push_back(Level(_data, TRAINNING_LEVEL_2));
 
 	this->_data->assetManager.LoadTexturesheet(PLAYER, PLAYER_SHEET, sf::Vector2u(16, 16));
 
+	_info.setFont(this->_data->assetManager.GetFont("Menu Font"));
+	_info.setCharacterSize(20);
+	_info.setFillColor(sf::Color::Black);
+	_info.setPosition(sf::Vector2f(0, 0));
 
 	_playerPopulation = std::vector<NNControlledPlayer>();
 	std::vector<NeuralNetwork>& gapop = _ga.GetPopulation();
@@ -36,8 +41,6 @@ void TrainNetworkState::Init()
 	this->_data->camera = Camera(&(this->_data->window), this->_data->window.getSize(), sf::Vector2f(0, 0));
 	//the init ttl should be v small just so the networks can rapidly get to the point where they have some features to evolve.
 	_ttl = 0.1f;
-	srand(time(0));
-
 }
 
 void TrainNetworkState::Cleanup()
@@ -57,12 +60,35 @@ void TrainNetworkState::HandleEvents()
 		if (sf::Event::Resized == event.type) {
 			this->_data->camera.Resize(event);
 		}
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-			//stop the  sim
-			std::cout << "\ntraining sim stopped by user" << std::endl;
-			//return to menu
-			this->_data->stateMachine.PushState(StateRef(new MainMenuState(this->_data)));
+		
+		if (sf::Event::KeyPressed == event.type) {
+
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1)) {
+				this->_data->gameSpeedMultiplier = 1.0f;
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2)) {
+				this->_data->gameSpeedMultiplier = 2.0f;
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num3)) {
+				this->_data->gameSpeedMultiplier = 3.0f;
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num4)) {
+				this->_data->gameSpeedMultiplier = 4.0f;
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num5)) {
+				this->_data->gameSpeedMultiplier = 5.0f;
+			}
+
+
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+				//stop the  sim
+				std::cout << "\ntraining sim stopped by user" << std::endl;
+				//return to menu
+				this->_data->stateMachine.PushState(StateRef(new MainMenuState(this->_data)));
+			}
 		}
+
+		
 	}
 }
 
@@ -78,7 +104,7 @@ void TrainNetworkState::Update(float dt)
 			NeuralNetwork* controller = nnplayer.GetNetworkController();
 			//need to get a set of inputs from the ray cast info from each of the players
 
-			std::vector<float> inputs = { 1.0f, 0.5f, 1.0f, 0.0f};
+			std::vector<float> inputs = nnplayer.ConrollersViewOfLevel(CONTROLLER_TILES_VIEW);
 			controller->Run(inputs);
 			std::vector<float> output = controller->GetOutput();
 			//given the outputs of the network 
@@ -135,8 +161,20 @@ void TrainNetworkState::Update(float dt)
 		for (NNControlledPlayer& nnplayer : this->_playerPopulation) {
 			nnplayer.GetNetworkController()->SetFitnessScore(nnplayer.GetProgress());
 			if (this->EvaluateNNControlledPlayer(nnplayer)) {
-				this->_ga.Solved();
-				break;
+				
+				if (_currentLevel + 1 < this->_levels.size()) {
+
+					std::cout << "\n Level Completed" << std::endl;
+					this->_currentLevel++;
+					for (NNControlledPlayer& nnplayer : this->_playerPopulation) {
+						nnplayer.Restart();
+					}
+				}
+				else {
+					this->_ga.Solved();
+					break;
+				}
+				
 			}
 		}
 		this->_ga.EvalutePopulation();
@@ -155,7 +193,9 @@ void TrainNetworkState::Update(float dt)
 		}
 		else {
 			this->_ga.SaveFittestNetwork();
-			std::cout << "\n Level Completed" << std::endl;
+			
+			std::cout << "Player has beaten the game, well done!\n" << std::endl;
+			this->_data->stateMachine.PopState();
 		}
 	}
 }
@@ -164,8 +204,13 @@ void TrainNetworkState::Draw(float dt)
 {
 	this->_data->window.clear(sf::Color::White);
 	if (this->_display) {
+		_info.setString("Speed: " + std::to_string(this->_data->gameSpeedMultiplier) + "x , TTL: " + std::to_string(_clock.getElapsedTime().asSeconds()) + " / " + std::to_string(_ttl));
+		_info.setPosition(this->_data->camera.GetCameraBox().left, this->_data->camera.GetCameraBox().top);
+
 		this->_levels.at(this->_currentLevel).Draw();
 		this->_data->gameObjectManager.Draw(dt);
+
+		this->_data->window.draw(_info);
 	}
 	this->_data->window.display();
 }

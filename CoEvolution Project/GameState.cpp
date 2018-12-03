@@ -40,7 +40,6 @@ void GameState::HandleEvents()
 		}
 		if (sf::Event::Resized == event.type) {
 			this->_data->camera.Resize(event);
-
 		}
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {

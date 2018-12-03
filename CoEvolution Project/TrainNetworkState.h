@@ -27,6 +27,8 @@ private:
 	sf::Clock _clock;
 	float _ttl;
 
+	sf::Text _info;
+
 	//given a players distance from the final checkpoint what is the fitness of the network that is controlling
 	bool EvaluateNNControlledPlayer(NNControlledPlayer& nnplayer);
 };

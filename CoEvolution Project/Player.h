@@ -6,6 +6,7 @@
 class Player : virtual public IEntity {
 
 public:
+
 	Player(GameDataRef data, std::vector<Level>& levels, int& currentLevel, sf::Vector2f wh);
 	~Player();
 
@@ -20,11 +21,10 @@ public:
 	void Left();
 	void Right();
 	void Stop();
-	virtual void Die();
+	void Die();
 	void Respawn();
-	virtual void Restart();
-	virtual void Finish();
-	virtual void NextLevel();
+	void Restart();
+	void Finish();
 
 	void SetProgress(float progress);
 	void SetColor(sf::Color color);
@@ -38,7 +38,8 @@ protected:
 	int& _currentLevel;
 
 	float _speed, _jumpVelocity;
-	int _direction = 0, _lives = 3, _currentCheckpoint = 0;
+	const int _startingLives = 3;
+	int _direction = 0, _lives = _startingLives, _currentCheckpoint = 0;
 	bool _falling, _jumping, _holdingJump, _jump, _grounded, _finished, _exit;
 	float _progress = 0.0f;
 };
