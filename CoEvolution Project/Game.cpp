@@ -30,7 +30,7 @@ void Game::Run()
 
 		while (accumulator >= dt) {
 			this->_data->stateMachine.GetAvtiveState()->HandleEvents();
-			this->_data->stateMachine.GetAvtiveState()->Update(dt);
+			this->_data->stateMachine.GetAvtiveState()->Update(dt*this->_data->gameSpeedMultiplier);
 			accumulator -= dt;
 		}
 

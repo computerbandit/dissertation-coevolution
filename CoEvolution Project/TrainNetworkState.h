@@ -15,13 +15,14 @@ public:
 	virtual void HandleEvents() override;
 	virtual void Update(float dt) override;
 	virtual void Draw(float dt) override;
-
-
 private:
 	GameDataRef _data;
+	std::vector<Level> _levels;
+	int _currentLevel = 0;
+
 	NeuralNetworkGA _ga;
-	Level * _level;
 	std::vector<NNControlledPlayer> _playerPopulation;
+
 	bool _display;
 	sf::Clock _clock;
 	float _ttl;

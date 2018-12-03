@@ -6,8 +6,8 @@
 
 TrainNetworkState::TrainNetworkState(GameDataRef data, float timetolive, float speedMultiplier, bool display): _data(data), _display(display), _ttl(timetolive)
 {
-	_ga = NeuralNetworkGA(NeuralNetwork::GeneratePopulation(DEFUALT_TRAINNING_POPULATION_SIZE, {1,3}), 0.1f);
-	this->_level = new Level(_data);
+	_ga = NeuralNetworkGA(NeuralNetwork::GeneratePopulation(DEFUALT_TRAINNING_POPULATION_SIZE, {2, 2,3}), 0.1f);
+	this->_levels = std::vector<Level>();
 	this->_data->gameSpeedMultiplier = speedMultiplier;
 }
 
@@ -16,27 +16,28 @@ void TrainNetworkState::Init()
 
 	//load the texturesheet
 	this->_data->assetManager.LoadTexturesheet(TILES, TILE_SHEET, sf::Vector2u(16, 16));
-	this->_data->assetManager.LoadTexturesheet(PLATFORMS, PLATFORM_SHEET, sf::Vector2u(16, 4));
 
-	//load the level text file and set up tiles.
-	this->_level->LoadLevel(1);
+	//load the levels in the order to play them;
+	_levels.push_back(Level(_data, TRAINNING_LEVEL_1));
+	_levels.push_back(Level(_data, TRAINNING_LEVEL_2));
 
 	this->_data->assetManager.LoadTexturesheet(PLAYER, PLAYER_SHEET, sf::Vector2u(16, 16));
 
-	this->_data->camera = Camera(&(this->_data->window), this->_data->window.getSize(), sf::Vector2f(0, 0));
 
-	srand(time(0));
 	_playerPopulation = std::vector<NNControlledPlayer>();
 	std::vector<NeuralNetwork>& gapop = _ga.GetPopulation();
 	for (int i = 0; i < (int)_ga.GetPopulation().size(); i++) {
-		_playerPopulation.push_back(NNControlledPlayer(_data, &_level, sf::Vector2f(16, 16), &gapop.at(i)));
+		_playerPopulation.push_back(NNControlledPlayer(_data, _levels, _currentLevel, sf::Vector2f(16, 16), &gapop.at(i)));
 	}
 	for (NNControlledPlayer& n : _playerPopulation) {
 		this->_data->gameObjectManager.AddEntity(&n);
 	}
 
+	this->_data->camera = Camera(&(this->_data->window), this->_data->window.getSize(), sf::Vector2f(0, 0));
 	//the init ttl should be v small just so the networks can rapidly get to the point where they have some features to evolve.
 	_ttl = 0.1f;
+	srand(time(0));
+
 }
 
 void TrainNetworkState::Cleanup()
@@ -50,8 +51,8 @@ void TrainNetworkState::HandleEvents()
 	sf::Event event;
 	while (this->_data->window.pollEvent(event)) {
 		if (sf::Event::Closed == event.type) {
-			this->_data->window.close();
 			this->Cleanup();
+			this->_data->window.close();
 		}
 		if (sf::Event::Resized == event.type) {
 			this->_data->camera.Resize(event);
@@ -94,6 +95,9 @@ void TrainNetworkState::Update(float dt)
 			if (output.at(2) > 0.9f) {
 				nnplayer.Jump();
 			}
+			else {
+				nnplayer.StopJumping();
+			}
 			stillAlive = true;
 		}
 	}
@@ -121,11 +125,11 @@ void TrainNetworkState::Update(float dt)
 	}
 	else {
 		if (_display) {
-			this->_data->camera.Update(_level->GetCheckpoint(0));
+			this->_data->camera.Update(this->_levels.at(this->_currentLevel).GetCheckpoint(0));
 		}
 	}
 
-	if (this->_clock.getElapsedTime().asSeconds() > (this->_ttl) || !stillAlive) {
+	if (this->_clock.getElapsedTime().asSeconds() > (this->_ttl/this->_data->gameSpeedMultiplier) || !stillAlive) {
 		this->_clock.restart();
 			//set the fitnessScore for the each of the controllers now that they are all updated position wise
 		for (NNControlledPlayer& nnplayer : this->_playerPopulation) {
@@ -140,7 +144,7 @@ void TrainNetworkState::Update(float dt)
 		std::cout << "Generation [" << this->_ga.GetGeneration() << "] -> Percentage Progress: " << this->_ga.AverageFitness() << "% average, " << this->_ga.FittestNetwork().GetFitnessScore() << "% best controller" << "\r";
 
 		if(!_ga.isSolved()) {
-			//this->_ga.SaveFittestNetwork();
+			this->_ga.SaveFittestNetwork();
 			this->_ga.NextGeneration();
 			std::vector<NeuralNetwork>& gapop = this->_ga.GetPopulation();
 			for (int i = 0; i < (int)gapop.size(); i++) {
@@ -152,8 +156,6 @@ void TrainNetworkState::Update(float dt)
 		else {
 			this->_ga.SaveFittestNetwork();
 			std::cout << "\n Level Completed" << std::endl;
-			this->_data->gameSpeedMultiplier = 1.0f;
-			this->_data->stateMachine.PushState(StateRef(new MainMenuState(this->_data)));
 		}
 	}
 }
@@ -162,7 +164,7 @@ void TrainNetworkState::Draw(float dt)
 {
 	this->_data->window.clear(sf::Color::White);
 	if (this->_display) {
-		this->_level->Draw();
+		this->_levels.at(this->_currentLevel).Draw();
 		this->_data->gameObjectManager.Draw(dt);
 	}
 	this->_data->window.display();

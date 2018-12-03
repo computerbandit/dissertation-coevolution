@@ -5,10 +5,12 @@
 class NNControlledPlayer : public Player {
 public:
 
-	NNControlledPlayer(GameDataRef data, Level** level, sf::Vector2f wh, NeuralNetwork* networkController);
+	NNControlledPlayer(GameDataRef data, std::vector<Level>& levels, int& currentLevel, sf::Vector2f wh, NeuralNetwork* networkController);
 
 	virtual void Die() override;
 	virtual void Finish() override;
+	virtual void Restart() override;
+	virtual void NextLevel() override;
 
 	//function to return a vector or inputs to the controlling network;
 	void ParseDataToNNController();

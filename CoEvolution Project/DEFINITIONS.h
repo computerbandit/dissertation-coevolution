@@ -13,9 +13,9 @@
 
 //trainning speed 
 #define DISPLAY_TRAINNING true
-#define DEFUALT_TRAINNING_POPULATION_SIZE 100
-#define DEFUALT_TRAINNGNG_TIME_TO_LIVE 60.0f
-#define DEFUALT_TRAINNING_SPEED_MULTIPLIER 10.0f
+#define DEFUALT_TRAINNING_POPULATION_SIZE 50
+#define DEFUALT_TRAINNGNG_TIME_TO_LIVE 12.0f
+#define DEFUALT_TRAINNING_SPEED_MULTIPLIER 1.0f
 
 //textures
 #define MAIN_MENU_BACKGROUND_PATH "Resources/res/MainMenu_Background.png"
@@ -27,13 +27,11 @@
 #define PLAYER_TEX_PATH "Resources/res/Player_Sprite.png"
 
 //Level 
-#define LEVEL_1 "Resources/level/level1.txt"
-#define LEVEL_2 "Resources/level/level2.txt"
+#define TRAINNING_LEVEL_1 "Resources/level/level1.txt"
+#define TRAINNING_LEVEL_2 "Resources/level/level2.txt"
 
 //Spritesheets
 #define TILES "Tile_Sheet"
 #define TILE_SHEET "Resources/res/Tile_Sheet.png"
-#define PLATFORMS "Platform_Sheet"
-#define PLATFORM_SHEET "Resources/res/Platform_Sheet.png"
 #define PLAYER "Player_Sheet"
 #define PLAYER_SHEET "Resources/res/Player_Sheet.png"

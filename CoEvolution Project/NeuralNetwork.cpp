@@ -94,14 +94,14 @@ std::string NeuralNetwork::ToString() const
 //given a set of inputs what is the output of the network
 std::vector<float> NeuralNetwork::MatrixOutput(const Matrix& m, std::vector<float> input, ActivationFunction function)
 {
-	_output = std::vector<float>((int)m.at(0).size());
+	_output = std::vector<float>((int)m[0].size());
 	for (float& f: _output) {
 		f = 0.0f;
 	}
 
 	for (int i = 0; i < (int)m.size(); i++) {
-		for (int j = 0; j < (int)m.at(i).size(); j++) {
-			_output.at(j) += m.at(i).at(j) * input.at(i);
+		for (int j = 0; j < (int)m[i].size(); j++) {
+			_output[j] += m[i][j] * input[i];
 		}
 	}
 

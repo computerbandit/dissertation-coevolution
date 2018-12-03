@@ -3,28 +3,16 @@
 
 class Tile {
 public:
-	Tile(int tileID, sf::Sprite sprite, bool solid, bool topTile);
+
+	Tile(int tileID, sf::Sprite sprite, bool solid);
 	~Tile() {}
 
-	int& GetTileID() {
-		return _tileID;
-	}
-
-	sf::Sprite& GetSprite() {
-		return _sprite;
-	}
-
-	bool IsSolid() {
-		return _solid;
-	}
-
-	sf::FloatRect& GetHitBox() {
-		return _box;
-	}
-
-
+	const int& GetTileID() const;
+	const sf::Sprite& GetSprite() const;
+	const bool& IsSolid() const;
+	const sf::FloatRect& GetHitBox() const;
 	static bool GetIfSolid(int id);
-	static bool GetIfTop(int id);
+
 private:
 	sf::Sprite _sprite;
 	sf::FloatRect _box;

@@ -6,44 +6,39 @@
 class Player : virtual public IEntity {
 
 public:
-	Player(GameDataRef data, Level** level, sf::Vector2f wh);
-	~Player(){}
+	Player(GameDataRef data, std::vector<Level>& levels, int& currentLevel, sf::Vector2f wh);
+	~Player();
 
 	virtual void Init() override;
 	virtual void Update(float dt) override;
 	virtual void Draw(float dt) override;
 
+	float PercentageOfLevelCompleted();
+	bool IsAlive();
 	void Jump();
+	void StopJumping();
 	void Left();
 	void Right();
 	void Stop();
 	virtual void Die();
 	void Respawn();
-	void Restart();
+	virtual void Restart();
 	virtual void Finish();
+	virtual void NextLevel();
 
 	void SetProgress(float progress);
-	const float& GetProgress() const;
-
 	void SetColor(sf::Color color);
-
-	bool IsAlive();
-
-	float PercentageOfLevelCompleted();
-
-	sf::Vector2f& GetPosition() {
-		return _position;
-	}
-	
-	bool _holdingJump;
+	const float& GetProgress() const;
+	const sf::Vector2f& GetPosition() const;
 
 protected:
 	GameDataRef _data;
 	sf::Sprite _sprite;
-	Level** _level;
+	std::vector<Level>& _levels;
+	int& _currentLevel;
 
 	float _speed, _jumpVelocity;
 	int _direction = 0, _lives = 3, _currentCheckpoint = 0;
-	bool _falling, _jumping, _jump, _grounded;
+	bool _falling, _jumping, _holdingJump, _jump, _grounded, _finished, _exit;
 	float _progress = 0.0f;
 };

@@ -4,7 +4,7 @@
 #include "DEFINITIONS.h"
 #include <iostream>
 
-Player::Player(GameDataRef data, Level** level, sf::Vector2f wh): _data(data), _level(level)
+Player::Player(GameDataRef data, std::vector<Level>& levels, int& currentLevel, sf::Vector2f wh) : _data(data), _levels(levels), _currentLevel(currentLevel)
 {
 	this->_speed = 300.0f;
 	this->_jumpVelocity = 450.0f;
@@ -12,6 +12,11 @@ Player::Player(GameDataRef data, Level** level, sf::Vector2f wh): _data(data), _
 	AssetManager::Rescale(_sprite, wh);
 	this->_sprite.setColor(sf::Color::Blue);
 	this->Init();
+}
+
+Player::~Player()
+{
+
 }
 
 
@@ -22,6 +27,7 @@ void Player::Init()
 	_jumping = false;
 	_holdingJump = false; 
 	_grounded = false;
+	_finished = false;
 	this->Respawn();
 }
 
@@ -81,14 +87,14 @@ void Player::Update(float dt)
 
 	//collsison detection in 5 substeps with wall sliding
 	sf::Vector2f oldpos;
-	int num_steps = 5;
+	int num_steps = 4;
 
 	for (int i = 0; i < num_steps; i++) {
 		oldpos = sf::Vector2f(this->_position);
 		this->_position.x += this->_velocity.x * (dt/num_steps);
 		_sprite.setPosition(this->_position);
-		Tile* collisionTile = (*_level)->Collision(_sprite.getGlobalBounds());
-		if (collisionTile) {
+		bool collision = this->_levels.at(this->_currentLevel).Collision(_sprite.getGlobalBounds());
+		if (collision) {
 			this->_position = oldpos;
 			_sprite.setPosition(this->_position);
 		}
@@ -96,8 +102,8 @@ void Player::Update(float dt)
 		oldpos = sf::Vector2f(this->_position);
 		this->_position.y += this->_velocity.y * (dt/num_steps);
 		_sprite.setPosition(this->_position);
-		collisionTile = (*_level)->Collision(_sprite.getGlobalBounds());
-		if (collisionTile) {
+		collision = this->_levels.at(this->_currentLevel).Collision(_sprite.getGlobalBounds());
+		if (collision) {
 			this->_position = oldpos;
 			this->_velocity.y = 0;
 			_sprite.setPosition(this->_position);
@@ -109,13 +115,15 @@ void Player::Update(float dt)
 		this->Die();
 	}
 
-	if ((*_level)->LastCheckpoint(_currentCheckpoint + 1)) {
-		if (this->_position.x >= (*_level)->GetCheckpoint(_currentCheckpoint + 1).x) {
+	//if the next checkpoint is the of the level then when the player passes it they win finish
+	if (this->_levels.at(this->_currentLevel).LastCheckpoint(_currentCheckpoint + 1)) {
+		if (this->_position.x >= this->_levels.at(this->_currentLevel).GetCheckpoint(_currentCheckpoint + 1).x) {
 			//player beat the level.
 			this->Finish();
 		}
 	}
-	else if (this->_position.x >= (*_level)->GetCheckpoint(_currentCheckpoint + 1).x ) {
+	//if it is no the last check point then when the player passes it, it just sets that as the current checkpoint
+	else if (this->_position.x >= this->_levels.at(this->_currentLevel).GetCheckpoint(_currentCheckpoint + 1).x ) {
 		_currentCheckpoint++;
 	}
 
@@ -137,6 +145,11 @@ void Player::Jump()
 	}
 }
 
+void Player::StopJumping()
+{
+	this->_holdingJump = false;
+}
+
 void Player::Left()
 {
 	_direction = -1;
@@ -155,9 +168,8 @@ void Player::Stop()
 void Player::Die()
 {
 	_lives--;
-	if (_lives == 0) {
-		this->_data->stateMachine.PushState(StateRef(new MainMenuState(_data)));
-		this->Deactivate();
+	if (_lives <= 0) {
+		this->Restart();
 	}
 	else {
 		this->Respawn();
@@ -166,12 +178,13 @@ void Player::Die()
 
 void Player::Respawn()
 {
-	this->_position = (*_level)->GetCheckpoint(this->_currentCheckpoint);
+	this->_position = this->_levels.at(this->_currentLevel).GetCheckpoint(this->_currentCheckpoint);
 	this->_velocity = sf::Vector2f(0.0f, 0.0f);
 }
 
 void Player::Restart()
 {
+	this->_lives = 3;
 	this->_currentCheckpoint = 0;
 	this->Respawn();
 }
@@ -179,9 +192,24 @@ void Player::Restart()
 void Player::Finish()
 {
 	//player has finished the level...
-	_currentCheckpoint = 0;
-	(*_level)->LoadNextLevel();
-	this->Respawn();
+	this->_finished = true;
+	//could start a clock and have the next level after like 2 secs;
+	//and display you finished in overlay text or something;
+	this->NextLevel();
+	this->Restart();
+}
+
+void Player::NextLevel()
+{
+	//go to the next level or finish the game as the player beat the last level
+	if (_currentLevel + 1 < this->_levels.size()) {
+		this->_currentLevel++;
+	}
+	else {
+		std::cout << "Player has beaten the game, well done!\n" << std::endl;
+		this->_data->stateMachine.PopState();
+	}
+	this->_currentCheckpoint = 0;
 }
 
 void Player::SetProgress(float progress)
@@ -207,8 +235,8 @@ bool Player::IsAlive()
 float Player::PercentageOfLevelCompleted()
 {
 	//find the position of the player and compare it to the position of the final checkpoint
-	float start = (*_level)->GetCheckpoint(0).x;
-	float end = (*_level)->GetFinishFlagPosition().x;
+	float start = this->_levels.at(this->_currentLevel).GetCheckpoint(0).x;
+	float end = this->_levels.at(this->_currentLevel).GetFinishFlagPosition().x;
 	float ratio = (this->_position.x - start) / (end - start);
 	float percentage = ratio * 100.0f;
 	if (percentage > 100.0f || percentage < 0.0f) {
@@ -216,4 +244,11 @@ float Player::PercentageOfLevelCompleted()
 	}
 	return  percentage;
 }
+
+const sf::Vector2f & Player::GetPosition() const
+{
+	return this->_position;
+}
+
+
 

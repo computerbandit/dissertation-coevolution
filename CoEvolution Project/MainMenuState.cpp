@@ -60,7 +60,7 @@ void MainMenuState::HandleEvents()
 					{
 					case 0:
 						//Play Button action -> move to the play game state
-						this->_data->stateMachine.PushState(StateRef(new GameState(_data)));
+						this->_data->stateMachine.PushState(StateRef(new GameState(_data)), false);
 						break;
 					case 1:
 						//Train - the player network

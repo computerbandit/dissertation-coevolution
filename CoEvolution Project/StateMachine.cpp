@@ -3,7 +3,7 @@
 void StateMachine::PushState(StateRef newState, bool isReplacing)
 {
 	this->_isAdding = true;
-	this->_isRelplacing = _isRelplacing;
+	this->_isRelplacing = isReplacing;
 	
 	this->_newState = std::move(newState);
 }
@@ -15,8 +15,9 @@ void StateMachine::PopState()
 
 void StateMachine::ProcessStateChanges()
 {
-	if (this->_isRelplacing && !this->_states.empty())
+	if (this->_isRemoving && !this->_states.empty())
 	{
+		this->_states.top()->Cleanup();
 		this->_states.pop();
 		if (!this->_states.empty()) {
 			this->_states.top()->Resume();

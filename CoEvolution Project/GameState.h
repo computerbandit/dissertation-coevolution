@@ -16,6 +16,7 @@ public:
 	virtual void Draw(float dt) override;
 private:
 	GameDataRef _data;
-	Level * _level;
+	std::vector<Level> _levels;
+	int _currentLevel;
 	Player * _player;
 };
