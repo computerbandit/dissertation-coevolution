@@ -15,6 +15,10 @@ public:
 	void Deactivate() {
 		_active = false;
 	}
+	void Activate() {
+		_active = true;
+	}
+
 protected:
 	sf::Vector2f _velocity;
 	sf::Vector2f _position;

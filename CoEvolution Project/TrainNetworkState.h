@@ -22,13 +22,10 @@ private:
 
 	NeuralNetworkGA _ga;
 	std::vector<NNControlledPlayer> _playerPopulation;
-
+	sf::Clock _ttlClock;
+	sf::Clock _checkProgressClock;
 	bool _display;
-	sf::Clock _clock;
 	float _ttl;
-
 	sf::Text _info;
-
-	//given a players distance from the final checkpoint what is the fitness of the network that is controlling
-	bool EvaluateNNControlledPlayer(NNControlledPlayer& nnplayer);
+	std::string _token;
 };

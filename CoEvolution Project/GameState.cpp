@@ -42,6 +42,10 @@ void GameState::HandleEvents()
 			this->_data->camera.Resize(event);
 		}
 
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
+			this->_data->stateMachine.PopState();
+		}
+
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
 			_player->Left();
 		}
@@ -55,6 +59,7 @@ void GameState::HandleEvents()
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
 			_player->Jump();
 		}
+
 		if (event.type == sf::Event::KeyReleased)
 		{
 			if (event.key.code == sf::Keyboard::Space) {
@@ -67,6 +72,20 @@ void GameState::HandleEvents()
 void GameState::Update(float dt)
 {
 	this->_data->gameObjectManager.Update(dt);
+
+	if (_player->Finished()) {
+		if (_currentLevel + 1 < (int)this->_levels.size()) {
+
+			std::cout << "\n Level Completed" << std::endl;
+			this->_currentLevel++;
+			
+			this->_player->Restart();
+		}
+		else {
+			std::cout << "Well Done you finished" << std::endl;
+			this->_data->stateMachine.PopState();
+		}
+	}
 }
 
 void GameState::Draw(float dt)

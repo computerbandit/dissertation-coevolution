@@ -37,6 +37,16 @@ const bool & NeuralNetworkGA::isSolved() const
 	return _solution;
 }
 
+void NeuralNetworkGA::SetMutationRate(float mRate)
+{
+	this->_mutationRate = mRate;
+}
+
+const float & NeuralNetworkGA::GetMutationRate() const
+{
+	return this->_mutationRate;
+}
+
 //given the current population pick a parent based on the fitnessRatio.
 NeuralNetwork & NeuralNetworkGA::SelectParent()
 {
@@ -51,7 +61,6 @@ NeuralNetwork & NeuralNetworkGA::SelectParent()
 			return _population.back();
 		}
 	}
-	return _population.back();
 }
 //given the new fitness of the networks work out the fitnessRatio for each network
 void NeuralNetworkGA::EvalutePopulation()
@@ -96,10 +105,10 @@ void NeuralNetworkGA::NextGeneration()
 		}
 
 		//mutate products
-		if (NeuralNetwork::RandomFloat(0.0f, 1.0f) <= _mutationRate) {
+		if (NeuralNetwork::RandomFloat(0.0f, 1.0f) <= this->_mutationRate) {
 			Mutate(child.A);
 		}
-		if (NeuralNetwork::RandomFloat(0.0f, 1.0f) <= _mutationRate) {
+		if (NeuralNetwork::RandomFloat(0.0f, 1.0f) <= this->_mutationRate) {
 			Mutate(child.B);
 		}
 
@@ -119,7 +128,7 @@ void NeuralNetworkGA::Mutate(NeuralNetwork & network)
 	//
 	std::vector<Matrix> layers = network.GetLayers();
 
-	int numOfChanges = NeuralNetwork::RandomInt(1, 5);
+	int numOfChanges = NeuralNetwork::RandomInt(1, 1);
 
 	for (int i = 0; i < numOfChanges; i++) {
 		//pick a random weight in the network
@@ -147,7 +156,7 @@ CrossoverProduct NeuralNetworkGA::Crossover(NeuralNetwork & A,NeuralNetwork & B)
 	std::vector<float> newChromeosomeA = std::vector<float>(connections);
 	std::vector<float> newChromeosomeB = std::vector<float>(connections);
 
-	int numOfCrossoverPoints = NeuralNetwork::RandomInt(1, 5);
+	int numOfCrossoverPoints = int(NeuralNetwork::RandomFloatNromalDist(connections/2, connections/8));
 
 	std::vector<int> crossoverPoints = std::vector<int>(numOfCrossoverPoints);
 
@@ -183,9 +192,9 @@ CrossoverProduct NeuralNetworkGA::Crossover(NeuralNetwork & A,NeuralNetwork & B)
 	return product;
 }
 
-void NeuralNetworkGA::SaveFittestNetwork()
+void NeuralNetworkGA::SaveFittestNetwork(std::string token)
 {
-	FittestNetwork().SaveNetwork();
+	FittestNetwork().SaveNetwork(token);
 }
 
 float NeuralNetworkGA::AverageFitness()

@@ -73,13 +73,13 @@ void MainMenuState::HandleEvents()
 			}
 			else if (this->_data->inputManager.IsSpriteClicked(_buttons[_strings[1]]._sprite, sf::Mouse::Button::Left, this->_data->window))
 			{
-				this->_data->stateMachine.PushState(StateRef(new TrainNetworkState(_data, DEFUALT_TRAINNGNG_TIME_TO_LIVE, DEFUALT_TRAINNING_SPEED_MULTIPLIER, DISPLAY_TRAINNING)));
+				this->_data->stateMachine.PushState(StateRef(new TrainNetworkState(_data,DEFUALT_TRAINNGNG_TIME_TO_LIVE, DEFUALT_TRAINNING_SPEED_MULTIPLIER, DISPLAY_TRAINNING)),false);
 			}
 			else if (this->_data->inputManager.IsSpriteClicked(_buttons["Test"]._sprite, sf::Mouse::Button::Left, this->_data->window))
 			{
-				this->_data->stateMachine.PushState(StateRef(new TestNetworkState(this->_data)));
+				this->_data->stateMachine.PushState(StateRef(new TestNetworkState(this->_data)), false);
 			}
-			else if (this->_data->inputManager.IsSpriteClicked(_buttons[_strings[2]]._sprite, sf::Mouse::Button::Left, this->_data->window))
+			else if (this->_data->inputManager.IsSpriteClicked(_buttons["Exit"]._sprite, sf::Mouse::Button::Left, this->_data->window))
 			{
 				this->_data->window.close();
 			}

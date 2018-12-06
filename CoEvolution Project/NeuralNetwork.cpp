@@ -4,6 +4,7 @@
 #include <string>
 #include <sstream>
 
+
 float NeuralNetwork::Sigmoid(float sum, float theta)
 {
 	return (std::exp(sum - theta) - std::exp(-(sum - theta))) / (std::exp(sum - theta) + std::exp(-(sum - theta)));
@@ -137,7 +138,7 @@ const std::vector<float>& NeuralNetwork::GetOutput() const
 	return _output;
 }
 
-void NeuralNetwork::SaveNetwork(std::string filePath) const
+void NeuralNetwork::SaveNetwork(std::string token) const
 {
 	std::string topologyString = "";
 	for (int i = 0; i < (int)GetTopology().size(); i++) {
@@ -145,7 +146,7 @@ void NeuralNetwork::SaveNetwork(std::string filePath) const
 	}
 
 	std::ofstream file;
-	file.open((filePath == "") ? "Resources/networks/" + topologyString + "-" + ".txt" : filePath);
+	file.open("Resources/networks/" + topologyString + "-" + token + ".txt");
 	file << this->ToString();
 	file.close();
 }
@@ -153,7 +154,7 @@ void NeuralNetwork::SaveNetwork(std::string filePath) const
 std::vector<float> NeuralNetwork::MatricesToChromesome() const
 {
 	std::vector<float> chromeosome = std::vector<float>();
-	for (Matrix m : _layer) {
+	for (Matrix m : this->_layer) {
 		for (std::vector<float> row : m) {
 			for (float weight : row) {
 				chromeosome.push_back(weight);
@@ -214,6 +215,7 @@ void NeuralNetwork::SetSelected(bool selected)
 	_selected = !selected;
 }
 
+
 const std::vector<float>& NeuralNetwork::GetChromeosome() const
 {
 	return this->_chromeosome;
@@ -263,7 +265,7 @@ int NeuralNetwork::RandomInt(int Min, int Max)
 float NeuralNetwork::RandomFloatNromalDist(float mean, float stddev)
 {
 	static std::default_random_engine generator;
-	static std::normal_distribution<float> distribution(mean, stddev);
+	std::normal_distribution<float> distribution(mean, stddev);
 	return distribution(generator);
 }
 

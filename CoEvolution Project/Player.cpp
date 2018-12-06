@@ -87,7 +87,7 @@ void Player::Update(float dt)
 
 	//collsison detection in 5 substeps with wall sliding
 	sf::Vector2f oldpos;
-	int num_steps = 4;
+	int num_steps = 1;
 
 	for (int i = 0; i < num_steps; i++) {
 		oldpos = sf::Vector2f(this->_position);
@@ -110,8 +110,10 @@ void Player::Update(float dt)
 		}
 	}
 
+	this->SetProgress(PercentageOfLevelCompleted());
+
 	//if the player goes under the map then they die;
-	if (this->_position.y > 700) {
+	if (this->_levels.at(this->_currentLevel).CollisionWithTile(this->_sprite.getGlobalBounds(), DEATH_TILE)) {
 		this->Die();
 	}
 
@@ -120,8 +122,7 @@ void Player::Update(float dt)
 		if (this->_position.x >= this->_levels.at(this->_currentLevel).GetCheckpoint(_currentCheckpoint + 1).x) {
 			//player beat the level.
 			//fireworks and stop the player;
-			this->Stop();
-			this->_finished = true;
+			this->Finish();
 		}
 	}
 	//if it is no the last check point then when the player passes it, it just sets that as the current checkpoint
@@ -130,12 +131,12 @@ void Player::Update(float dt)
 	}
 
 	this->_sprite.setPosition(this->_position);
-	this->SetProgress(PercentageOfLevelCompleted());
 }
 
 void Player::Draw(float dt)
 {
 	this->_data->window.draw(this->_sprite);
+	this->_sprite.setColor(sf::Color::Blue);
 }
 
 
@@ -169,12 +170,15 @@ void Player::Stop()
 
 void Player::Die()
 {
-	_lives--;
-	if (_lives <= 0) {
-		this->Restart();
-	}
-	else {
-		this->Respawn();
+	if (!_finished) {
+		_lives--;
+		this->Deactivate();
+		if (_lives <= 0) {
+			this->Restart();
+		}
+		else {
+			this->Respawn();
+		}
 	}
 }
 
@@ -182,12 +186,15 @@ void Player::Respawn()
 {
 	this->_position = this->_levels.at(this->_currentLevel).GetCheckpoint(this->_currentCheckpoint);
 	this->_velocity = sf::Vector2f(0.0f, 0.0f);
+	this->Activate();
 }
 
 void Player::Restart()
 {
-	this->_lives = _startingLives;
+	this->_lives = this->_startingLives;
 	this->_currentCheckpoint = 0;
+	this->_finished = false;
+	this->_timer.restart();
 	this->Respawn();
 }
 
@@ -197,6 +204,12 @@ void Player::Finish()
 	this->_finished = true;
 	//could start a clock and have the next level after like 2 secs;
 	//and display you finished in overlay text or something;
+	
+}
+
+bool Player::Finished()
+{
+	return this->_finished;
 }
 
 void Player::SetProgress(float progress)

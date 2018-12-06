@@ -14,7 +14,6 @@ class NeuralNetworkGA{
 	std::vector<NeuralNetwork> _population;
 	int _populationSize = 0, _generation = 0;
 	float _mutationRate = 0.05f;
-	int MAX_GENERATIONS = 10;
 	bool _solution = false;
 
 public:
@@ -31,12 +30,15 @@ public:
 	void Solved();
 	const bool& isSolved() const;
 
+	void SetMutationRate(float mRate);
+	const float& GetMutationRate() const;
+
 	NeuralNetwork& SelectParent();
 	void EvalutePopulation();
 	void NextGeneration();
 	void Mutate(NeuralNetwork& network);
 	CrossoverProduct Crossover(NeuralNetwork& A, NeuralNetwork& B);
-	void SaveFittestNetwork();
+	void SaveFittestNetwork(std::string token);
 	float AverageFitness();
 	const NeuralNetwork& FittestNetwork();
 };

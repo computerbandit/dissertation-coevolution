@@ -33,7 +33,7 @@ public:
 	std::vector<float> MatrixOutput(const Matrix& m, std::vector<float> input, ActivationFunction function);
 	void Run(std::vector<float> input);
 	const std::vector<float>& GetOutput() const;
-	void SaveNetwork(std::string filePath = "") const;
+	void SaveNetwork(std::string token) const;
 	std::vector<float> MatricesToChromesome() const;
 	std::vector<int> GetTopology() const;
 
@@ -48,6 +48,9 @@ public:
 
 	const bool& IsSelected() const;
 	void SetSelected(bool selected);
+
+	const float& GetMutationRate() const;
+	void SetMutationRate(float rate);
 
 	const std::vector<float>& GetChromeosome() const;
 

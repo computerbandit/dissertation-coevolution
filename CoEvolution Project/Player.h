@@ -21,10 +21,12 @@ public:
 	void Left();
 	void Right();
 	void Stop();
-	void Die();
+	virtual void Die();
 	void Respawn();
 	void Restart();
-	void Finish();
+	virtual void Finish();
+
+	bool Finished();
 
 	void SetProgress(float progress);
 	void SetColor(sf::Color color);
@@ -35,6 +37,7 @@ protected:
 	GameDataRef _data;
 	sf::Sprite _sprite;
 	std::vector<Level>& _levels;
+	sf::Clock _timer;
 	int& _currentLevel;
 
 	float _speed, _jumpVelocity;

@@ -13,12 +13,13 @@ public:
 
 	void Draw();
 
-	bool Collision(sf::FloatRect rect);
-	std::vector<Tile*> GetTilesInArea(sf::FloatRect rect);
+	bool Collision(const sf::FloatRect &rect);
+	std::vector<Tile*> GetTilesInArea(const sf::FloatRect &rect);
+	bool CollisionWithTile(const sf::FloatRect &rect, int tileID);
 	const sf::Vector2f& GetCheckpoint(int num) const;
 	bool LastCheckpoint(int num);
 	const sf::Vector2f& GetFinishFlagPosition() const;
-
+	
 private:
 
 	void LoadLevelFromTextFile(std::string filePath);

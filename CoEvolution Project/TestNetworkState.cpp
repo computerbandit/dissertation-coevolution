@@ -1,5 +1,7 @@
 #include "TestNetworkState.h"
 #include "DEFINITIONS.h"
+#include <iostream>
+#include <string>
 
 TestNetworkState::TestNetworkState(GameDataRef data) :_data(data)
 {
@@ -18,7 +20,11 @@ void TestNetworkState::Init()
 	_levels.push_back(Level(_data, TRAINNING_LEVEL_2));
 
 	this->_data->assetManager.LoadTexturesheet(PLAYER, PLAYER_SHEET, sf::Vector2u(16, 16));
-	_player = new NNControlledPlayer(this->_data, _levels, _currentLevel, sf::Vector2f(16, 16), new NeuralNetwork("Resources/networks/25_4_4_3-.txt"));
+	std::string fileName;
+	std::cout << "\n Enter name of the network file: ";
+	std::cin >> fileName;
+	this->_data->window.requestFocus();
+	_player = new NNControlledPlayer(this->_data, _levels, _currentLevel, sf::Vector2f(16, 16), new NeuralNetwork("Resources/networks/"+ fileName + ".txt"));
 
 	this->_data->gameObjectManager.AddEntity(_player);
 
@@ -60,14 +66,19 @@ void TestNetworkState::HandleEvents()
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num5)) {
 				this->_data->gameSpeedMultiplier = 5.0f;
 			}
+
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
+				this->_data->stateMachine.PopState();
+			}
+
 		}
 	}
 }
 
 void TestNetworkState::Update(float dt)
 {
-	std::vector<float> inputs = _player->ConrollersViewOfLevel(CONTROLLER_TILES_VIEW);
-	_player->GetNetworkController()->Run(inputs);
+
+	_player->GetNetworkController()->Run(_player->ConrollersViewOfLevel(CONTROLLER_TILES_VIEW));
 	std::vector<float> output = _player->GetNetworkController()->GetOutput();
 	//given the outputs of the network 
 
@@ -89,7 +100,15 @@ void TestNetworkState::Update(float dt)
 
 	this->_data->gameObjectManager.Update(dt);
 	this->_data->camera.Update(_player->GetPosition());
-
+	if (_player->Finished()) {
+		if (_currentLevel + 1 < (int)this->_levels.size()) {
+			this->_currentLevel++;
+			this->_player->Restart();
+		}
+		else {
+			this->_data->stateMachine.PopState();
+		}
+	}
 }
 
 void TestNetworkState::Draw(float dt)

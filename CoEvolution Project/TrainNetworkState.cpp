@@ -7,9 +7,10 @@
 
 TrainNetworkState::TrainNetworkState(GameDataRef data, float timetolive, float speedMultiplier, bool display): _data(data), _display(display), _ttl(timetolive)
 {
-	_ga = NeuralNetworkGA(NeuralNetwork::GeneratePopulation(DEFUALT_TRAINNING_POPULATION_SIZE, {INPUT_LAYER_SIZE, 4, 4, 3}), 0.5f);
+	_ga = NeuralNetworkGA(NeuralNetwork::GeneratePopulation(DEFUALT_TRAINNING_POPULATION_SIZE, {INPUT_LAYER_SIZE,4, 5 ,  3}), STARTING_TRAINNING_MUTATION_RATE);
 	this->_levels = std::vector<Level>();
 	this->_data->gameSpeedMultiplier = speedMultiplier;
+	this->_token = std::to_string(time(0));
 }
 
 void TrainNetworkState::Init()
@@ -20,7 +21,9 @@ void TrainNetworkState::Init()
 
 	//load the levels in the order to play them;
 	_levels.push_back(Level(_data, TRAINNING_LEVEL_1));
-	//_levels.push_back(Level(_data, TRAINNING_LEVEL_2));
+	_levels.push_back(Level(_data, TRAINNING_LEVEL_2));
+	_levels.push_back(Level(_data, TRAINNING_LEVEL_1));
+	_levels.push_back(Level(_data, TRAINNING_LEVEL_2));
 
 	this->_data->assetManager.LoadTexturesheet(PLAYER, PLAYER_SHEET, sf::Vector2u(16, 16));
 
@@ -40,7 +43,6 @@ void TrainNetworkState::Init()
 
 	this->_data->camera = Camera(&(this->_data->window), this->_data->window.getSize(), sf::Vector2f(0, 0));
 	//the init ttl should be v small just so the networks can rapidly get to the point where they have some features to evolve.
-	_ttl = 0.1f;
 }
 
 void TrainNetworkState::Cleanup()
@@ -70,21 +72,17 @@ void TrainNetworkState::HandleEvents()
 				this->_data->gameSpeedMultiplier = 2.0f;
 			}
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num3)) {
-				this->_data->gameSpeedMultiplier = 3.0f;
-			}
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num4)) {
-				this->_data->gameSpeedMultiplier = 4.0f;
-			}
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num5)) {
 				this->_data->gameSpeedMultiplier = 5.0f;
 			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num4)) {
+				this->_data->gameSpeedMultiplier = 10.0f;
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num5)) {
+				this->_data->gameSpeedMultiplier = 100.0f;
+			}
 
-
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-				//stop the  sim
-				std::cout << "\ntraining sim stopped by user" << std::endl;
-				//return to menu
-				this->_data->stateMachine.PushState(StateRef(new MainMenuState(this->_data)));
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
+				this->_data->stateMachine.PopState();
 			}
 		}
 
@@ -95,17 +93,14 @@ void TrainNetworkState::HandleEvents()
 void TrainNetworkState::Update(float dt)
 {
 	//check all the players have died then eval them
-	bool stillAlive = false;
-	int numAlive = 0;
 	for (NNControlledPlayer& nnplayer : this->_playerPopulation) {
-		if (!nnplayer.Finished()) {
-			numAlive++;
+		if (nnplayer.IsAlive() && !nnplayer.Finished()) {
+
 			//update the player based on the nn that controls it
 			NeuralNetwork* controller = nnplayer.GetNetworkController();
 			//need to get a set of inputs from the ray cast info from each of the players
 
-			std::vector<float> inputs = nnplayer.ConrollersViewOfLevel(CONTROLLER_TILES_VIEW);
-			controller->Run(inputs);
+			controller->Run(nnplayer.ConrollersViewOfLevel(CONTROLLER_TILES_VIEW));
 			std::vector<float> output = controller->GetOutput();
 			//given the outputs of the network 
 			
@@ -124,13 +119,18 @@ void TrainNetworkState::Update(float dt)
 			else {
 				nnplayer.StopJumping();
 			}
-			stillAlive = true;
 		}
 	}
 
 	//updating all nncontrolled player objects in the game
 	this->_data->gameObjectManager.Update(dt);
 	//find the nnplayer that has made the most progess if we are displaying then set th cameras postition to the best controller
+	
+}
+
+void TrainNetworkState::Draw(float dt)
+{
+
 	float mostProgress = 0.0f;
 	NNControlledPlayer* bestController = nullptr;
 	for (NNControlledPlayer& nnplayer : this->_playerPopulation) {
@@ -144,7 +144,7 @@ void TrainNetworkState::Update(float dt)
 		if (_ttl < 1.0f && mostProgress > 0.0f) {
 			_ttl = DEFUALT_TRAINNGNG_TIME_TO_LIVE;
 		}
-		if(_display) {
+		if (_display) {
 			bestController->SetColor(sf::Color::Red);
 			this->_data->camera.Update(bestController->GetPosition());
 		}
@@ -155,34 +155,66 @@ void TrainNetworkState::Update(float dt)
 		}
 	}
 
-	if (this->_clock.getElapsedTime().asSeconds() > (this->_ttl/this->_data->gameSpeedMultiplier) || !stillAlive) {
-		this->_clock.restart();
-			//set the fitnessScore for the each of the controllers now that they are all updated position wise
+	//check the progess for the controllers and if any have not made progress in 1 second
+	if (this->_checkProgressClock.getElapsedTime().asSeconds() > (1.0f / this->_data->gameSpeedMultiplier)) {
+		this->_checkProgressClock.restart();
 		for (NNControlledPlayer& nnplayer : this->_playerPopulation) {
-			nnplayer.GetNetworkController()->SetFitnessScore(nnplayer.GetProgress());
-			if (this->EvaluateNNControlledPlayer(nnplayer)) {
-				
-				if (_currentLevel + 1 < this->_levels.size()) {
-
-					std::cout << "\n Level Completed" << std::endl;
-					this->_currentLevel++;
-					for (NNControlledPlayer& nnplayer : this->_playerPopulation) {
-						nnplayer.Restart();
-					}
+			if (nnplayer.IsAlive() && !nnplayer.Finished()) {
+				if (!nnplayer.IsMakingProgress()) {
+					nnplayer.Die();
 				}
-				else {
-					this->_ga.Solved();
-					break;
-				}
-				
+			}
+		}
+	}
+	bool allDead = false;
+	for (NNControlledPlayer& nnplayer : this->_playerPopulation) {
+		if (nnplayer.IsAlive()) {
+			allDead = false;
+			break;
+		}
+		else {
+			allDead = true;
+		}
+	}
+	
+	if (this->_ttlClock.getElapsedTime().asSeconds() > (this->_ttl / this->_data->gameSpeedMultiplier) || allDead) {
+		this->_ttlClock.restart();
+		//if there are any controllers still alive after the ttl clock 
+		//killing the rest off will give them a fitnessScore
+		for (NNControlledPlayer& nnplayer : this->_playerPopulation) {
+			if (nnplayer.IsAlive() && !nnplayer.Finished()) {
+				nnplayer.Die();
 			}
 		}
 		this->_ga.EvalutePopulation();
 
-		std::cout << "Generation [" << this->_ga.GetGeneration() << "] -> Percentage Progress: " << this->_ga.AverageFitness() << "% average, " << this->_ga.FittestNetwork().GetFitnessScore() << "% best controller" << "\r";
+		//find the best controller
+		NNControlledPlayer bestController = this->_playerPopulation.front();
+		float mostProgess = bestController.GetProgress();
+		float averageProgress = this->_ga.AverageFitness();
 
-		if(!_ga.isSolved()) {
-			this->_ga.SaveFittestNetwork();
+		std::cout << "Generation [" << this->_ga.GetGeneration() << "] -> Percentage Progress: " << averageProgress << "% average, " << mostProgess << "% best controller" << "\r";
+
+
+		if (bestController.GetNetworkController()->GetFitnessScore() >= 100.0f) {
+			if (_currentLevel + 1 < (int)this->_levels.size()) {
+				std::cout << "\n Level Completed" << std::endl;
+				this->_currentLevel++;
+				this->_ga.SetMutationRate(0.2f);
+				this->_ga.SaveFittestNetwork(this->_token);
+				//set the rest of the population controllers to the best one
+				for (NNControlledPlayer& nnplayer : this->_playerPopulation) {
+					nnplayer.Restart();
+				}
+			}
+			else {
+				this->_ga.Solved();
+			}
+		}
+
+
+		if (!_ga.isSolved()) {
+			this->_ga.SaveFittestNetwork(this->_token);
 			this->_ga.NextGeneration();
 			std::vector<NeuralNetwork>& gapop = this->_ga.GetPopulation();
 			for (int i = 0; i < (int)gapop.size(); i++) {
@@ -192,19 +224,15 @@ void TrainNetworkState::Update(float dt)
 			}
 		}
 		else {
-			this->_ga.SaveFittestNetwork();
-			
+			this->_ga.SaveFittestNetwork(this->_token);
 			std::cout << "Player has beaten the game, well done!\n" << std::endl;
 			this->_data->stateMachine.PopState();
 		}
-	}
-}
 
-void TrainNetworkState::Draw(float dt)
-{
+	}
 	this->_data->window.clear(sf::Color::White);
 	if (this->_display) {
-		_info.setString("Speed: " + std::to_string(this->_data->gameSpeedMultiplier) + "x , TTL: " + std::to_string(_clock.getElapsedTime().asSeconds()) + " / " + std::to_string(_ttl));
+		_info.setString("Speed: " + std::to_string(this->_data->gameSpeedMultiplier) + "x , TTL: " + std::to_string(_ttlClock.getElapsedTime().asSeconds()) + " / " + std::to_string(_ttl/this->_data->gameSpeedMultiplier));
 		_info.setPosition(this->_data->camera.GetCameraBox().left, this->_data->camera.GetCameraBox().top);
 
 		this->_levels.at(this->_currentLevel).Draw();
@@ -215,13 +243,3 @@ void TrainNetworkState::Draw(float dt)
 	this->_data->window.display();
 }
 
-bool TrainNetworkState::EvaluateNNControlledPlayer(NNControlledPlayer& nnplayer)
-{
-	if (nnplayer.GetProgress() >= 100.0f) {
-		return true;
-	}
-	else {
-		return false;
-	}
-
-}
