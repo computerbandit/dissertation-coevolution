@@ -6,47 +6,47 @@ NNControlledPlayer::NNControlledPlayer(GameDataRef data, std::vector<Level>& lev
 {
 }
 
-NeuralNetwork * NNControlledPlayer::GetNetworkController()
+NeuralNetwork * NNControlledPlayer::getNetworkController()
 {
 	return this->_networkController;
 }
 
-void NNControlledPlayer::SetNNController(NeuralNetwork * network)
+void NNControlledPlayer::setNNController(NeuralNetwork * network)
 {
 	this->_networkController = network;
 }
 
-void NNControlledPlayer::Die()
+void NNControlledPlayer::die()
 {
 	if (!_finished) {
-		_networkController->SetFitnessScore(GetProgress());
+		_networkController->setFitnessScore(getProgress());
 		this->_lives = 0;
 		this->_previousProgress = 0.0f;
-		this->Deactivate();
+		this->deactivate();
 	}	
 }
 
-void NNControlledPlayer::Finish()
+void NNControlledPlayer::finish()
 {
-	this->Die();
+	this->die();
 	this->_finished = true;
 }
 
 //given the position and current level the the entity is currently in return a list of values regarding the solid state of the tiles around around the entity
-std::vector<float> NNControlledPlayer::ConrollersViewOfLevel(int tileDiameter) const
+std::vector<float> NNControlledPlayer::controllersViewOfLevel(int tileDiameter) const
 {
 	float diameter = TILE_SIZE * tileDiameter;
 	sf::FloatRect view = sf::FloatRect(this->_position.x - (diameter /2), this->_position.y - (diameter / 2), diameter, diameter);
 	std::vector<float> tileValues = std::vector<float>();
 	//get to the pos of the entity in the grid position of the level
-	for (Tile* t : this->_levels.at(this->_currentLevel).GetTilesInArea(view)) {
+	for (Tile* t : this->_levels.at(this->_currentLevel).getTilesInArea(view)) {
 		float value = 0.0f;
-		if (t->IsSolid()) {
+		if (t->isSolid()) {
 			value = 1.0f;
 		}
 		else {
 			value = 0.0f;
-			if (t->GetTileID() == DEATH_TILE) {
+			if (t->getTileID() == DEATH_TILE) {
 				value = -1.0f;
 			}
 		}	
@@ -55,10 +55,10 @@ std::vector<float> NNControlledPlayer::ConrollersViewOfLevel(int tileDiameter) c
 	return tileValues;
 }
 
-bool NNControlledPlayer::IsMakingProgress()
+bool NNControlledPlayer::isMakingProgress()
 {
-	if (this->GetProgress() > this->_previousProgress) {
-		this->_previousProgress = this->GetProgress();
+	if (this->getProgress() > this->_previousProgress) {
+		this->_previousProgress = this->getProgress();
 		return true;
 	}
 	else {

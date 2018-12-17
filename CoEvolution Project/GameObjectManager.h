@@ -8,12 +8,12 @@ public:
 	GameObjectManager() {}
 	~GameObjectManager();
 
-	void AddEntity(IEntity* e);
-	void ClearEntities();
+	void addEntity(IEntity* e);
+	void clearEntities();
 
 
-	void Draw(float dt);
-	void Update(float dt);
+	void draw(float dt);
+	void update(float dt);
 
 private:
 	std::vector<IEntity*> _entities;

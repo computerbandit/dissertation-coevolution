@@ -8,19 +8,19 @@ SplashState::SplashState(GameDataRef data) : _data(data)
 {
 }
 
-void SplashState::Init()
+void SplashState::init()
 {
-	this->_data->assetManager.LoadTexture("Splash State Background", SPLASH_STATE_BACKGROUND_PATH);
-	_background.setTexture(this->_data->assetManager.GetTexture("Splash State Background"));
-	AssetManager::Rescale(_background, sf::Vector2f(this->_data->window.getSize()));
+	this->_data->assetManager.loadTexture("Splash State Background", SPLASH_STATE_BACKGROUND_PATH);
+	_background.setTexture(this->_data->assetManager.getTexture("Splash State Background"));
+	AssetManager::rescale(_background, sf::Vector2f(this->_data->window.getSize()));
 }
 
-void SplashState::Cleanup()
+void SplashState::cleanup()
 {
 
 }
 
-void SplashState::HandleEvents()
+void SplashState::handleEvents()
 {
 	sf::Event event;
 	while (this->_data->window.pollEvent(event)) {
@@ -28,23 +28,23 @@ void SplashState::HandleEvents()
 			this->_data->window.close();
 		}
 		if (sf::Event::MouseButtonPressed == event.type) {
-			this->_data->stateMachine.PushState(StateRef(new MainMenuState(this->_data)));
+			this->_data->stateMachine.pushState(StateRef(new MainMenuState(this->_data)));
 		}
 		if (sf::Event::Resized == event.type) {
-			this->_data->camera.Resize(event);
-			AssetManager::Rescale(_background, sf::Vector2f(this->_data->window.getSize()));
+			this->_data->camera.resize(event);
+			AssetManager::rescale(_background, sf::Vector2f(this->_data->window.getSize()));
 		}
 	}
 }
 
-void SplashState::Update(float dt)
+void SplashState::update(float dt)
 {
 	if (this->_clock.getElapsedTime().asSeconds() > SPLASH_STATE_SHOW_TIME) {
-		this->_data->stateMachine.PushState(StateRef(new MainMenuState(this->_data)));
+		this->_data->stateMachine.pushState(StateRef(new MainMenuState(this->_data)));
 	}
 }
 
-void SplashState::Draw(float dt)
+void SplashState::draw(float dt)
 {
 	this->_data->window.clear(sf::Color::Black);
 	this->_data->window.draw(_background);

@@ -5,12 +5,12 @@
 #include <sstream>
 
 
-float NeuralNetwork::Sigmoid(float sum, float theta)
+float NeuralNetwork::sigmoid(float sum, float theta)
 {
 	return (std::exp(sum - theta) - std::exp(-(sum - theta))) / (std::exp(sum - theta) + std::exp(-(sum - theta)));
 }
 
-float NeuralNetwork::HardLimit(float sum, float theta)
+float NeuralNetwork::hardLimit(float sum, float theta)
 {
 	if (sum >= theta) {
 		return 1.0f;
@@ -35,7 +35,7 @@ NeuralNetwork::NeuralNetwork(std::vector<int> topology) {
 		}
 		_layer.push_back(m);
 	}
-	this->_chromeosome = this->MatricesToChromesome();
+	this->_chromeosome = this->matricesToChromesome();
 }
 
 
@@ -71,11 +71,11 @@ NeuralNetwork::NeuralNetwork(std::string filePath)
 
 NeuralNetwork::NeuralNetwork(std::vector<int> topology, std::vector<float> chromeosome): _chromeosome(chromeosome)
 {
-	_layer = NeuralNetwork::ChromeosomeToMatrices(topology, _chromeosome);
+	_layer = NeuralNetwork::chromeosomeToMatrices(topology, _chromeosome);
 
 }
 
-std::string NeuralNetwork::ToString() const
+std::string NeuralNetwork::toString() const
 {
 	std::string layersString = "";
 	for (int k = 0; k < (int)_layer.size(); k++) {
@@ -93,7 +93,7 @@ std::string NeuralNetwork::ToString() const
 }
 
 //given a set of inputs what is the output of the network
-std::vector<float> NeuralNetwork::MatrixOutput(const Matrix& m, std::vector<float> input, ActivationFunction function)
+std::vector<float> NeuralNetwork::matrixOutput(const Matrix& m, std::vector<float> input, ActivationFunction function)
 {
 	_output = std::vector<float>((int)m[0].size());
 	for (float& f: _output) {
@@ -111,10 +111,10 @@ std::vector<float> NeuralNetwork::MatrixOutput(const Matrix& m, std::vector<floa
 		switch (function)
 		{
 		case SIGMOID:
-			output = this->Sigmoid(output, 0.0f);
+			output = this->sigmoid(output, 0.0f);
 			break;
 		case HARDLIM:
-			output = this->HardLimit(output, 0.5f);
+			output = this->hardLimit(output, 0.5f);
 			break;
 		default:
 			break;
@@ -125,33 +125,33 @@ std::vector<float> NeuralNetwork::MatrixOutput(const Matrix& m, std::vector<floa
 	return _output;
 }
 
-void NeuralNetwork::Run(std::vector<float> input)
+void NeuralNetwork::run(std::vector<float> input)
 {
 	for (int i = 0 ; i < (int)_layer.size(); i++){
-		input = this->MatrixOutput(_layer.at(i), input, (i == (int)_layer.size()-1)? HARDLIM : SIGMOID);
+		input = this->matrixOutput(_layer.at(i), input, (i == (int)_layer.size()-1)? HARDLIM : SIGMOID);
 	}
 	_output = input;
 }
 
-const std::vector<float>& NeuralNetwork::GetOutput() const
+const std::vector<float>& NeuralNetwork::getOutput() const
 {
 	return _output;
 }
 
-void NeuralNetwork::SaveNetwork(std::string token) const
+void NeuralNetwork::saveNetwork(std::string token) const
 {
 	std::string topologyString = "";
-	for (int i = 0; i < (int)GetTopology().size(); i++) {
-		topologyString.append(std::to_string(GetTopology().at(i)) + ((i == (int)GetTopology().size() - 1) ? "" : "_"));
+	for (int i = 0; i < (int)getTopology().size(); i++) {
+		topologyString.append(std::to_string(getTopology().at(i)) + ((i == (int)getTopology().size() - 1) ? "" : "_"));
 	}
 
 	std::ofstream file;
 	file.open("Resources/networks/" + topologyString + "-" + token + ".txt");
-	file << this->ToString();
+	file << this->toString();
 	file.close();
 }
 
-std::vector<float> NeuralNetwork::MatricesToChromesome() const
+std::vector<float> NeuralNetwork::matricesToChromesome() const
 {
 	std::vector<float> chromeosome = std::vector<float>();
 	for (Matrix m : this->_layer) {
@@ -164,7 +164,7 @@ std::vector<float> NeuralNetwork::MatricesToChromesome() const
 	return chromeosome;
 }
 
-std::vector<int> NeuralNetwork::GetTopology() const
+std::vector<int> NeuralNetwork::getTopology() const
 {
 	std::vector<int> topology = std::vector<int>();
 	for (const Matrix& m : _layer) {
@@ -174,54 +174,54 @@ std::vector<int> NeuralNetwork::GetTopology() const
 	return topology;
 }
 
-const float& NeuralNetwork::GetFitnessScore() const
+const float& NeuralNetwork::getFitnessScore() const
 {
 	return _fitnessScore;
 }
 
-void NeuralNetwork::SetFitnessScore(float fitnessScore)
+void NeuralNetwork::setFitnessScore(float fitnessScore)
 {
 	_fitnessScore = fitnessScore;
 }
 
-const float& NeuralNetwork::GetFitnessRatio() const
+const float& NeuralNetwork::getFitnessRatio() const
 {
 	return _fitnessRatio;
 }
 
-void NeuralNetwork::SetFitnessRatio(float fitnessRatio)
+void NeuralNetwork::setFitnessRatio(float fitnessRatio)
 {
 	_fitnessRatio = fitnessRatio;
 }
 
 
-std::vector<Matrix>& NeuralNetwork::GetLayers() 
+std::vector<Matrix>& NeuralNetwork::getLayers() 
 {
 	return _layer;
 }
 
-void NeuralNetwork::SetLayers(std::vector<Matrix> newLayers)
+void NeuralNetwork::setLayers(std::vector<Matrix> newLayers)
 {
 	_layer = newLayers;
 }
 
-const bool & NeuralNetwork::IsSelected() const
+const bool & NeuralNetwork::isSelected() const
 {
 	return _selected;
 }
 
-void NeuralNetwork::SetSelected(bool selected)
+void NeuralNetwork::setSelected(bool selected)
 {
 	_selected = !selected;
 }
 
 
-const std::vector<float>& NeuralNetwork::GetChromeosome() const
+const std::vector<float>& NeuralNetwork::getChromeosome() const
 {
 	return this->_chromeosome;
 }
 
-std::vector<Matrix> NeuralNetwork::ChromeosomeToMatrices(std::vector<int> topology, std::vector<float> chromeosome)
+std::vector<Matrix> NeuralNetwork::chromeosomeToMatrices(std::vector<int> topology, std::vector<float> chromeosome)
 {
 	std::vector<Matrix> layers = std::vector<Matrix>();
 	int chromeosomeNum = 0;
@@ -239,7 +239,7 @@ std::vector<Matrix> NeuralNetwork::ChromeosomeToMatrices(std::vector<int> topolo
 	return layers;
 }
 
-std::vector<NeuralNetwork> NeuralNetwork::GeneratePopulation(int populationSize, std::vector<int> topology)
+std::vector<NeuralNetwork> NeuralNetwork::generatePopulation(int populationSize, std::vector<int> topology)
 {
 	std::vector<NeuralNetwork>* population = new std::vector<NeuralNetwork>();
 	std::cout << "Generating " + std::to_string(populationSize) + " networks. \n ---please wait---" << std::endl;
@@ -252,24 +252,24 @@ std::vector<NeuralNetwork> NeuralNetwork::GeneratePopulation(int populationSize,
 	return *population;
 }
 
-float NeuralNetwork::RandomFloat(float Min, float Max)
+float NeuralNetwork::randomFloat(float Min, float Max)
 {
 	return ((float(rand()) / float(RAND_MAX)) * (Max - Min)) + Min;
 }
 
-int NeuralNetwork::RandomInt(int Min, int Max)
+int NeuralNetwork::randomInt(int Min, int Max)
 {
 	return Min + (rand() % static_cast<int>(Max - Min + 1));
 }
 
-float NeuralNetwork::RandomFloatNromalDist(float mean, float stddev)
+float NeuralNetwork::randomFloatNromalDist(float mean, float stddev)
 {
 	static std::default_random_engine generator;
 	std::normal_distribution<float> distribution(mean, stddev);
 	return distribution(generator);
 }
 
-int NeuralNetwork::NewNetworkId()
+int NeuralNetwork::newNetworkId()
 {
 	return _networkCount++;
 }

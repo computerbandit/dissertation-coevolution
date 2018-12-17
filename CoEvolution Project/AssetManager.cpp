@@ -1,7 +1,7 @@
 #include "AssetManager.h"
 
 
-void AssetManager::LoadTexture(std::string name, std::string fileName)
+void AssetManager::loadTexture(std::string name, std::string fileName)
 {
 	sf::Texture texture;
 	if (texture.loadFromFile(fileName)) {
@@ -9,12 +9,12 @@ void AssetManager::LoadTexture(std::string name, std::string fileName)
 	}
 }
 
-sf::Texture & AssetManager::GetTexture(std::string name)
+sf::Texture & AssetManager::getTexture(std::string name)
 {
 	return this->_textures[name];
 }
 
-void AssetManager::LoadTexturesheet(std::string name, std::string fileName, sf::Vector2u texturesize)
+void AssetManager::loadTexturesheet(std::string name, std::string fileName, sf::Vector2u texturesize)
 {
 	sf::Image image;
 	if (image.loadFromFile(fileName)) {
@@ -24,12 +24,12 @@ void AssetManager::LoadTexturesheet(std::string name, std::string fileName, sf::
 
 }
 
-Texturesheet & AssetManager::GetTexturesheet(std::string name)
+Texturesheet & AssetManager::getTexturesheet(std::string name)
 {
 	return this->_texturesheets.at(name);
 }
 
-void AssetManager::LoadFont(std::string name, std::string fileName)
+void AssetManager::loadFont(std::string name, std::string fileName)
 {
 	sf::Font font;
 	if (font.loadFromFile(fileName)) {
@@ -37,17 +37,17 @@ void AssetManager::LoadFont(std::string name, std::string fileName)
 	}
 }
 
-sf::Font & AssetManager::GetFont(std::string name)
+sf::Font & AssetManager::getFont(std::string name)
 {
 	return this->_fonts.at(name);
 }
 
-void AssetManager::Rescale(sf::Sprite & sprite, sf::Vector2f newSize)
+void AssetManager::rescale(sf::Sprite & sprite, sf::Vector2f newSize)
 {
 	sprite.setScale(newSize.x / sprite.getGlobalBounds().width, newSize.y / sprite.getGlobalBounds().height);
 }
 
-void AssetManager::Rescale(sf::Sprite & sprite, float factor)
+void AssetManager::rescale(sf::Sprite & sprite, float factor)
 {
 	sprite.setScale(factor, factor);
 }

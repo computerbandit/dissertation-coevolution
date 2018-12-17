@@ -9,22 +9,22 @@ MainMenuState::MainMenuState(GameDataRef data) : _data(data)
 {
 }
 
-void MainMenuState::Init()
+void MainMenuState::init()
 {
 	this->_data->camera = Camera(&(this->_data->window),this->_data->window.getSize(), sf::Vector2f(this->_data->window.getSize().x / 2.0f, this->_data->window.getSize().y / 2.0f));
 	//Loading in assets for the main menu
 	//Background
-	this->_data->assetManager.LoadTexture("Main Menu Background", MAIN_MENU_BACKGROUND_PATH);
-	_background.setTexture(this->_data->assetManager.GetTexture("Main Menu Background"));
-	AssetManager::Rescale(_background, sf::Vector2f(this->_data->window.getSize()));
+	this->_data->assetManager.loadTexture("Main Menu Background", MAIN_MENU_BACKGROUND_PATH);
+	_background.setTexture(this->_data->assetManager.getTexture("Main Menu Background"));
+	AssetManager::rescale(_background, sf::Vector2f(this->_data->window.getSize()));
 	//Menu Button
-	this->_data->assetManager.LoadTexture("Menu Button", MENU_BUTTON_PATH);
+	this->_data->assetManager.loadTexture("Menu Button", MENU_BUTTON_PATH);
 	sf::Sprite buttonSprite;
-	buttonSprite.setTexture(this->_data->assetManager.GetTexture("Menu Button"));
-	this->_data->assetManager.LoadFont("Menu Font", MENU_FONT_PATH);
+	buttonSprite.setTexture(this->_data->assetManager.getTexture("Menu Button"));
+	this->_data->assetManager.loadFont("Menu Font", MENU_FONT_PATH);
 
 	sf::Text text;
-	text.setFont(this->_data->assetManager.GetFont("Menu Font"));
+	text.setFont(this->_data->assetManager.getFont("Menu Font"));
 	text.setCharacterSize(20);
 	text.setFillColor(sf::Color::Black);
 
@@ -48,12 +48,12 @@ void MainMenuState::Init()
 	}
 }
 
-void MainMenuState::Cleanup()
+void MainMenuState::cleanup()
 {
 
 }
 
-void MainMenuState::HandleEvents()
+void MainMenuState::handleEvents()
 {
 	sf::Event event;
 	while (this->_data->window.pollEvent(event)) {
@@ -62,24 +62,24 @@ void MainMenuState::HandleEvents()
 		}
 
 		if (sf::Event::Resized == event.type) {
-			this->_data->camera.Resize(event);
-			AssetManager::Rescale(_background, sf::Vector2f(this->_data->window.getSize()));
+			this->_data->camera.resize(event);
+			AssetManager::rescale(_background, sf::Vector2f(this->_data->window.getSize()));
 		}
 		if (sf::Event::MouseButtonPressed == event.type) {
 			
-			if (this->_data->inputManager.IsSpriteClicked(_buttons[_strings[0]]._sprite, sf::Mouse::Button::Left, this->_data->window))
+			if (this->_data->inputManager.isSpriteClicked(_buttons[_strings[0]]._sprite, sf::Mouse::Button::Left, this->_data->window))
 			{
-				this->_data->stateMachine.PushState(StateRef(new GameState(_data)), false);
+				this->_data->stateMachine.pushState(StateRef(new GameState(_data)), false);
 			}
-			else if (this->_data->inputManager.IsSpriteClicked(_buttons[_strings[1]]._sprite, sf::Mouse::Button::Left, this->_data->window))
+			else if (this->_data->inputManager.isSpriteClicked(_buttons[_strings[1]]._sprite, sf::Mouse::Button::Left, this->_data->window))
 			{
-				this->_data->stateMachine.PushState(StateRef(new TrainNetworkState(_data,DEFUALT_TRAINNGNG_TIME_TO_LIVE, DEFUALT_TRAINNING_SPEED_MULTIPLIER, DISPLAY_TRAINNING)),false);
+				this->_data->stateMachine.pushState(StateRef(new TrainNetworkState(_data,DEFUALT_TRAINNGNG_TIME_TO_LIVE, DEFUALT_TRAINNING_SPEED_MULTIPLIER, DISPLAY_TRAINNING)),false);
 			}
-			else if (this->_data->inputManager.IsSpriteClicked(_buttons["Test"]._sprite, sf::Mouse::Button::Left, this->_data->window))
+			else if (this->_data->inputManager.isSpriteClicked(_buttons["Test"]._sprite, sf::Mouse::Button::Left, this->_data->window))
 			{
-				this->_data->stateMachine.PushState(StateRef(new TestNetworkState(this->_data)), false);
+				this->_data->stateMachine.pushState(StateRef(new TestNetworkState(this->_data)), false);
 			}
-			else if (this->_data->inputManager.IsSpriteClicked(_buttons["Exit"]._sprite, sf::Mouse::Button::Left, this->_data->window))
+			else if (this->_data->inputManager.isSpriteClicked(_buttons["Exit"]._sprite, sf::Mouse::Button::Left, this->_data->window))
 			{
 				this->_data->window.close();
 			}
@@ -87,11 +87,11 @@ void MainMenuState::HandleEvents()
 	}
 }
 
-void MainMenuState::Update(float dt)
+void MainMenuState::update(float dt)
 {
 }
 
-void MainMenuState::Draw(float dt)
+void MainMenuState::draw(float dt)
 {
 	this->_data->window.clear(sf::Color::Black);
 	//draw background

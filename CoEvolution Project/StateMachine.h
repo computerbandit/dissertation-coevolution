@@ -12,12 +12,12 @@ public:
 	StateMachine() {}
 	~StateMachine() {}
 
-	void PushState(StateRef newState, bool isReplacing = true);
-	void PopState();
+	void pushState(StateRef newState, bool isReplacing = true);
+	void popState();
 
-	void ProcessStateChanges();
+	void processStateChanges();
 
-	StateRef& GetAvtiveState();
+	StateRef& getAvtiveState();
 
 private:
 	std::stack<StateRef> _states;

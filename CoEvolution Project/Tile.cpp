@@ -6,27 +6,27 @@ Tile::Tile(int tileID, sf::Sprite sprite, bool solid):_sprite(sprite), _solid(so
 	this->_box = this->_sprite.getGlobalBounds();
 }
 
-const int & Tile::GetTileID() const
+const int & Tile::getTileID() const
 {
 	return this->_tileID;
 }
 
-const sf::Sprite & Tile::GetSprite() const
+const sf::Sprite & Tile::getSprite() const
 {
 	return this->_sprite;
 }
 
-const bool & Tile::IsSolid() const
+const bool & Tile::isSolid() const
 {
 	return this->_solid;
 }
 
-const sf::FloatRect & Tile::GetHitBox() const
+const sf::FloatRect & Tile::getHitBox() const
 {
 	return this->_box;
 }
 
-bool Tile::GetIfSolid(int id)
+bool Tile::getIfSolid(int id)
 {
 	if (id == 0) {
 		return false;

@@ -22,23 +22,23 @@ public:
 	NeuralNetworkGA(std::vector<NeuralNetwork> population, float mRate);
 	~NeuralNetworkGA() {}
 	
-	void Run(std::vector<float> input);
-	std::vector<NeuralNetwork>& GetPopulation();
+	void run(std::vector<float> input);
+	std::vector<NeuralNetwork>& getPopulation();
 
-	const int& GetGeneration()const;
+	const int& getGeneration()const;
 
-	void Solved();
+	void solved();
 	const bool& isSolved() const;
 
-	void SetMutationRate(float mRate);
-	const float& GetMutationRate() const;
+	void setMutationRate(float mRate);
+	const float& getMutationRate() const;
 
-	NeuralNetwork& SelectParent();
-	void EvalutePopulation();
-	void NextGeneration();
-	void Mutate(NeuralNetwork& network);
+	NeuralNetwork& selectParent();
+	void evalutePopulation();
+	void nextGeneration();
+	void mutate(NeuralNetwork& network);
 	CrossoverProduct Crossover(NeuralNetwork& A, NeuralNetwork& B);
-	void SaveFittestNetwork(std::string token);
-	float AverageFitness();
-	const NeuralNetwork& FittestNetwork();
+	void saveFittestNetwork(std::string token);
+	float averageFitness();
+	const NeuralNetwork& fittestNetwork();
 };

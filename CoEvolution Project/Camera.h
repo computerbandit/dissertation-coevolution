@@ -9,12 +9,12 @@ public:
 	Camera(sf::RenderWindow* window, sf::Vector2u wh, sf::Vector2f offset);
 	~Camera() {}
 
-	void Restore();
-	void Update(sf::Vector2f point);
+	void restore();
+	void update(sf::Vector2f point);
 
-	const sf::FloatRect GetCameraBox();
+	const sf::FloatRect getCameraBox();
 
-	void Resize(sf::Event event);
+	void resize(sf::Event event);
 private:
 	sf::RenderWindow* _window;
 	sf::View _view;

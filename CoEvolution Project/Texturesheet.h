@@ -7,7 +7,7 @@ public:
 	Texturesheet() {}
 	Texturesheet(sf::Image texturesheet, sf::Vector2u spritesize);
 	~Texturesheet() {}
-	sf::Texture &GetTexture(int index);
+	sf::Texture &getTexture(int index);
 
 private:
 	sf::Vector2u _texturesize;

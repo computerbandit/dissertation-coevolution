@@ -2,35 +2,35 @@
 
 GameObjectManager::~GameObjectManager()
 {
-	ClearEntities();
+	clearEntities();
 }
 
-void GameObjectManager::AddEntity(IEntity * e)
+void GameObjectManager::addEntity(IEntity * e)
 {
 	this->_entities.push_back(e);
 }
 
 
-void GameObjectManager::ClearEntities()
+void GameObjectManager::clearEntities()
 {
 	this->_entities.clear();
 }
 
 
-void GameObjectManager::Draw(float dt)
+void GameObjectManager::draw(float dt)
 {
 	for (IEntity* e : _entities) {
-		if (e->IsActive()) {
-			e->Draw(dt);
+		if (e->isActive()) {
+			e->draw(dt);
 		}
 	}
 }
 
-void GameObjectManager::Update(float dt)
+void GameObjectManager::update(float dt)
 {
 	for(int i = 0; i < (int)_entities.size(); i++){
-		if (_entities[i]->IsActive()) {
-			_entities[i]->Update(dt);
+		if (_entities[i]->isActive()) {
+			_entities[i]->update(dt);
 		}/*
 		else {
 			//deactivate / remove the entity;

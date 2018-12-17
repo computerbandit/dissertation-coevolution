@@ -2,13 +2,13 @@
 
 class State {
 public:	
-	virtual void Init() = 0;
-	virtual void Cleanup() = 0;
+	virtual void init() = 0;
+	virtual void cleanup() = 0;
 
-	virtual void Pause() {}
-	virtual void Resume() {}
+	virtual void pause() {}
+	virtual void resume() {}
 
-	virtual void HandleEvents() = 0;
-	virtual void Update(float dt) = 0;
-	virtual void Draw(float dt) = 0;
+	virtual void handleEvents() = 0;
+	virtual void update(float dt) = 0;
+	virtual void draw(float dt) = 0;
 };

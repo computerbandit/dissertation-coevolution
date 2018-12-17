@@ -5,17 +5,17 @@ public:
 
 	~IEntity() {}
 
-	virtual void Init() = 0;
-	virtual void Update(float dt) = 0;
-	virtual void Draw(float dt) = 0;
+	virtual void init() = 0;
+	virtual void update(float dt) = 0;
+	virtual void draw(float dt) = 0;
 
-	bool IsActive() {
+	bool isActive() {
 		return _active;
 	}
-	void Deactivate() {
+	void deactivate() {
 		_active = false;
 	}
-	void Activate() {
+	void activate() {
 		_active = true;
 	}
 

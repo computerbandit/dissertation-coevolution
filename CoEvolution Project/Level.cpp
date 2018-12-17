@@ -7,10 +7,10 @@
 
 Level::Level(GameDataRef data, std::string filePath): _data(data)
 {
-	LoadLevelFromTextFile(filePath);
+	loadLevelFromTextFile(filePath);
 }
 
-void Level::LoadLevelFromTextFile(std::string filePath)
+void Level::loadLevelFromTextFile(std::string filePath)
 {
 	this->_tilemap = std::vector<Tile>();
 	this->_checkpoint = std::vector<sf::Vector2f>();
@@ -29,12 +29,12 @@ void Level::LoadLevelFromTextFile(std::string filePath)
 			while (std::getline(ss, token, ',')) {
 				int tileID = std::stoi(token);
 				sf::Sprite spriteTile;
-				spriteTile.setTexture(this->_data->assetManager.GetTexturesheet(TILES).GetTexture(tileID));
-				AssetManager::Rescale(spriteTile, SCALE_FACTOR);
+				spriteTile.setTexture(this->_data->assetManager.getTexturesheet(TILES).getTexture(tileID));
+				AssetManager::rescale(spriteTile, SCALE_FACTOR);
 				//change the width and height scaling
 				sf::Vector2f pos(j*TILE_SIZE, i*TILE_SIZE);
 				spriteTile.setPosition(pos);
-				_tilemap.push_back(Tile(tileID, spriteTile, Tile::GetIfSolid(tileID)));
+				_tilemap.push_back(Tile(tileID, spriteTile, Tile::getIfSolid(tileID)));
 				if (tileID == CHECKPOINT_TILE || tileID == FINISH_LINE_TILE) {
 					_checkpoint.push_back(pos);
 				}
@@ -51,7 +51,7 @@ void Level::LoadLevelFromTextFile(std::string filePath)
 	file.close();
 }
 
-Tile * Level::TileAt(int i, int j)
+Tile * Level::tileAt(int i, int j)
 {
 	if (i < 0) i = 0;
 	if (i > this->_width - 1) i = this->_width - 1;
@@ -60,22 +60,22 @@ Tile * Level::TileAt(int i, int j)
 	return &_tilemap.at((j * this->_width) + i);
 }
 
-void Level::Draw()
+void Level::draw()
 {
 	for (Tile& tile : _tilemap) {
-		if (this->_data->camera.GetCameraBox().intersects(tile.GetSprite().getGlobalBounds())) {
-			this->_data->window.draw(tile.GetSprite());
+		if (this->_data->camera.getCameraBox().intersects(tile.getSprite().getGlobalBounds())) {
+			this->_data->window.draw(tile.getSprite());
 		}
 	}
 }
 
 
-bool Level::Collision(const sf::FloatRect &rect)
+bool Level::collision(const sf::FloatRect &rect)
 {
 	//only check the tiles near the player maybe some how
 	bool any_collision = false;
-	for (Tile* t : this->GetTilesInArea(rect)) {
-		if (t->IsSolid()) {
+	for (Tile* t : this->getTilesInArea(rect)) {
+		if (t->isSolid()) {
 			any_collision = true;
 			break;
 		}
@@ -83,7 +83,7 @@ bool Level::Collision(const sf::FloatRect &rect)
 	return any_collision;
 }
 
-std::vector<Tile*> Level::GetTilesInArea(const sf::FloatRect &rect)
+std::vector<Tile*> Level::getTilesInArea(const sf::FloatRect &rect)
 {
 	int left_tile = int(rect.left / TILE_SIZE);
 	int right_tile = int((rect.left + rect.width) / TILE_SIZE);
@@ -96,29 +96,29 @@ std::vector<Tile*> Level::GetTilesInArea(const sf::FloatRect &rect)
 	{
 		for (int j = top_tile; j <= bottom_tile; j++)
 		{
-			tilesInArea.push_back(this->TileAt(i, j));
+			tilesInArea.push_back(this->tileAt(i, j));
 		}
 	}
 	return tilesInArea;
 
 }
 
-bool Level::CollisionWithTile(const sf::FloatRect &rect, int tileID)
+bool Level::collisionWithTile(const sf::FloatRect &rect, int tileID)
 {
-	for (Tile* t : this->GetTilesInArea(rect)) {
-		if (t->GetTileID() == tileID) {
+	for (Tile* t : this->getTilesInArea(rect)) {
+		if (t->getTileID() == tileID) {
 			return true;
 		}
 	}
 	return false;
 }
 
-const sf::Vector2f& Level::GetCheckpoint(int num) const 
+const sf::Vector2f& Level::getCheckpoint(int num) const 
 {
 	return _checkpoint.at(num);
 }
 
-bool Level::LastCheckpoint(int num)
+bool Level::lastCheckpoint(int num)
 {
 	if (num == _checkpoint.size() - 1) {
 		return true;
@@ -128,7 +128,7 @@ bool Level::LastCheckpoint(int num)
 	}
 }
 
-const sf::Vector2f & Level::GetFinishFlagPosition() const
+const sf::Vector2f & Level::getFinishFlagPosition() const
 {
 	return this->_checkpoint.back();
 }

@@ -10,11 +10,11 @@ class TrainNetworkState : public State {
 public:
 	TrainNetworkState(GameDataRef data, float timetolive,  float speedMultiplier, bool display = false);
 	// Inherited via State
-	virtual void Init() override;
-	virtual void Cleanup() override;
-	virtual void HandleEvents() override;
-	virtual void Update(float dt) override;
-	virtual void Draw(float dt) override;
+	virtual void init() override;
+	virtual void cleanup() override;
+	virtual void handleEvents() override;
+	virtual void update(float dt) override;
+	virtual void draw(float dt) override;
 private:
 	GameDataRef _data;
 	std::vector<Level> _levels;

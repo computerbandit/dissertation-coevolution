@@ -7,11 +7,11 @@ public:
 	Tile(int tileID, sf::Sprite sprite, bool solid);
 	~Tile() {}
 
-	const int& GetTileID() const;
-	const sf::Sprite& GetSprite() const;
-	const bool& IsSolid() const;
-	const sf::FloatRect& GetHitBox() const;
-	static bool GetIfSolid(int id);
+	const int& getTileID() const;
+	const sf::Sprite& getSprite() const;
+	const bool& isSolid() const;
+	const sf::FloatRect& getHitBox() const;
+	static bool getIfSolid(int id);
 
 private:
 	sf::Sprite _sprite;

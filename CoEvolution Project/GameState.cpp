@@ -8,30 +8,31 @@ GameState::GameState(GameDataRef data) : _data(data)
 	this->_levels = std::vector<Level>();
 }
 
-void GameState::Init()
+void GameState::init()
 {
 	//load the texturesheet
-	this->_data->assetManager.LoadTexturesheet(TILES, TILE_SHEET, sf::Vector2u(16, 16));
+	this->_data->assetManager.loadTexturesheet(TILES, TILE_SHEET, sf::Vector2u(16, 16));
 
 	_levels.push_back(Level(_data, TRAINNING_LEVEL_1));
 	_levels.push_back(Level(_data, TRAINNING_LEVEL_2));
 
 	//init Player
-	this->_data->assetManager.LoadTexturesheet(PLAYER, PLAYER_SHEET, sf::Vector2u(16, 16));
+	this->_data->assetManager.loadTexturesheet(PLAYER, PLAYER_SHEET, sf::Vector2u(16, 16));
 	_player = new Player(_data, _levels, _currentLevel, sf::Vector2f(16, 16));
-	this->_data->gameObjectManager.AddEntity(_player);
+	this->_data->gameObjectManager.addEntity(_player);
 
 	this->_data->camera = Camera(&(this->_data->window), this->_data->window.getSize(), sf::Vector2f(0, 0));
 }
 
-void GameState::Cleanup()
+void GameState::cleanup()
 {
-	this->_data->camera.Restore();
-	this->_data->gameObjectManager.ClearEntities();
+	this->_data->camera.restore();
+	this->_data->gameObjectManager.clearEntities();
+	this->_levels.clear();
 	delete this->_player;
 }
 
-void GameState::HandleEvents()
+void GameState::handleEvents()
 {
 	sf::Event event;
 	while (this->_data->window.pollEvent(event)) {
@@ -39,60 +40,60 @@ void GameState::HandleEvents()
 			this->_data->window.close();
 		}
 		if (sf::Event::Resized == event.type) {
-			this->_data->camera.Resize(event);
+			this->_data->camera.resize(event);
 		}
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
-			this->_data->stateMachine.PopState();
+			this->_data->stateMachine.popState();
 		}
 
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left)) {
-			_player->Left();
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
+			_player->left();
 		}
-		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right)) {
-			_player->Right();
+		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
+			_player->right();
 		}
 		else {
-			_player->Stop();
+			_player->stop();
 		}
 
 		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
-			_player->Jump();
+			_player->jump();
 		}
 
 		if (event.type == sf::Event::KeyReleased)
 		{
 			if (event.key.code == sf::Keyboard::Space) {
-				_player->StopJumping();
+				_player->stopJumping();
 			}
 		}
 	}
 }
 
-void GameState::Update(float dt)
+void GameState::update(float dt)
 {
-	this->_data->gameObjectManager.Update(dt);
+	this->_data->gameObjectManager.update(dt);
 
-	if (_player->Finished()) {
+	if (_player->isFinished()) {
 		if (_currentLevel + 1 < (int)this->_levels.size()) {
 
 			std::cout << "\n Level Completed" << std::endl;
 			this->_currentLevel++;
 			
-			this->_player->Restart();
+			this->_player->restart();
 		}
 		else {
 			std::cout << "Well Done you finished" << std::endl;
-			this->_data->stateMachine.PopState();
+			this->_data->stateMachine.popState();
 		}
 	}
 }
 
-void GameState::Draw(float dt)
+void GameState::draw(float dt)
 {
-	this->_data->camera.Update(_player->GetPosition());
+	this->_data->camera.update(_player->getPosition());
 	this->_data->window.clear(sf::Color::White);
-	this->_levels.at(this->_currentLevel).Draw();
-	this->_data->gameObjectManager.Draw(dt);
+	this->_levels.at(this->_currentLevel).draw();
+	this->_data->gameObjectManager.draw(dt);
 	this->_data->window.display();
 }

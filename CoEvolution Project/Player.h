@@ -10,28 +10,28 @@ public:
 	Player(GameDataRef data, std::vector<Level>& levels, int& currentLevel, sf::Vector2f wh);
 	~Player();
 
-	virtual void Init() override;
-	virtual void Update(float dt) override;
-	virtual void Draw(float dt) override;
+	virtual void init() override;
+	virtual void update(float dt) override;
+	virtual void draw(float dt) override;
 
-	float PercentageOfLevelCompleted();
-	bool IsAlive();
-	void Jump();
-	void StopJumping();
-	void Left();
-	void Right();
-	void Stop();
-	virtual void Die();
-	void Respawn();
-	void Restart();
-	virtual void Finish();
+	float percentageOfLevelCompleted();
+	bool isAlive();
+	void jump();
+	void stopJumping();
+	void left();
+	void right();
+	void stop();
+	virtual void die();
+	void respawn();
+	void restart();
+	virtual void finish();
 
-	bool Finished();
+	bool isFinished();
 
-	void SetProgress(float progress);
-	void SetColor(sf::Color color);
-	const float& GetProgress() const;
-	const sf::Vector2f& GetPosition() const;
+	void setProgress(float progress);
+	void setColor(sf::Color color);
+	const float& getProgress() const;
+	const sf::Vector2f& getPosition() const;
 
 protected:
 	GameDataRef _data;

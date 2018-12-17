@@ -8,10 +8,10 @@ Player::Player(GameDataRef data, std::vector<Level>& levels, int& currentLevel, 
 {
 	this->_speed = 300.0f;
 	this->_jumpVelocity = 450.0f;
-	this->_sprite.setTexture(this->_data->assetManager.GetTexturesheet(PLAYER).GetTexture(0));
-	AssetManager::Rescale(_sprite, wh);
+	this->_sprite.setTexture(this->_data->assetManager.getTexturesheet(PLAYER).getTexture(0));
+	AssetManager::rescale(_sprite, wh);
 	this->_sprite.setColor(sf::Color::Blue);
-	this->Init();
+	this->init();
 }
 
 Player::~Player()
@@ -20,7 +20,7 @@ Player::~Player()
 }
 
 
-void Player::Init()
+void Player::init()
 {
 	_jump = false;
 	_falling = true;
@@ -28,10 +28,10 @@ void Player::Init()
 	_holdingJump = false; 
 	_grounded = false;
 	_finished = false;
-	this->Respawn();
+	this->respawn();
 }
 
-void Player::Update(float dt)
+void Player::update(float dt)
 {
 	if (_jump) {
 		_jump = false;
@@ -93,7 +93,7 @@ void Player::Update(float dt)
 		oldpos = sf::Vector2f(this->_position);
 		this->_position.x += this->_velocity.x * (dt/num_steps);
 		_sprite.setPosition(this->_position);
-		bool collision = this->_levels.at(this->_currentLevel).Collision(_sprite.getGlobalBounds());
+		bool collision = this->_levels.at(this->_currentLevel).collision(_sprite.getGlobalBounds());
 		if (collision) {
 			this->_position = oldpos;
 			_sprite.setPosition(this->_position);
@@ -102,7 +102,7 @@ void Player::Update(float dt)
 		oldpos = sf::Vector2f(this->_position);
 		this->_position.y += this->_velocity.y * (dt/num_steps);
 		_sprite.setPosition(this->_position);
-		collision = this->_levels.at(this->_currentLevel).Collision(_sprite.getGlobalBounds());
+		collision = this->_levels.at(this->_currentLevel).collision(_sprite.getGlobalBounds());
 		if (collision) {
 			this->_position = oldpos;
 			this->_velocity.y = 0;
@@ -110,37 +110,37 @@ void Player::Update(float dt)
 		}
 	}
 
-	this->SetProgress(PercentageOfLevelCompleted());
+	this->setProgress(percentageOfLevelCompleted());
 
 	//if the player goes under the map then they die;
-	if (this->_levels.at(this->_currentLevel).CollisionWithTile(this->_sprite.getGlobalBounds(), DEATH_TILE)) {
-		this->Die();
+	if (this->_levels.at(this->_currentLevel).collisionWithTile(this->_sprite.getGlobalBounds(), DEATH_TILE)) {
+		this->die();
 	}
 
 	//if the next checkpoint is the of the level then when the player passes it they win finish
-	if (this->_levels.at(this->_currentLevel).LastCheckpoint(_currentCheckpoint + 1)) {
-		if (this->_position.x >= this->_levels.at(this->_currentLevel).GetCheckpoint(_currentCheckpoint + 1).x) {
+	if (this->_levels.at(this->_currentLevel).lastCheckpoint(_currentCheckpoint + 1)) {
+		if (this->_position.x >= this->_levels.at(this->_currentLevel).getCheckpoint(_currentCheckpoint + 1).x) {
 			//player beat the level.
 			//fireworks and stop the player;
-			this->Finish();
+			this->finish();
 		}
 	}
 	//if it is no the last check point then when the player passes it, it just sets that as the current checkpoint
-	else if (this->_position.x >= this->_levels.at(this->_currentLevel).GetCheckpoint(_currentCheckpoint + 1).x ) {
+	else if (this->_position.x >= this->_levels.at(this->_currentLevel).getCheckpoint(_currentCheckpoint + 1).x ) {
 		_currentCheckpoint++;
 	}
 
 	this->_sprite.setPosition(this->_position);
 }
 
-void Player::Draw(float dt)
+void Player::draw(float dt)
 {
 	this->_data->window.draw(this->_sprite);
 	this->_sprite.setColor(sf::Color::Blue);
 }
 
 
-void Player::Jump()
+void Player::jump()
 {
 	_holdingJump = true;
 	if (_grounded) {		
@@ -148,57 +148,57 @@ void Player::Jump()
 	}
 }
 
-void Player::StopJumping()
+void Player::stopJumping()
 {
 	this->_holdingJump = false;
 }
 
-void Player::Left()
+void Player::left()
 {
 	_direction = -1;
 }
 
-void Player::Right()
+void Player::right()
 {
 	_direction = 1;
 }
 
-void Player::Stop()
+void Player::stop()
 {
 	_direction = 0;
 }
 
-void Player::Die()
+void Player::die()
 {
 	if (!_finished) {
 		_lives--;
-		this->Deactivate();
+		this->deactivate();
 		if (_lives <= 0) {
-			this->Restart();
+			this->restart();
 		}
 		else {
-			this->Respawn();
+			this->respawn();
 		}
 	}
 }
 
-void Player::Respawn()
+void Player::respawn()
 {
-	this->_position = this->_levels.at(this->_currentLevel).GetCheckpoint(this->_currentCheckpoint);
+	this->_position = this->_levels.at(this->_currentLevel).getCheckpoint(this->_currentCheckpoint);
 	this->_velocity = sf::Vector2f(0.0f, 0.0f);
-	this->Activate();
+	this->activate();
 }
 
-void Player::Restart()
+void Player::restart()
 {
 	this->_lives = this->_startingLives;
 	this->_currentCheckpoint = 0;
 	this->_finished = false;
 	this->_timer.restart();
-	this->Respawn();
+	this->respawn();
 }
 
-void Player::Finish()
+void Player::finish()
 {
 	//player has finished the level...
 	this->_finished = true;
@@ -207,36 +207,36 @@ void Player::Finish()
 	
 }
 
-bool Player::Finished()
+bool Player::isFinished()
 {
 	return this->_finished;
 }
 
-void Player::SetProgress(float progress)
+void Player::setProgress(float progress)
 {
 	this->_progress = progress;
 }
 
-const float & Player::GetProgress() const
+const float & Player::getProgress() const
 {
 	return this->_progress;
 }
 
-void Player::SetColor(sf::Color color)
+void Player::setColor(sf::Color color)
 {
 	this->_sprite.setColor(color);
 }
 
-bool Player::IsAlive()
+bool Player::isAlive()
 {
 	return (_lives > 0);
 }
 
-float Player::PercentageOfLevelCompleted()
+float Player::percentageOfLevelCompleted()
 {
 	//find the position of the player and compare it to the position of the final checkpoint
-	float start = this->_levels.at(this->_currentLevel).GetCheckpoint(0).x;
-	float end = this->_levels.at(this->_currentLevel).GetFinishFlagPosition().x;
+	float start = this->_levels.at(this->_currentLevel).getCheckpoint(0).x;
+	float end = this->_levels.at(this->_currentLevel).getFinishFlagPosition().x;
 	float ratio = (this->_position.x - start) / (end - start);
 	float percentage = ratio * 100.0f;
 	if (percentage > 100.0f || percentage < 0.0f) {
@@ -245,7 +245,7 @@ float Player::PercentageOfLevelCompleted()
 	return  percentage;
 }
 
-const sf::Vector2f & Player::GetPosition() const
+const sf::Vector2f & Player::getPosition() const
 {
 	return this->_position;
 }

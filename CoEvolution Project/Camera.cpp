@@ -9,16 +9,16 @@ Camera::Camera(sf::RenderWindow* window, sf::Vector2u wh, sf::Vector2f offset): 
 	this->_window->setView(_view);
 }
 
-void Camera::Restore()
+void Camera::restore()
 {
 	this->_window->setView(this->_window->getDefaultView());
 }
 
-void Camera::Update(sf::Vector2f point)
+void Camera::update(sf::Vector2f point)
 {
-	if (this->GetCameraBox().contains(point)) {
+	if (this->getCameraBox().contains(point)) {
 		float dampx = ((point.x - (_view.getCenter().x - _view.getSize().x / 4)) / 100)*6.0f;
-		float dampy = ((point.y - (_view.getCenter().y + _view.getSize().y / 8)) / 100)*20.0f;
+		float dampy = 0;//((point.y - (_view.getCenter().y + _view.getSize().y / 8)) / 100)*20.0f;
 		//could do some sort of zooming out while the player is moving but that is hard :(
 		_view.move(dampx, dampy);
 	}
@@ -28,12 +28,12 @@ void Camera::Update(sf::Vector2f point)
 	this->_window->setView(_view);
 }
 
-const sf::FloatRect Camera::GetCameraBox()
+const sf::FloatRect Camera::getCameraBox()
 {
 	return  sf::FloatRect(_view.getCenter() - (_view.getSize() / 2.0f), _view.getSize());
 }
 
-void Camera::Resize(sf::Event event){
+void Camera::resize(sf::Event event){
 
 	int newWidth = event.size.width;
 	int newHeight = (newWidth/ASPECT_RATIO_WIDTH) * ASPECT_RATIO_HEIGHT;

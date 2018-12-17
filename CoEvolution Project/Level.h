@@ -11,24 +11,24 @@ public:
 	Level(GameDataRef data, std::string filePath);
 	~Level() {}
 
-	void Draw();
+	void draw();
 
-	bool Collision(const sf::FloatRect &rect);
-	std::vector<Tile*> GetTilesInArea(const sf::FloatRect &rect);
-	bool CollisionWithTile(const sf::FloatRect &rect, int tileID);
-	const sf::Vector2f& GetCheckpoint(int num) const;
-	bool LastCheckpoint(int num);
-	const sf::Vector2f& GetFinishFlagPosition() const;
+	bool collision(const sf::FloatRect &rect);
+	std::vector<Tile*> getTilesInArea(const sf::FloatRect &rect);
+	bool collisionWithTile(const sf::FloatRect &rect, int tileID);
+	const sf::Vector2f& getCheckpoint(int num) const;
+	bool lastCheckpoint(int num);
+	const sf::Vector2f& getFinishFlagPosition() const;
 	
 private:
 
-	void LoadLevelFromTextFile(std::string filePath);
-	Tile* TileAt(int i, int j);
+	void loadLevelFromTextFile(std::string filePath);
+	Tile* tileAt(int i, int j);
+
 
 	GameDataRef _data;
 	Tilemap _tilemap;
 	int _width, _height;
-
 	std::vector<sf::Vector2f> _checkpoint;
 	sf::Sprite _background;
 };
