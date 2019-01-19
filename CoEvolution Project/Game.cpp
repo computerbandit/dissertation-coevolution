@@ -1,5 +1,6 @@
 #include "Game.h"
 #include "SplashState.h"
+#include "DEFINITIONS.h"
 
 Game::Game(int width, int height, std::string title)
 {

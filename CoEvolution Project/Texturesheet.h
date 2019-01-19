@@ -13,5 +13,4 @@ private:
 	sf::Vector2u _texturesize;
 	sf::Vector2u _sheetsize;
 	std::vector<sf::Texture> _textures;
-
 };

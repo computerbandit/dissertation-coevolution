@@ -13,7 +13,7 @@ Texturesheet::Texturesheet(sf::Image texturesheet, sf::Vector2u texturesize) : _
 
 sf::Texture & Texturesheet::getTexture(int index)
 {
-	if (index < (_texturesize.x * _texturesize.y)) {
+	if (index < (int)_textures.size()) {
 		return _textures[index];
 	}
 	else {

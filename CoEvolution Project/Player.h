@@ -2,12 +2,13 @@
 #include "Game.h"
 #include "Level.h"
 #include "IEntity.h"
+#include "AnimationController.h"
 
 class Player : virtual public IEntity {
 
 public:
 
-	Player(GameDataRef data, std::vector<Level>& levels, int& currentLevel, sf::Vector2f wh);
+	Player(GameDataRef data, std::vector<Level>* levels, sf::Vector2f wh);
 	~Player();
 
 	virtual void init() override;
@@ -25,7 +26,8 @@ public:
 	void respawn();
 	void restart();
 	virtual void finish();
-
+	void nextLevel();
+	const int& getCurrentLevel();
 	bool isFinished();
 
 	void setProgress(float progress);
@@ -35,10 +37,12 @@ public:
 
 protected:
 	GameDataRef _data;
+
+	AnimationController* _animController;
 	sf::Sprite _sprite;
-	std::vector<Level>& _levels;
+	std::vector<Level>* _levels;
 	sf::Clock _timer;
-	int& _currentLevel;
+	int _currentLevel;
 
 	float _speed, _jumpVelocity;
 	const int _startingLives = 3;

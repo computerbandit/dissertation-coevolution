@@ -14,6 +14,7 @@ sf::Texture & AssetManager::getTexture(std::string name)
 	return this->_textures[name];
 }
 
+
 void AssetManager::loadTexturesheet(std::string name, std::string fileName, sf::Vector2u texturesize)
 {
 	sf::Image image;

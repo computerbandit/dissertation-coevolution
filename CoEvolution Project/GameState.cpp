@@ -10,15 +10,12 @@ GameState::GameState(GameDataRef data) : _data(data)
 
 void GameState::init()
 {
-	//load the texturesheet
-	this->_data->assetManager.loadTexturesheet(TILES, TILE_SHEET, sf::Vector2u(16, 16));
-
+	//load the levels in to the level vector
 	_levels.push_back(Level(_data, TRAINNING_LEVEL_1));
 	_levels.push_back(Level(_data, TRAINNING_LEVEL_2));
 
 	//init Player
-	this->_data->assetManager.loadTexturesheet(PLAYER, PLAYER_SHEET, sf::Vector2u(16, 16));
-	_player = new Player(_data, _levels, _currentLevel, sf::Vector2f(16, 16));
+	_player = new Player(_data, &_levels, sf::Vector2f(16, 16));
 	this->_data->gameObjectManager.addEntity(_player);
 
 	this->_data->camera = Camera(&(this->_data->window), this->_data->window.getSize(), sf::Vector2f(0, 0));
@@ -79,7 +76,7 @@ void GameState::update(float dt)
 
 			std::cout << "\n Level Completed" << std::endl;
 			this->_currentLevel++;
-			
+			this->_player->nextLevel();
 			this->_player->restart();
 		}
 		else {

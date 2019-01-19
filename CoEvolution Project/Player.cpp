@@ -4,12 +4,13 @@
 #include "DEFINITIONS.h"
 #include <iostream>
 
-Player::Player(GameDataRef data, std::vector<Level>& levels, int& currentLevel, sf::Vector2f wh) : _data(data), _levels(levels), _currentLevel(currentLevel)
+Player::Player(GameDataRef data, std::vector<Level>* levels, sf::Vector2f wh) : _data(data), _levels(levels), _currentLevel(0)
 {
 	this->_speed = 300.0f;
 	this->_jumpVelocity = 450.0f;
 	this->_sprite.setTexture(this->_data->assetManager.getTexturesheet(PLAYER).getTexture(0));
 	AssetManager::rescale(_sprite, wh);
+	this->_animController = new AnimationController(this->_sprite);
 	this->_sprite.setColor(sf::Color::Blue);
 	this->init();
 }
@@ -93,7 +94,7 @@ void Player::update(float dt)
 		oldpos = sf::Vector2f(this->_position);
 		this->_position.x += this->_velocity.x * (dt/num_steps);
 		_sprite.setPosition(this->_position);
-		bool collision = this->_levels.at(this->_currentLevel).collision(_sprite.getGlobalBounds());
+		bool collision = this->_levels->at(this->_currentLevel).collision(_sprite.getGlobalBounds());
 		if (collision) {
 			this->_position = oldpos;
 			_sprite.setPosition(this->_position);
@@ -102,7 +103,7 @@ void Player::update(float dt)
 		oldpos = sf::Vector2f(this->_position);
 		this->_position.y += this->_velocity.y * (dt/num_steps);
 		_sprite.setPosition(this->_position);
-		collision = this->_levels.at(this->_currentLevel).collision(_sprite.getGlobalBounds());
+		collision = this->_levels->at(this->_currentLevel).collision(_sprite.getGlobalBounds());
 		if (collision) {
 			this->_position = oldpos;
 			this->_velocity.y = 0;
@@ -112,21 +113,21 @@ void Player::update(float dt)
 
 	this->setProgress(percentageOfLevelCompleted());
 
-	//if the player goes under the map then they die;
-	if (this->_levels.at(this->_currentLevel).collisionWithTile(this->_sprite.getGlobalBounds(), DEATH_TILE)) {
+	//if the player collides with a death tile then die
+	if (this->_levels->at(this->_currentLevel).collisionWithTile(this->_sprite.getGlobalBounds(), DEATH_TILE)) {
 		this->die();
 	}
 
 	//if the next checkpoint is the of the level then when the player passes it they win finish
-	if (this->_levels.at(this->_currentLevel).lastCheckpoint(_currentCheckpoint + 1)) {
-		if (this->_position.x >= this->_levels.at(this->_currentLevel).getCheckpoint(_currentCheckpoint + 1).x) {
+	if (this->_levels->at(this->_currentLevel).lastCheckpoint(_currentCheckpoint + 1)) {
+		if (this->_position.x >= this->_levels->at(this->_currentLevel).getCheckpoint(_currentCheckpoint + 1).x) {
 			//player beat the level.
 			//fireworks and stop the player;
 			this->finish();
 		}
 	}
 	//if it is no the last check point then when the player passes it, it just sets that as the current checkpoint
-	else if (this->_position.x >= this->_levels.at(this->_currentLevel).getCheckpoint(_currentCheckpoint + 1).x ) {
+	else if (this->_position.x >= this->_levels->at(this->_currentLevel).getCheckpoint(_currentCheckpoint + 1).x ) {
 		_currentCheckpoint++;
 	}
 
@@ -136,7 +137,6 @@ void Player::update(float dt)
 void Player::draw(float dt)
 {
 	this->_data->window.draw(this->_sprite);
-	this->_sprite.setColor(sf::Color::Blue);
 }
 
 
@@ -184,7 +184,7 @@ void Player::die()
 
 void Player::respawn()
 {
-	this->_position = this->_levels.at(this->_currentLevel).getCheckpoint(this->_currentCheckpoint);
+	this->_position = this->_levels->at(this->_currentLevel).getCheckpoint(this->_currentCheckpoint);
 	this->_velocity = sf::Vector2f(0.0f, 0.0f);
 	this->activate();
 }
@@ -205,6 +205,16 @@ void Player::finish()
 	//could start a clock and have the next level after like 2 secs;
 	//and display you finished in overlay text or something;
 	
+}
+
+void Player::nextLevel()
+{
+	this->_currentLevel++;
+}
+
+const int & Player::getCurrentLevel()
+{
+	return this->_currentLevel;
 }
 
 bool Player::isFinished()
@@ -235,8 +245,8 @@ bool Player::isAlive()
 float Player::percentageOfLevelCompleted()
 {
 	//find the position of the player and compare it to the position of the final checkpoint
-	float start = this->_levels.at(this->_currentLevel).getCheckpoint(0).x;
-	float end = this->_levels.at(this->_currentLevel).getFinishFlagPosition().x;
+	float start = this->_levels->at(this->_currentLevel).getCheckpoint(0).x;
+	float end = this->_levels->at(this->_currentLevel).getFinishFlagPosition().x;
 	float ratio = (this->_position.x - start) / (end - start);
 	float percentage = ratio * 100.0f;
 	if (percentage > 100.0f || percentage < 0.0f) {

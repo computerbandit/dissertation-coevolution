@@ -101,8 +101,8 @@ std::vector<float> NeuralNetwork::matrixOutput(const Matrix& m, std::vector<floa
 	}
 
 	for (int i = 0; i < (int)m.size(); i++) {
-		for (int j = 0; j < (int)m[i].size(); j++) {
-			_output[j] += m[i][j] * input[i];
+		for (int j = 0; j < (int)m.at(i).size(); j++) {
+			_output.at(j) += m.at(i).at(j) * input.at(i);
 		}
 	}
 
@@ -126,7 +126,7 @@ std::vector<float> NeuralNetwork::matrixOutput(const Matrix& m, std::vector<floa
 }
 
 void NeuralNetwork::run(std::vector<float> input)
-{
+{	
 	for (int i = 0 ; i < (int)_layer.size(); i++){
 		input = this->matrixOutput(_layer.at(i), input, (i == (int)_layer.size()-1)? HARDLIM : SIGMOID);
 	}

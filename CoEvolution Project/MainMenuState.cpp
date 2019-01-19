@@ -46,6 +46,10 @@ void MainMenuState::init()
 		pos.y += buttonSprite.getLocalBounds().height + 25;
 		_buttons[s] = Button(buttonSprite, text);
 	}
+
+	this->_data->assetManager.loadTexturesheet(TILES, TILE_SHEET, sf::Vector2u(16, 16));
+	this->_data->assetManager.loadTexturesheet(PLAYER, PLAYER_SHEET, sf::Vector2u(16, 16));
+
 }
 
 void MainMenuState::cleanup()

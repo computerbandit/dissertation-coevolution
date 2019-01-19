@@ -13,11 +13,8 @@
 
 //trainning defines
 
-#define CONTROLLER_TILES_VIEW 3
-#define INPUT_LAYER_SIZE CONTROLLER_TILES_VIEW*CONTROLLER_TILES_VIEW
-
 #define DISPLAY_TRAINNING true
-#define DEFUALT_TRAINNING_POPULATION_SIZE 50
+#define DEFUALT_TRAINNING_POPULATION_SIZE 200
 #define STARTING_TRAINNING_MUTATION_RATE 0.9f
 #define DEFUALT_TRAINNGNG_TIME_TO_LIVE 30.0f
 #define DEFUALT_TRAINNING_SPEED_MULTIPLIER 1.0f
@@ -35,7 +32,11 @@
 //Level 
 #define TRAINNING_LEVEL_1 "Resources/level/level1.txt"
 #define TRAINNING_LEVEL_2 "Resources/level/level2.txt"
-
+#define TRAINNING_LEVEL_3 "Resources/level/level3.txt"
+#define TRAINNING_LEVEL_4 "Resources/level/level4.txt"
+#define TRAINNING_LEVEL_5 "Resources/level/level5.txt"
+#define TRAINNING_LEVEL_6 "Resources/level/level6.txt"
+#define TRAINNING_LEVEL_7 "Resources/level/level7.txt"
 //Spritesheets
 #define TILES "Tile_Sheet"
 #define TILE_SHEET "Resources/res/Tile_Sheet.png"
