@@ -11,6 +11,7 @@ public:
 	void loadTexture(std::string name, std::string fileName);
 	sf::Texture &getTexture(std::string name);
 
+	//loads a image into a the manager given a name, filepath and the size of the textures
 	void loadTexturesheet(std::string name, std::string fileName, sf::Vector2u texturesize);
 	Texturesheet &getTexturesheet(std::string name);
 

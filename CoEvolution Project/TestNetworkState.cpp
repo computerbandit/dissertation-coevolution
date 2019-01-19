@@ -5,26 +5,21 @@
 
 TestNetworkState::TestNetworkState(GameDataRef data) :_data(data)
 {
-
 	 _levels = std::vector<Level>();
-
 }
 
 void TestNetworkState::init()
 {
-	//load the texturesheet
-	this->_data->assetManager.loadTexturesheet(TILES, TILE_SHEET, sf::Vector2u(16, 16));
 
 	//load the levels in the order to play them;
-	_levels.push_back(Level(_data, TRAINNING_LEVEL_2));
+	
 	_levels.push_back(Level(_data, TRAINNING_LEVEL_1));
-
-	this->_data->assetManager.loadTexturesheet(PLAYER, PLAYER_SHEET, sf::Vector2u(16, 16));
+	_levels.push_back(Level(_data, TRAINNING_LEVEL_2));
 	std::string fileName;
 	std::cout << "\n Enter name of the network file: ";
 	std::cin >> fileName;
 	this->_data->window.requestFocus();
-	_player = new NNControlledPlayer(this->_data, _levels, _currentLevel, sf::Vector2f(16, 16), new NeuralNetwork("Resources/networks/"+ fileName + ".txt"));
+	_player = new NNControlledPlayer(this->_data, &_levels, sf::Vector2f(16, 16), new NeuralNetwork("Resources/networks/"+ fileName + ".txt"));
 
 	this->_data->gameObjectManager.addEntity(_player);
 
@@ -77,7 +72,7 @@ void TestNetworkState::handleEvents()
 
 void TestNetworkState::update(float dt)
 {
-	_player->getNetworkController()->run(_player->controllersViewOfLevel(CONTROLLER_TILES_VIEW));
+	_player->getNetworkController()->run(_player->controllersViewOfLevel(1, 1, 1, 3));
 	std::vector<float> output = _player->getNetworkController()->getOutput();
 	//given the outputs of the network 
 
@@ -102,6 +97,7 @@ void TestNetworkState::update(float dt)
 	if (_player->isFinished()) {
 		if (_currentLevel + 1 < (int)this->_levels.size()) {
 			this->_currentLevel++;
+			this->_player->nextLevel();
 			this->_player->restart();
 		}
 		else {

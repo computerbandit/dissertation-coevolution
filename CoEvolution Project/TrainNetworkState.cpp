@@ -3,7 +3,8 @@
 #include <string>
 #include <iostream>
 #include "DEFINITIONS.h"
-#include "TestNetworkState.h"
+
+#define INPUT_LAYER_SIZE (1+1+1) * (1+3+1)
 
 TrainNetworkState::TrainNetworkState(GameDataRef data, float timetolive, float speedMultiplier, bool display): _data(data), _display(display), _ttl(timetolive)
 {
@@ -15,16 +16,10 @@ TrainNetworkState::TrainNetworkState(GameDataRef data, float timetolive, float s
 
 void TrainNetworkState::init()
 {
-	//load the texturesheet
-	this->_data->assetManager.loadTexturesheet(TILES, TILE_SHEET, sf::Vector2u(16, 16));
-
 	//load the levels in the order to play them;
-	_levels.push_back(Level(_data, TRAINNING_LEVEL_2));
 	_levels.push_back(Level(_data, TRAINNING_LEVEL_1));
 	_levels.push_back(Level(_data, TRAINNING_LEVEL_2));
-	_levels.push_back(Level(_data, TRAINNING_LEVEL_1));
-
-	this->_data->assetManager.loadTexturesheet(PLAYER, PLAYER_SHEET, sf::Vector2u(16, 16));
+	_levels.push_back(Level(_data, TRAINNING_LEVEL_3));
 
 	_info.setFont(this->_data->assetManager.getFont("Menu Font"));
 	_info.setCharacterSize(20);
@@ -34,7 +29,7 @@ void TrainNetworkState::init()
 	_playerPopulation = std::vector<NNControlledPlayer>();
 	std::vector<NeuralNetwork>& gapop = _ga.getPopulation();
 	for (int i = 0; i < (int)_ga.getPopulation().size(); i++) {
-		_playerPopulation.push_back(NNControlledPlayer(_data, _levels, _currentLevel, sf::Vector2f(16, 16), &gapop.at(i)));
+		_playerPopulation.push_back(NNControlledPlayer(_data, &_levels, sf::Vector2f(16, 16), &gapop.at(i)));
 	}
 	for (NNControlledPlayer& n : _playerPopulation) {
 		this->_data->gameObjectManager.addEntity(&n);
@@ -98,7 +93,7 @@ void TrainNetworkState::update(float dt)
 	for (NNControlledPlayer& nnplayer : this->_playerPopulation) {
 		if (nnplayer.isAlive() && !nnplayer.isFinished()) {
 			//need to get a set of inputs from the ray cast info from each of the players
-			nnplayer.getNetworkController()->run(nnplayer.controllersViewOfLevel(CONTROLLER_TILES_VIEW));
+			nnplayer.getNetworkController()->run(nnplayer.controllersViewOfLevel(1, 1, 1, 3));
 			 output = nnplayer.getNetworkController()->getOutput();
 			//given the outputs of the network 
 			
@@ -195,7 +190,7 @@ void TrainNetworkState::draw(float dt)
 
 		std::cout << "Generation [" << this->_ga.getGeneration() << "] -> Percentage Progress: " << averageProgress << "% average, " << mostProgess << "% best controller" << "\r";
 
-
+		
 		if (bestController.getNetworkController()->getFitnessScore() >= 100.0f) {
 			if (_currentLevel + 1 < (int)this->_levels.size()) {
 				std::cout << "\n Level Completed" << std::endl;
@@ -204,6 +199,7 @@ void TrainNetworkState::draw(float dt)
 				this->_ga.saveFittestNetwork(this->_token);
 				//set the rest of the population controllers to the best one
 				for (NNControlledPlayer& nnplayer : this->_playerPopulation) {
+					nnplayer.nextLevel();
 					nnplayer.restart();
 				}
 			}
