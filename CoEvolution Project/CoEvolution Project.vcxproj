@@ -178,12 +178,17 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\res\Exit_Button.png" />
+    <Image Include="Resources\res\Extra_sheet.png" />
     <Image Include="Resources\res\MainMenu_Background.png" />
+    <Image Include="Resources\res\Menu_Button.png" />
     <Image Include="Resources\res\Player_Sheet.png" />
     <Image Include="Resources\res\Play_Button.png" />
     <Image Include="Resources\res\Splash_Background.png" />
     <Image Include="Resources\res\Tile_Sheet.png" />
     <Image Include="Resources\res\Train_Button.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="Resources\fonts\Menu_Font.ttf" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

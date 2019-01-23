@@ -174,5 +174,14 @@
     <Image Include="Resources\res\Train_Button.png">
       <Filter>Resource Files</Filter>
     </Image>
+    <Image Include="Resources\res\Extra_sheet.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+    <Image Include="Resources\res\Menu_Button.png">
+      <Filter>Resource Files</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <Font Include="Resources\fonts\Menu_Font.ttf" />
   </ItemGroup>
 </Project>
