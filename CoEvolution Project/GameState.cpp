@@ -11,7 +11,7 @@ GameState::GameState(GameDataRef data) : _data(data)
 void GameState::init()
 {
 	//load the levels in to the level vector
-	_levels.push_back(Level(_data, TRAINNING_LEVEL_1));
+	_levels.push_back(Level(_data, TRAINNING_LEVEL_3));
 	_levels.push_back(Level(_data, TRAINNING_LEVEL_2));
 
 	//init Player

@@ -16,15 +16,9 @@ void Camera::restore()
 
 void Camera::update(sf::Vector2f point)
 {
-	if (this->getCameraBox().contains(point)) {
-		float dampx = ((point.x - (_view.getCenter().x - _view.getSize().x / 4)) / 100)*6.0f;
-		float dampy = 0;//((point.y - (_view.getCenter().y + _view.getSize().y / 8)) / 100)*20.0f;
-		//could do some sort of zooming out while the player is moving but that is hard :(
-		_view.move(dampx, dampy);
-	}
-	else {
-		_view.setCenter(point);
-	}
+	float dampx = ((point.x - (_view.getCenter().x - _view.getSize().x / 4)) / 100)*6.0f;
+	_view.move(dampx, 0);
+
 	this->_window->setView(_view);
 }
 

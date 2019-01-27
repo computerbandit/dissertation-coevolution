@@ -4,7 +4,7 @@
 #include <iostream>
 #include "DEFINITIONS.h"
 
-#define INPUT_LAYER_SIZE (1+1+1) * (1+3+1)
+#define INPUT_LAYER_SIZE (2+1+2) * (2+1+4)
 
 TrainNetworkState::TrainNetworkState(GameDataRef data, float timetolive, float speedMultiplier, bool display): _data(data), _display(display), _ttl(timetolive)
 {
@@ -17,7 +17,7 @@ TrainNetworkState::TrainNetworkState(GameDataRef data, float timetolive, float s
 void TrainNetworkState::init()
 {
 	//load the levels in the order to play them;
-	_levels.push_back(Level(_data, TRAINNING_LEVEL_1));
+	_levels.push_back(Level(_data, TRAINNING_LEVEL_3));
 	_levels.push_back(Level(_data, TRAINNING_LEVEL_2));
 	_levels.push_back(Level(_data, TRAINNING_LEVEL_3));
 
@@ -93,7 +93,7 @@ void TrainNetworkState::update(float dt)
 	for (NNControlledPlayer& nnplayer : this->_playerPopulation) {
 		if (nnplayer.isAlive() && !nnplayer.isFinished()) {
 			//need to get a set of inputs from the ray cast info from each of the players
-			nnplayer.getNetworkController()->run(nnplayer.controllersViewOfLevel(1, 1, 1, 3));
+			nnplayer.getNetworkController()->run(nnplayer.controllersViewOfLevel(2, 2, 2, 4));
 			 output = nnplayer.getNetworkController()->getOutput();
 			//given the outputs of the network 
 			
@@ -129,6 +129,7 @@ void TrainNetworkState::draw(float dt)
 	float mostProgress = 0.0f;
 	NNControlledPlayer* bestController = nullptr;
 	for (NNControlledPlayer& nnplayer : this->_playerPopulation) {
+		nnplayer.setColor(sf::Color::Blue);
 		if (nnplayer.getProgress() > mostProgress) {
 			bestController = &nnplayer;
 			mostProgress = nnplayer.getProgress();
@@ -210,7 +211,7 @@ void TrainNetworkState::draw(float dt)
 
 
 		if (!_ga.isSolved()) {
-			this->_ga.saveFittestNetwork(this->_token);
+			//this->_ga.saveFittestNetwork(this->_token);
 			this->_ga.nextGeneration();
 			std::vector<NeuralNetwork>& gapop = this->_ga.getPopulation();
 			for (int i = 0; i < (int)gapop.size(); i++) {

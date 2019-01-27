@@ -128,7 +128,7 @@ void NeuralNetworkGA::mutate(NeuralNetwork & network)
 	//
 	std::vector<Matrix> layers = network.getLayers();
 
-	int numOfChanges = NeuralNetwork::randomInt(1, 1);
+	int numOfChanges = NeuralNetwork::randomInt(1, 10);
 
 	for (int i = 0; i < numOfChanges; i++) {
 		//pick a random weight in the network
@@ -156,7 +156,7 @@ CrossoverProduct NeuralNetworkGA::Crossover(NeuralNetwork & A,NeuralNetwork & B)
 	std::vector<float> newChromeosomeA = std::vector<float>(connections);
 	std::vector<float> newChromeosomeB = std::vector<float>(connections);
 
-	int numOfCrossoverPoints = 4;
+	int numOfCrossoverPoints = 2;
 
 	std::vector<int> crossoverPoints = std::vector<int>(numOfCrossoverPoints);
 

@@ -154,6 +154,7 @@ void NeuralNetwork::saveNetwork(std::string token) const
 std::vector<float> NeuralNetwork::matricesToChromesome() const
 {
 	std::vector<float> chromeosome = std::vector<float>();
+	
 	for (Matrix m : this->_layer) {
 		for (std::vector<float> row : m) {
 			for (float weight : row) {
