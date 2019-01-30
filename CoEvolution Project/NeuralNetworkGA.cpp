@@ -105,12 +105,8 @@ void NeuralNetworkGA::nextGeneration()
 		}
 
 		//mutate products
-		if (NeuralNetwork::randomFloat(0.0f, 1.0f) <= this->_mutationRate) {
-			mutate(child.A);
-		}
-		if (NeuralNetwork::randomFloat(0.0f, 1.0f) <= this->_mutationRate) {
-			mutate(child.B);
-		}
+		mutate(child.A);
+		mutate(child.B);
 
 		nextgen.push_back(child.A);
 		nextgen.push_back(child.B);
@@ -128,7 +124,26 @@ void NeuralNetworkGA::mutate(NeuralNetwork & network)
 	//
 	std::vector<Matrix> layers = network.getLayers();
 
-	int numOfChanges = NeuralNetwork::randomInt(1, 10);
+	for (Matrix& m : layers) {
+		for (std::vector<float>& layer : m) {
+			for (float& w : layer) {
+				if (NeuralNetwork::randomFloat(0.0f, 1.0f) >= 0.995f) {
+					w += NeuralNetwork::randomFloatNromalDist(0.0f, 0.4f);
+					if (w > 1.0f || w < -1.0f) {
+						w = std::max(-1.0f, std::min(w, 1.0f));
+					}
+				}
+			}
+		}
+	}
+
+	network.setLayers(layers);
+
+
+
+	/* randomly select connections in the network to be mutated
+	
+	int numOfChanges = 2;
 
 	for (int i = 0; i < numOfChanges; i++) {
 		//pick a random weight in the network
@@ -136,14 +151,16 @@ void NeuralNetworkGA::mutate(NeuralNetwork & network)
 		int row = NeuralNetwork::randomInt(0, layers[layernum].size() - 1);
 		int coloumn = NeuralNetwork::randomInt(0, layers[layernum][row].size() - 1);
 
-		//mutate this random weight that we have selected
+		//mutate this random weight that we have selected and clamp it to -1 <-> 1 range
 		float& wieght = layers[layernum][row][coloumn];
-		wieght += NeuralNetwork::randomFloatNromalDist(0.0f, 0.2f);
+		wieght += NeuralNetwork::randomFloatNromalDist(0.0f, 0.4f);
 		if (wieght > 1.0f || wieght < -1.0f) {
 			wieght = std::max(-1.0f, std::min(wieght, 1.0f));
 		}
 	}
-	network.setLayers(layers);
+
+	*/
+
 }
 
 CrossoverProduct NeuralNetworkGA::Crossover(NeuralNetwork & A,NeuralNetwork & B)
@@ -156,7 +173,7 @@ CrossoverProduct NeuralNetworkGA::Crossover(NeuralNetwork & A,NeuralNetwork & B)
 	std::vector<float> newChromeosomeA = std::vector<float>(connections);
 	std::vector<float> newChromeosomeB = std::vector<float>(connections);
 
-	int numOfCrossoverPoints = NeuralNetwork::randomInt(1, 10);
+	int numOfCrossoverPoints = 1;
 
 	std::vector<int> crossoverPoints = std::vector<int>(numOfCrossoverPoints);
 

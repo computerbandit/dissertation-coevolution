@@ -10,6 +10,7 @@ public:
 	~Camera() {}
 
 	void restore();
+	void setCenter(sf::Vector2f point);
 	void update(sf::Vector2f point);
 
 	const sf::FloatRect getCameraBox();

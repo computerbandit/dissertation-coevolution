@@ -14,6 +14,13 @@ void Camera::restore()
 	this->_window->setView(this->_window->getDefaultView());
 }
 
+void Camera::setCenter(sf::Vector2f point)
+{
+	_view.setCenter(point);
+
+	this->_window->setView(_view);
+}
+
 void Camera::update(sf::Vector2f point)
 {
 	//camera gets locked when going backwards so that when the player respawns the cam goes to the char faster
@@ -36,7 +43,8 @@ const sf::FloatRect Camera::getCameraBox()
 
 void Camera::resize(sf::Event event){
 
-	int newWidth = event.size.width;
+	int newWidth = (event.size.width >= 1300)? 1300 : event.size.width;
+
 	int newHeight = (newWidth/ASPECT_RATIO_WIDTH) * ASPECT_RATIO_HEIGHT;
 	//maintain aspect ratio
 	_window->setSize(sf::Vector2u(newWidth, newHeight));

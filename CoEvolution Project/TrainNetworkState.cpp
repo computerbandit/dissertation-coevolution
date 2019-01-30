@@ -4,11 +4,14 @@
 #include <iostream>
 #include "DEFINITIONS.h"
 
-#define INPUT_LAYER_SIZE (2+1+2) * (2+1+4)
+#define DEFUALT_TRAINNING_POPULATION_SIZE 80
+
+
+#define INPUT_LAYER_SIZE (3+1+3) * (4+1+4)
 
 TrainNetworkState::TrainNetworkState(GameDataRef data, float timetolive, float speedMultiplier, bool display): _data(data), _display(display), _ttl(timetolive)
 {
-	_ga = NeuralNetworkGA(NeuralNetwork::generatePopulation(DEFUALT_TRAINNING_POPULATION_SIZE, {INPUT_LAYER_SIZE, 4, 3}), STARTING_TRAINNING_MUTATION_RATE);
+	_ga = NeuralNetworkGA(NeuralNetwork::generatePopulation(DEFUALT_TRAINNING_POPULATION_SIZE, {INPUT_LAYER_SIZE, 2, 3}), STARTING_TRAINNING_MUTATION_RATE);
 	this->_levels = std::vector<Level>();
 	this->_data->gameSpeedMultiplier = speedMultiplier;
 	this->_token = std::to_string(time(0));
@@ -59,6 +62,7 @@ void TrainNetworkState::handleEvents()
 		}
 		if (sf::Event::Resized == event.type) {
 			this->_data->camera.resize(event);
+			this->_data->camera.setCenter(sf::Vector2f(0, 0));
 		}
 		
 		if (sf::Event::KeyPressed == event.type) {
@@ -76,15 +80,19 @@ void TrainNetworkState::handleEvents()
 				this->_data->gameSpeedMultiplier = 10.0f;
 			}
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num5)) {
+				this->_data->gameSpeedMultiplier = 50.0f;
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num6)) {
 				this->_data->gameSpeedMultiplier = 100.0f;
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num7)) {
+				this->_data->gameSpeedMultiplier = 200.0f;
 			}
 
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
 				this->_data->stateMachine.popState();
 			}
 		}
-
-		
 	}
 }
 
@@ -95,7 +103,7 @@ void TrainNetworkState::update(float dt)
 	for (NNControlledPlayer* nnplayer : this->_populationChunk) {
 		if (nnplayer->isAlive() && !nnplayer->isFinished()) {
 			//need to get a set of inputs from the ray cast info from each of the players
-			nnplayer->getNetworkController()->run(nnplayer->controllersViewOfLevel(2, 2, 2, 4));
+			nnplayer->getNetworkController()->run(nnplayer->controllersViewOfLevel(3, 3, 4, 4));
 			 output = nnplayer->getNetworkController()->getOutput();
 			//given the outputs of the network 
 			
@@ -197,19 +205,39 @@ void TrainNetworkState::draw(float dt)
 
 
 			if (bestController.getNetworkController()->getFitnessScore() >= 100.0f) {
-				if (_currentLevel + 1 < (int)this->_levels.size()) {
-					std::cout << "\n Level Completed" << std::endl;
-					this->_currentLevel++;
-					this->_ga.setMutationRate(0.2f);
-					this->_ga.saveFittestNetwork(this->_token);
-					//set the rest of the population controllers to the best one
-					for (NNControlledPlayer& nnplayer : this->_playerPopulation) {
-						nnplayer.nextLevel();
-						nnplayer.restart();
+
+				//can only go to the next level if 80% of the pop has completed the current
+				float passValueNeeded = this->_playerPopulation.size() * 0.75f;
+				int runningTotal = 0;
+				bool passedLevel = false;
+				for (NNControlledPlayer& nnplayer : this->_playerPopulation) {
+					if (nnplayer.getNetworkController()->getFitnessScore() >= 100.0f) {
+						runningTotal++;
+					}
+					if (runningTotal >= passValueNeeded) {
+						passedLevel = true;
+						break;
+					}
+					else {
+						passedLevel = false;
 					}
 				}
-				else {
-					this->_ga.solved();
+				//if the population has reached the pass rate then go to the next level
+				if (passedLevel) {
+					if (_currentLevel + 1 < (int)this->_levels.size()) {
+						std::cout << "\n Level Completed" << std::endl;
+						this->_currentLevel++;
+						this->_ga.setMutationRate(0.15f);
+						this->_ga.saveFittestNetwork(this->_token);
+						//set the rest of the population controllers to the best one
+						for (NNControlledPlayer& nnplayer : this->_playerPopulation) {
+							nnplayer.nextLevel();
+							nnplayer.restart();
+						}
+					}
+					else {
+						this->_ga.solved();
+					}
 				}
 			}
 

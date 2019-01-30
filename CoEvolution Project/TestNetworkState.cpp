@@ -15,6 +15,7 @@ void TestNetworkState::init()
 	
 	_levels.push_back(Level(_data, TRAINNING_LEVEL_1));
 	_levels.push_back(Level(_data, TRAINNING_LEVEL_2));
+	_levels.push_back(Level(_data, TRAINNING_LEVEL_3));
 	std::string fileName;
 	std::cout << "\n Enter name of the network file: ";
 	std::cin >> fileName;
@@ -72,7 +73,7 @@ void TestNetworkState::handleEvents()
 
 void TestNetworkState::update(float dt)
 {
-	_player->getNetworkController()->run(_player->controllersViewOfLevel(1, 1, 1, 3));
+	_player->getNetworkController()->run(_player->controllersViewOfLevel(2, 2, 2, 4));
 	std::vector<float> output = _player->getNetworkController()->getOutput();
 	//given the outputs of the network 
 
