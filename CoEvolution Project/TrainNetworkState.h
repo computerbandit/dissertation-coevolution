@@ -18,7 +18,9 @@ public:
 
 private:
 	bool nextPopulationChunk();
-
+	NNControlledPlayer* getBestController();
+	void checkProgress(float interval);
+	bool AreAllDead();
 
 
 	GameDataRef _data;

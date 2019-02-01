@@ -1,6 +1,7 @@
 #include "NeuralNetworkGA.h"
 #include <algorithm>
 #include <iostream>
+#include <fstream>
 #include <string>
 
 
@@ -85,7 +86,18 @@ void NeuralNetworkGA::evalutePopulation()
 	{
 		return lhs.getFitnessRatio() > rhs.getFitnessRatio();
 	});
-	//std::cout << "DONE, Population Sorted" << std::endl;
+	//std::cout << "DONE, Population Sorted" << std::endl; 
+
+
+	//TODO: After the population has been evaluated we need to export some of this data to th csv file, so we can look at the percentage error as the agents are lerning the levels
+
+	std::ofstream csvfile;
+	//csvfile.open("Resources/networkdata/" +  + ".csv");
+
+
+		//to make sure that the error of each of the generations 
+
+
 }
 
 //Generate the new population

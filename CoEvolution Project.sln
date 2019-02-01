@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
-VisualStudioVersion = 15.0.28010.2046
+VisualStudioVersion = 15.0.28307.329
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "CoEvolution Project", "CoEvolution Project\CoEvolution Project.vcxproj", "{7EE89B17-52C0-4602-8BDE-99BA7919AD63}"
 EndProject
@@ -26,6 +26,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {62D5CA48-0C6F-4388-8D32-3E1C45E29ABE}
+		SolutionGuid = {CEDDC002-2E80-4432-A9E9-C26B4B2AD96B}
 	EndGlobalSection
 EndGlobal

@@ -4,10 +4,10 @@
 #include <iostream>
 #include "DEFINITIONS.h"
 
-#define DEFUALT_TRAINNING_POPULATION_SIZE 80
+#define DEFUALT_TRAINNING_POPULATION_SIZE 100
 
 
-#define INPUT_LAYER_SIZE (3+1+3) * (4+1+4)
+#define INPUT_LAYER_SIZE (2+1+2) * (2+1+4)
 
 TrainNetworkState::TrainNetworkState(GameDataRef data, float timetolive, float speedMultiplier, bool display): _data(data), _display(display), _ttl(timetolive)
 {
@@ -103,7 +103,7 @@ void TrainNetworkState::update(float dt)
 	for (NNControlledPlayer* nnplayer : this->_populationChunk) {
 		if (nnplayer->isAlive() && !nnplayer->isFinished()) {
 			//need to get a set of inputs from the ray cast info from each of the players
-			nnplayer->getNetworkController()->run(nnplayer->controllersViewOfLevel(3, 3, 4, 4));
+			nnplayer->getNetworkController()->run(nnplayer->controllersViewOfLevel(2, 2, 2, 4));
 			 output = nnplayer->getNetworkController()->getOutput();
 			//given the outputs of the network 
 			
@@ -136,18 +136,11 @@ void TrainNetworkState::update(float dt)
 void TrainNetworkState::draw(float dt)
 {
 
-	float mostProgress = 0.0f;
-	NNControlledPlayer* bestController = nullptr;
-	for (NNControlledPlayer* nnplayer : this->_populationChunk) {
-		nnplayer->setColor(sf::Color::Blue);
-		if (nnplayer->getProgress() > mostProgress) {
-			bestController = &(*nnplayer);
-			mostProgress = nnplayer->getProgress();
-		}
-	}
+	NNControlledPlayer* bestController = getBestController();
+	
 
 	if (bestController != nullptr) {
-		if (_ttl < 1.0f && mostProgress > 0.0f) {
+		if (_ttl < 1.0f && bestController->getNetworkController.percentageOfLevelCompleted() > 0.0f) {
 			_ttl = DEFUALT_TRAINNGNG_TIME_TO_LIVE;
 		}
 		if (_display) {
@@ -162,28 +155,10 @@ void TrainNetworkState::draw(float dt)
 	}
 
 	//check the progess for the controllers and if any have not made progress in 1 second
-	if (this->_checkProgressClock.getElapsedTime().asSeconds() > (1.0f / this->_data->gameSpeedMultiplier)) {
-		this->_checkProgressClock.restart();
-		for (NNControlledPlayer* nnplayer : this->_populationChunk) {
-			if (nnplayer->isAlive() && !nnplayer->isFinished()) {
-				if (!nnplayer->isMakingProgress()) {
-					nnplayer->die();
-				}
-			}
-		}
-	}
-	bool allDead = false;
-	for (NNControlledPlayer* nnplayer : this->_populationChunk) {
-		if (nnplayer->isAlive()) {
-			allDead = false;
-			break;
-		}
-		else {
-			allDead = true;
-		}
-	}
-	
-	if (this->_ttlClock.getElapsedTime().asSeconds() > (this->_ttl / this->_data->gameSpeedMultiplier) || allDead) {
+	checkProgress(1.0f);
+
+
+	if (this->_ttlClock.getElapsedTime().asSeconds() > (this->_ttl / this->_data->gameSpeedMultiplier) || AreAllDead()) {
 		this->_ttlClock.restart();
 		//if there are any controllers still alive after the ttl clock 
 		//killing the rest off will give them a fitnessScore
@@ -302,5 +277,49 @@ bool TrainNetworkState::nextPopulationChunk()
 	else {
 		return false;
 	}
+}
+
+NNControlledPlayer * TrainNetworkState::getBestController()
+{
+	float mostProgress = 0.0f;
+	NNControlledPlayer* bestController = nullptr;
+	for (NNControlledPlayer* nnplayer : this->_populationChunk) {
+		nnplayer->setColor(sf::Color::Blue);
+		if (nnplayer->getProgress() > mostProgress) {
+			bestController = &(*nnplayer);
+			mostProgress = nnplayer->getProgress();
+		}
+	}
+	return bestController;
+}
+
+void TrainNetworkState::checkProgress(float interval)
+{
+	//checks if the controller has made progress in the last second if not it dies
+	if (this->_checkProgressClock.getElapsedTime().asSeconds() > (interval / this->_data->gameSpeedMultiplier)) {
+		this->_checkProgressClock.restart();
+		for (NNControlledPlayer* nnplayer : this->_populationChunk) {
+			if (nnplayer->isAlive() && !nnplayer->isFinished()) {
+				if (!nnplayer->isMakingProgress()) {
+					nnplayer->die();
+				}
+			}
+		}
+	}
+}
+
+bool TrainNetworkState::AreAllDead()
+{
+	bool allDead = false;
+	for (NNControlledPlayer* nnplayer : this->_populationChunk) {
+		if (nnplayer->isAlive()) {
+			allDead = false;
+			break;
+		}
+		else {
+			allDead = true;
+		}
+	}
+	return allDead;
 }
 
