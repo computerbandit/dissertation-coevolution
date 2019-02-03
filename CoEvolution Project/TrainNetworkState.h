@@ -21,6 +21,7 @@ private:
 	NNControlledPlayer* getBestController();
 	void checkProgress(float interval);
 	bool AreAllDead();
+	void selectLevelForChunk();
 
 
 	GameDataRef _data;

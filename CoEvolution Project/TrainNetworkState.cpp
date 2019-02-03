@@ -11,7 +11,7 @@
 
 TrainNetworkState::TrainNetworkState(GameDataRef data, float timetolive, float speedMultiplier, bool display): _data(data), _display(display), _ttl(timetolive)
 {
-	_ga = NeuralNetworkGA(NeuralNetwork::generatePopulation(DEFUALT_TRAINNING_POPULATION_SIZE, {INPUT_LAYER_SIZE, 2, 3}), STARTING_TRAINNING_MUTATION_RATE);
+	_ga = NeuralNetworkGA(NeuralNetwork::generatePopulation(DEFUALT_TRAINNING_POPULATION_SIZE, {INPUT_LAYER_SIZE, 15, 3}), STARTING_TRAINNING_MUTATION_RATE);
 	this->_levels = std::vector<Level>();
 	this->_data->gameSpeedMultiplier = speedMultiplier;
 	this->_token = std::to_string(time(0));
@@ -39,6 +39,7 @@ void TrainNetworkState::init()
 	}
 	_populationChunk = std::vector<NNControlledPlayer*>();
 	this->nextPopulationChunk();
+	this->selectLevelForChunk();
 
 	this->_data->camera = Camera(&(this->_data->window), this->_data->window.getSize(), sf::Vector2f(0, 0));
 	//the init ttl should be v small just so the networks can rapidly get to the point where they have some features to evolve.
@@ -140,7 +141,7 @@ void TrainNetworkState::draw(float dt)
 	
 
 	if (bestController != nullptr) {
-		if (_ttl < 1.0f && bestController->getNetworkController.percentageOfLevelCompleted() > 0.0f) {
+		if (_ttl < 1.0f && bestController->getNetworkController()->getFitnessScore() > 0.0f) {
 			_ttl = DEFUALT_TRAINNGNG_TIME_TO_LIVE;
 		}
 		if (_display) {
@@ -172,7 +173,7 @@ void TrainNetworkState::draw(float dt)
 			this->_ga.evalutePopulation();
 
 			//find the best controller
-			NNControlledPlayer bestController = this->_playerPopulation.front();
+			NNControlledPlayer& bestController = this->_playerPopulation.front();
 			float mostProgess = bestController.getProgress();
 			float averageProgress = this->_ga.averageFitness();
 
@@ -181,44 +182,21 @@ void TrainNetworkState::draw(float dt)
 
 			if (bestController.getNetworkController()->getFitnessScore() >= 100.0f) {
 
-				//can only go to the next level if 80% of the pop has completed the current
-				float passValueNeeded = this->_playerPopulation.size() * 0.75f;
+				//can only go to the next level if 75% of the pop has completed the current
+				float passValueNeeded = this->_playerPopulation.size() * 0.80f;
 				int runningTotal = 0;
-				bool passedLevel = false;
 				for (NNControlledPlayer& nnplayer : this->_playerPopulation) {
 					if (nnplayer.getNetworkController()->getFitnessScore() >= 100.0f) {
 						runningTotal++;
 					}
 					if (runningTotal >= passValueNeeded) {
-						passedLevel = true;
-						break;
-					}
-					else {
-						passedLevel = false;
-					}
-				}
-				//if the population has reached the pass rate then go to the next level
-				if (passedLevel) {
-					if (_currentLevel + 1 < (int)this->_levels.size()) {
-						std::cout << "\n Level Completed" << std::endl;
-						this->_currentLevel++;
-						this->_ga.setMutationRate(0.15f);
-						this->_ga.saveFittestNetwork(this->_token);
-						//set the rest of the population controllers to the best one
-						for (NNControlledPlayer& nnplayer : this->_playerPopulation) {
-							nnplayer.nextLevel();
-							nnplayer.restart();
-						}
-					}
-					else {
 						this->_ga.solved();
+						break;
 					}
 				}
 			}
 
-
 			if (!_ga.isSolved()) {
-				//this->_ga.saveFittestNetwork(this->_token);
 				this->_ga.nextGeneration();
 				std::vector<NeuralNetwork>& gapop = this->_ga.getPopulation();
 				for (int i = 0; i < (int)gapop.size(); i++) {
@@ -232,13 +210,9 @@ void TrainNetworkState::draw(float dt)
 				std::cout << "Player has beaten the game, well done!\n" << std::endl;
 				this->_data->stateMachine.popState();
 			}
-		}
-
-		//get the next chunk on nncontrolled players
-
+		}	
 		this->_lastChunk = this->nextPopulationChunk();
-
-		
+		this->selectLevelForChunk();
 	}
 
 	this->_data->window.clear(sf::Color::White);
@@ -261,7 +235,7 @@ bool TrainNetworkState::nextPopulationChunk()
 	}
 	this->_populationChunk.clear();
 	for (int i = 0; i < this->_chunkSize; i++) {
-		if ((i + this->_chunkIndex) >= this->_playerPopulation.size()) {
+		if ((i + this->_chunkIndex) >= (int)this->_playerPopulation.size()) {
 			break;
 		}
 		else {
@@ -270,7 +244,7 @@ bool TrainNetworkState::nextPopulationChunk()
 		}
 	}
 	this->_chunkIndex += this->_chunkSize;
-	if (this->_chunkIndex >= this->_playerPopulation.size()) {
+	if (this->_chunkIndex >= (int)this->_playerPopulation.size()) {
 		this->_chunkIndex = 0;
 		return true;
 	}
@@ -321,5 +295,14 @@ bool TrainNetworkState::AreAllDead()
 		}
 	}
 	return allDead;
+}
+
+void TrainNetworkState::selectLevelForChunk()
+{
+	int randlevel = NeuralNetwork::randomInt(0,this->_levels.size()-1);
+	for (NNControlledPlayer* nnplayer : this->_populationChunk) {
+		nnplayer->selectLevel(randlevel);
+		this->_currentLevel = randlevel;
+	}
 }
 

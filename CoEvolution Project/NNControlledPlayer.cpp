@@ -45,14 +45,14 @@ std::vector<float> NNControlledPlayer::controllersViewOfLevel(int up, int down, 
 	float value = 0.0f;
 	for (int i = 0; i < (int)tilesInArea.size(); i++) {
 		if (tilesInArea.at(i)->isSolid()) {
-			value = 1.0f;
+			value = 5.0f;
 		}
 		else {
 			if (tilesInArea.at(i)->getTileID() == DEATH_TILE) {
-				value = -1.0f;
+				value = -15.0f;
 			}
 			else {
-				value = 0.0f;
+				value = -5.0f;
 			}
 		}	
 		tileValues.push_back(value);

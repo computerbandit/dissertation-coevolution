@@ -62,6 +62,7 @@ NeuralNetwork & NeuralNetworkGA::selectParent()
 			return _population.back();
 		}
 	}
+	return _population.back();
 }
 //given the new fitness of the networks work out the fitnessRatio for each network
 void NeuralNetworkGA::evalutePopulation()
@@ -139,8 +140,8 @@ void NeuralNetworkGA::mutate(NeuralNetwork & network)
 	for (Matrix& m : layers) {
 		for (std::vector<float>& layer : m) {
 			for (float& w : layer) {
-				if (NeuralNetwork::randomFloat(0.0f, 1.0f) >= 0.995f) {
-					w += NeuralNetwork::randomFloatNromalDist(0.0f, 0.4f);
+				if (NeuralNetwork::randomFloat(0.0f, 1.0f) >= 0.998f) {
+					w += NeuralNetwork::randomFloatNromalDist(0.0f, 0.3f);
 					if (w > 1.0f || w < -1.0f) {
 						w = std::max(-1.0f, std::min(w, 1.0f));
 					}

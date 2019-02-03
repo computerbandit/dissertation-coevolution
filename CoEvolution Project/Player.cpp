@@ -212,6 +212,11 @@ void Player::nextLevel()
 	this->_currentLevel++;
 }
 
+void Player::selectLevel(int levelnum)
+{
+	this->_currentLevel = levelnum;
+}
+
 const int & Player::getCurrentLevel()
 {
 	return this->_currentLevel;

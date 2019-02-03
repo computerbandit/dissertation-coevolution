@@ -27,6 +27,7 @@ public:
 	void restart();
 	virtual void finish();
 	void nextLevel();
+	void selectLevel(int levelnum);
 	const int& getCurrentLevel();
 	bool isFinished();
 
