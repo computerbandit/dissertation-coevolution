@@ -35,7 +35,7 @@ public:
 	void setColor(sf::Color color);
 	const float& getProgress() const;
 	const sf::Vector2f& getPosition() const;
-
+	const sf::Vector2f& getSpriteCenterPosition() const;
 protected:
 	GameDataRef _data;
 

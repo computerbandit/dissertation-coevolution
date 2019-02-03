@@ -35,8 +35,8 @@ void NNControlledPlayer::finish()
 //given the position and current level the the entity is currently in return a list of values regarding the solid state of the tiles around around the entity
 std::vector<float> NNControlledPlayer::controllersViewOfLevel(int up, int down, int left, int right) const
 {
-	int x_tile = int(this->_position.x / TILE_SIZE) * TILE_SIZE;
-	int y_tile = int(this->_position.y / TILE_SIZE) * TILE_SIZE;
+	int x_tile = int(this->getSpriteCenterPosition().x / TILE_SIZE) * TILE_SIZE;
+	int y_tile = int(this->getSpriteCenterPosition().y / TILE_SIZE) * TILE_SIZE;
 
 	sf::FloatRect view = sf::FloatRect(x_tile - (left*TILE_SIZE), y_tile - (up*TILE_SIZE), ((right+left+1)*TILE_SIZE) - TILE_SIZE / 10, ((up+down+1)*TILE_SIZE) - TILE_SIZE/10);
 	std::vector<float> tileValues = std::vector<float>();

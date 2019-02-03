@@ -7,11 +7,11 @@
 #define DEFUALT_TRAINNING_POPULATION_SIZE 100
 
 
-#define INPUT_LAYER_SIZE (2+1+2) * (2+1+4)
+#define INPUT_LAYER_SIZE (2+2+1) * (2+4+1)
 
 TrainNetworkState::TrainNetworkState(GameDataRef data, float timetolive, float speedMultiplier, bool display): _data(data), _display(display), _ttl(timetolive)
 {
-	_ga = NeuralNetworkGA(NeuralNetwork::generatePopulation(DEFUALT_TRAINNING_POPULATION_SIZE, {INPUT_LAYER_SIZE, 15, 3}), STARTING_TRAINNING_MUTATION_RATE);
+	_ga = NeuralNetworkGA(NeuralNetwork::generatePopulation(DEFUALT_TRAINNING_POPULATION_SIZE, {INPUT_LAYER_SIZE, 6, 3}), STARTING_TRAINNING_MUTATION_RATE);
 	this->_levels = std::vector<Level>();
 	this->_data->gameSpeedMultiplier = speedMultiplier;
 	this->_token = std::to_string(time(0));
@@ -32,7 +32,7 @@ void TrainNetworkState::init()
 	_playerPopulation = std::vector<NNControlledPlayer>();
 	std::vector<NeuralNetwork>& gapop = _ga.getPopulation();
 	for (int i = 0; i < (int)_ga.getPopulation().size(); i++) {
-		_playerPopulation.push_back(NNControlledPlayer(_data, &_levels, sf::Vector2f(16, 16), &gapop.at(i)));
+		_playerPopulation.push_back(NNControlledPlayer(_data, &_levels, sf::Vector2f(20, 30), &gapop.at(i)));
 	}
 	for (NNControlledPlayer& n : _playerPopulation) {
 		this->_data->gameObjectManager.addEntity(&n);

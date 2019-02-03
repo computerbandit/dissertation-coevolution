@@ -88,7 +88,7 @@ void Player::update(float dt)
 
 	//collsison detection in 5 substeps with wall sliding
 	sf::Vector2f oldpos;
-	int num_steps = 1;
+	int num_steps = 3;
 
 	for (int i = 0; i < num_steps; i++) {
 		oldpos = sf::Vector2f(this->_position);
@@ -263,6 +263,13 @@ float Player::percentageOfLevelCompleted()
 const sf::Vector2f & Player::getPosition() const
 {
 	return this->_position;
+}
+
+const sf::Vector2f & Player::getSpriteCenterPosition() const
+{
+	float w = this->_sprite.getGlobalBounds().width;
+	float h = this->_sprite.getGlobalBounds().height;
+	return sf::Vector2f((w / 2) + this->_position.x, (h / 2) + this->_position.y);
 }
 
 
