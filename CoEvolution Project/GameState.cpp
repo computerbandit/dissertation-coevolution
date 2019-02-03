@@ -11,14 +11,16 @@ GameState::GameState(GameDataRef data) : _data(data)
 void GameState::init()
 {
 	//load the levels in to the level vector
-	_levels.push_back(Level(_data, TRAINNING_LEVEL_3));
+	_levels.push_back(Level(_data, TRAINNING_LEVEL_1));
 	_levels.push_back(Level(_data, TRAINNING_LEVEL_2));
+	_levels.push_back(Level(_data, TRAINNING_LEVEL_3));
+	
 
 	//init Player
-	_player = new Player(_data, &_levels, sf::Vector2f(16, 16));
+	_player = new Player(_data, &_levels, sf::Vector2f(TILE_SIZE / 4, TILE_SIZE / 4));
 	this->_data->gameObjectManager.addEntity(_player);
 
-	this->_data->camera = Camera(&(this->_data->window), this->_data->window.getSize(), sf::Vector2f(0, 0));
+	this->_data->camera = Camera(&(this->_data->window), this->_data->window.getSize(), sf::Vector2f(0, 400));
 }
 
 void GameState::cleanup()
@@ -88,7 +90,7 @@ void GameState::update(float dt)
 
 void GameState::draw(float dt)
 {
-	this->_data->camera.update(_player->getPosition());
+	this->_data->camera.update(_player->getSpriteCenterPosition());
 	this->_data->window.clear(sf::Color::White);
 	this->_levels.at(this->_currentLevel).draw();
 	this->_data->gameObjectManager.draw(dt);

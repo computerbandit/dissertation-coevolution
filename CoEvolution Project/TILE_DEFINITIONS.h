@@ -14,6 +14,11 @@
 #define GRASS_BOTTOM 8
 #define GRASS_BOTTOM_RIGHT 9
 #define TEST_TILE 10
+#define PURPLE_TILE 11
+#define GREEN_TILE 12
+#define BLUE_TILE 13
+#define GRAY_TILE 14
+
 
 #define CHECKPOINT_TILE 32
 #define FINISH_LINE_TILE 33

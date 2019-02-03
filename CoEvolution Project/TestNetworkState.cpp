@@ -94,7 +94,7 @@ void TestNetworkState::update(float dt)
 	} 
 
 	this->_data->gameObjectManager.update(dt);
-	this->_data->camera.update(_player->getPosition());
+	this->_data->camera.update(_player->getSpriteCenterPosition());
 	if (_player->isFinished()) {
 		if (_currentLevel + 1 < (int)this->_levels.size()) {
 			this->_currentLevel++;

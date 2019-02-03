@@ -32,7 +32,7 @@ void TrainNetworkState::init()
 	_playerPopulation = std::vector<NNControlledPlayer>();
 	std::vector<NeuralNetwork>& gapop = _ga.getPopulation();
 	for (int i = 0; i < (int)_ga.getPopulation().size(); i++) {
-		_playerPopulation.push_back(NNControlledPlayer(_data, &_levels, sf::Vector2f(20, 30), &gapop.at(i)));
+		_playerPopulation.push_back(NNControlledPlayer(_data, &_levels, sf::Vector2f(TILE_SIZE/4, TILE_SIZE/4), &gapop.at(i)));
 	}
 	for (NNControlledPlayer& n : _playerPopulation) {
 		this->_data->gameObjectManager.addEntity(&n);
@@ -146,7 +146,7 @@ void TrainNetworkState::draw(float dt)
 		}
 		if (_display) {
 			bestController->setColor(sf::Color::Red);
-			this->_data->camera.update(bestController->getPosition());
+			this->_data->camera.update(bestController->getSpriteCenterPosition());
 		}
 	}
 	else {
