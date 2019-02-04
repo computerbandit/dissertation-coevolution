@@ -47,9 +47,8 @@ void MainMenuState::init()
 		_buttons[s] = Button(buttonSprite, text);
 	}
 
-	this->_data->assetManager.loadTexturesheet(TILES, TILE_SHEET, sf::Vector2u(16, 16));
-	this->_data->assetManager.loadTexturesheet(PLAYER, PLAYER_SHEET, sf::Vector2u(16, 16));
-
+	this->_data->assetManager.loadTexturesheet(TILES, TILE_SHEET, sf::Vector2u(TEXTURE_SIZE, TEXTURE_SIZE));
+	this->_data->assetManager.loadTexturesheet(PLAYER, PLAYER_SHEET, sf::Vector2u(TEXTURE_SIZE, TEXTURE_SIZE));
 }
 
 void MainMenuState::cleanup()
@@ -67,7 +66,7 @@ void MainMenuState::handleEvents()
 
 		if (sf::Event::Resized == event.type) {
 			this->_data->camera.resize(event);
-			AssetManager::rescale(_background, sf::Vector2f(this->_data->window.getSize()));
+			//AssetManager::rescale(_background, sf::Vector2f(this->_data->window.getSize()));
 		}
 		if (sf::Event::MouseButtonPressed == event.type) {
 			

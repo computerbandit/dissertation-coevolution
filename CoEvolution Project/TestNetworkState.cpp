@@ -73,7 +73,7 @@ void TestNetworkState::handleEvents()
 
 void TestNetworkState::update(float dt)
 {
-	_player->getNetworkController()->run(_player->controllersViewOfLevel(2, 2, 2, 4));
+	_player->getNetworkController()->run(_player->controllersViewOfLevel(2, 2, 2, 2));
 	std::vector<float> output = _player->getNetworkController()->getOutput();
 	//given the outputs of the network 
 

@@ -7,7 +7,7 @@
 #define DEFUALT_TRAINNING_POPULATION_SIZE 100
 
 
-#define INPUT_LAYER_SIZE (2+2+1) * (2+4+1)
+#define INPUT_LAYER_SIZE (2+1+2) * (2+1+2)	
 
 TrainNetworkState::TrainNetworkState(GameDataRef data, float timetolive, float speedMultiplier, bool display): _data(data), _display(display), _ttl(timetolive)
 {
@@ -104,7 +104,7 @@ void TrainNetworkState::update(float dt)
 	for (NNControlledPlayer* nnplayer : this->_populationChunk) {
 		if (nnplayer->isAlive() && !nnplayer->isFinished()) {
 			//need to get a set of inputs from the ray cast info from each of the players
-			nnplayer->getNetworkController()->run(nnplayer->controllersViewOfLevel(2, 2, 2, 4));
+			nnplayer->getNetworkController()->run(nnplayer->controllersViewOfLevel(2, 2, 2, 2));
 			 output = nnplayer->getNetworkController()->getOutput();
 			//given the outputs of the network 
 			
@@ -183,7 +183,7 @@ void TrainNetworkState::draw(float dt)
 			if (bestController.getNetworkController()->getFitnessScore() >= 100.0f) {
 
 				//can only go to the next level if 75% of the pop has completed the current
-				float passValueNeeded = this->_playerPopulation.size() * 0.80f;
+				float passValueNeeded = this->_playerPopulation.size() * 0.10f;
 				int runningTotal = 0;
 				for (NNControlledPlayer& nnplayer : this->_playerPopulation) {
 					if (nnplayer.getNetworkController()->getFitnessScore() >= 100.0f) {
@@ -217,12 +217,11 @@ void TrainNetworkState::draw(float dt)
 
 	this->_data->window.clear(sf::Color::White);
 	if (this->_display) {
-		_info.setString("Speed: " + std::to_string(this->_data->gameSpeedMultiplier) + "x , TTL: " + std::to_string(_ttlClock.getElapsedTime().asSeconds()) + " / " + std::to_string(_ttl/this->_data->gameSpeedMultiplier));
+		_info.setString("Speed: " + std::to_string(this->_data->gameSpeedMultiplier) + "x\n Generation: " + std::to_string(this->_ga.getGeneration()));
 		_info.setPosition(this->_data->camera.getCameraBox().left, this->_data->camera.getCameraBox().top);
 
 		this->_levels.at(this->_currentLevel).draw();
 		this->_data->gameObjectManager.draw(dt);
-
 		this->_data->window.draw(_info);
 	}
 	this->_data->window.display();

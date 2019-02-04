@@ -20,7 +20,7 @@ void GameState::init()
 	_player = new Player(_data, &_levels, sf::Vector2f(TILE_SIZE / 4, TILE_SIZE / 4));
 	this->_data->gameObjectManager.addEntity(_player);
 
-	this->_data->camera = Camera(&(this->_data->window), this->_data->window.getSize(), sf::Vector2f(0, 400));
+	this->_data->camera = Camera(&(this->_data->window), this->_data->window.getSize(), sf::Vector2f(0, 0));
 }
 
 void GameState::cleanup()

@@ -11,7 +11,6 @@ Player::Player(GameDataRef data, std::vector<Level>* levels, sf::Vector2f wh) : 
 	this->_sprite.setTexture(this->_data->assetManager.getTexturesheet(PLAYER).getTexture(0));
 	AssetManager::rescale(_sprite, wh);
 	this->_animController = new AnimationController(this->_sprite);
-	//this->_sprite.setColor(sf::Color::Blue);
 	this->init();
 }
 

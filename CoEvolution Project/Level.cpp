@@ -72,7 +72,6 @@ void Level::draw()
 
 bool Level::collision(const sf::FloatRect &rect)
 {
-	//only check the tiles near the player maybe some how
 	bool any_collision = false;
 	for (Tile* t : this->getTilesInArea(rect)) {
 		if (t->isSolid()) {

@@ -17,7 +17,7 @@ struct GameData {
 	InputManager inputManager;
 	GameObjectManager gameObjectManager;
 	float gameSpeedMultiplier = 1.0f;
-	const sf::Vector2f gravity = sf::Vector2f(0.0f, 1000.0f);
+	sf::Vector2f gravity = sf::Vector2f(0.0f, 1000.0f);
 };
 
 typedef std::shared_ptr<GameData> GameDataRef;
