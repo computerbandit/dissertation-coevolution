@@ -20,16 +20,19 @@ void NNControlledPlayer::die()
 {
 	if (!_finished) {
 		_networkController->setFitnessScore(getProgress());
-		this->_lives = 0;
-		this->_previousProgress = 0.0f;
-		this->deactivate();
-	}	
+	}
+	else { //if the player has finished then the controller gets loads more fitness points
+		_networkController->setFitnessScore(getProgress() + 1000.0f);
+	}
+	this->_lives = 0;
+	this->_previousProgress = 0.0f;
+	this->deactivate();
 }
 
 void NNControlledPlayer::finish()
 {
-	this->die();
 	this->_finished = true;
+	this->die();
 }
 
 //given the position and current level the the entity is currently in return a list of values regarding the solid state of the tiles around around the entity
@@ -43,16 +46,26 @@ std::vector<float> NNControlledPlayer::controllersViewOfLevel(int up, int down, 
 	//get to the pos of the entity in the grid position of the level
 	std::vector<Tile*> tilesInArea = this->_levels->at(this->_currentLevel).getTilesInArea(view);
 	float value = 0.0f;
+	//assign the value of the tile to a number for the controllers perception
 	for (int i = 0; i < (int)tilesInArea.size(); i++) {
 		if (tilesInArea.at(i)->isSolid()) {
-			value = 5.0f;
+			value = 15.0f;
 		}
 		else {
-			if (tilesInArea.at(i)->getTileID() == DEATH_TILE) {
-				value = -15.0f;
-			}
-			else {
-				value = -5.0f;
+			switch (tilesInArea.at(i)->getTileID())
+			{
+			case DEATH_TILE:
+				value = -100.0f;
+				break;
+			case CHECKPOINT_TILE:
+				value = 50.0f;
+				break;
+			case FINISH_LINE_TILE:
+				value = 1000.0f;
+				break;
+			default:
+				value = 0.0f;
+				break;
 			}
 		}	
 		tileValues.push_back(value);

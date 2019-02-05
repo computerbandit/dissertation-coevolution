@@ -110,7 +110,7 @@ void Player::update(float dt)
 		}
 	}
 
-	this->setProgress(percentageOfLevelCompleted());
+
 
 	//if the player collides with a death tile then die
 	if (this->_levels->at(this->_currentLevel).collisionWithTile(this->_sprite.getGlobalBounds(), DEATH_TILE)) {
@@ -131,6 +131,7 @@ void Player::update(float dt)
 	}
 
 	this->_sprite.setPosition(this->_position);
+	this->setProgress(percentageOfLevelCompleted());
 }
 
 void Player::draw(float dt)

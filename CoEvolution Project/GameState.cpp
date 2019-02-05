@@ -14,6 +14,8 @@ void GameState::init()
 	_levels.push_back(Level(_data, TRAINNING_LEVEL_1));
 	_levels.push_back(Level(_data, TRAINNING_LEVEL_2));
 	_levels.push_back(Level(_data, TRAINNING_LEVEL_3));
+	_levels.push_back(Level(_data, TRAINNING_LEVEL_4));
+	_levels.push_back(Level(_data, TRAINNING_LEVEL_5));
 	
 
 	//init Player

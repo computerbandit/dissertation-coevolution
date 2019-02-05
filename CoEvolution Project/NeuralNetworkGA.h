@@ -35,6 +35,11 @@ public:
 
 	NeuralNetwork& selectParent();
 	void evalutePopulation();
+	float sumPopulationScores();
+	void setPopulationFitnessRatios(float sum);
+	void sortPopulation();
+
+
 	void nextGeneration();
 	void mutate(NeuralNetwork& network);
 	CrossoverProduct Crossover(NeuralNetwork& A, NeuralNetwork& B);

@@ -57,48 +57,65 @@ NeuralNetwork & NeuralNetworkGA::selectParent()
 		theta += network.getFitnessRatio();
 		if (random <= theta && !network.isSelected()) {
 			network.setSelected(true);
+			this->setPopulationFitnessRatios(this->sumPopulationScores());
 			return network;
 		}else if(network.getFitnessRatio() == 0.0f){
-			return _population.back();
+			return _population.front();
 		}
 	}
-	return _population.back();
+	return _population.front();
 }
 //given the new fitness of the networks work out the fitnessRatio for each network
 void NeuralNetworkGA::evalutePopulation()
 {
 	//std::cout << "Evaluating Generation [" << _generation << "] ... ";
+
+	//set the fitness ratio for the selection process
+	this->setPopulationFitnessRatios(this->sumPopulationScores());
+	this->sortPopulation();
+	
+
+	//TODO: After the population has been evaluated we need to export some of this data to th csv file, so we can look at the percentage error as the agents are lerning the levels
+
+	//std::ofstream csvfile;
+	//csvfile.open("Resources/networkdata/" +  + ".csv");
+
+
+	//to make sure that the error of each of the generations 
+}
+
+float NeuralNetworkGA::sumPopulationScores()
+{
 	float sum = 0.0f;
 	for (NeuralNetwork& n : _population) {
-		sum += n.getFitnessScore();
+		if (!n.isSelected()) {
+			sum += n.getFitnessScore();
+		}
 	}
-	//set the fitness ratio for the selection process
-	
+	return sum;
+}
+
+void NeuralNetworkGA::setPopulationFitnessRatios(float sum)
+{
 	for (NeuralNetwork& n : _population) {
-		if (sum != 0.0f) {
-			n.setFitnessRatio(n.getFitnessScore() / sum);
-		}
-		else {
-			n.setFitnessRatio(0.0f);
+		if (!n.isSelected()) {
+			if (sum != 0.0f) {
+				n.setFitnessRatio(n.getFitnessScore() / sum);
+			}
+			else {
+				n.setFitnessRatio(0.0f);
+			}
 		}
 	}
+}
+
+void NeuralNetworkGA::sortPopulation()
+{
 	//sort based on the fitnessRatio
 	std::sort(_population.begin(), _population.end(), [](const NeuralNetwork& lhs, const NeuralNetwork& rhs)
 	{
 		return lhs.getFitnessRatio() > rhs.getFitnessRatio();
 	});
-	//std::cout << "DONE, Population Sorted" << std::endl; 
-
-
-	//TODO: After the population has been evaluated we need to export some of this data to th csv file, so we can look at the percentage error as the agents are lerning the levels
-
-	std::ofstream csvfile;
-	//csvfile.open("Resources/networkdata/" +  + ".csv");
-
-
-		//to make sure that the error of each of the generations 
-
-
 }
 
 //Generate the new population
@@ -140,8 +157,8 @@ void NeuralNetworkGA::mutate(NeuralNetwork & network)
 	for (Matrix& m : layers) {
 		for (std::vector<float>& layer : m) {
 			for (float& w : layer) {
-				if (NeuralNetwork::randomFloat(0.0f, 1.0f) >= 0.998f) {
-					w += NeuralNetwork::randomFloatNromalDist(0.0f, 0.3f);
+				if (NeuralNetwork::randomFloat(0.0f, 1.0f) >= this->_mutationRate) {
+					w += NeuralNetwork::randomFloatNromalDist(0.0f, 0.35f);
 					if (w > 1.0f || w < -1.0f) {
 						w = std::max(-1.0f, std::min(w, 1.0f));
 					}
@@ -186,7 +203,7 @@ CrossoverProduct NeuralNetworkGA::Crossover(NeuralNetwork & A,NeuralNetwork & B)
 	std::vector<float> newChromeosomeA = std::vector<float>(connections);
 	std::vector<float> newChromeosomeB = std::vector<float>(connections);
 
-	int numOfCrossoverPoints = 1;
+	int numOfCrossoverPoints = NeuralNetwork::randomInt(3,10);
 
 	std::vector<int> crossoverPoints = std::vector<int>(numOfCrossoverPoints);
 

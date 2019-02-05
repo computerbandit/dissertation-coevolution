@@ -4,7 +4,7 @@
 #include <iostream>
 #include "DEFINITIONS.h"
 
-#define DEFUALT_TRAINNING_POPULATION_SIZE 100
+#define DEFUALT_TRAINNING_POPULATION_SIZE 70
 
 
 #define INPUT_LAYER_SIZE (2+1+2) * (2+1+2)	
@@ -20,9 +20,13 @@ TrainNetworkState::TrainNetworkState(GameDataRef data, float timetolive, float s
 void TrainNetworkState::init()
 {
 	//load the levels in the order to play them;
-	_levels.push_back(Level(_data, TRAINNING_LEVEL_1));
-	_levels.push_back(Level(_data, TRAINNING_LEVEL_2));
-	_levels.push_back(Level(_data, TRAINNING_LEVEL_3));
+	//_levels.push_back(Level(_data, TRAINNING_LEVEL_1));
+	//_levels.push_back(Level(_data, TRAINNING_LEVEL_2));
+	//_levels.push_back(Level(_data, TRAINNING_LEVEL_3));
+	_levels.push_back(Level(_data, TRAINNING_LEVEL_4));
+	_levels.push_back(Level(_data, TRAINNING_LEVEL_5));
+	//_levels.push_back(Level(_data, TRAINNING_LEVEL_6));
+	//_levels.push_back(Level(_data, TRAINNING_LEVEL_7));
 
 	_info.setFont(this->_data->assetManager.getFont("Menu Font"));
 	_info.setCharacterSize(20);
@@ -143,6 +147,7 @@ void TrainNetworkState::draw(float dt)
 	if (bestController != nullptr) {
 		if (_ttl < 1.0f && bestController->getNetworkController()->getFitnessScore() > 0.0f) {
 			_ttl = DEFUALT_TRAINNGNG_TIME_TO_LIVE;
+			this->_ga.setMutationRate(0.9998f);
 		}
 		if (_display) {
 			bestController->setColor(sf::Color::Red);
@@ -183,7 +188,7 @@ void TrainNetworkState::draw(float dt)
 			if (bestController.getNetworkController()->getFitnessScore() >= 100.0f) {
 
 				//can only go to the next level if 75% of the pop has completed the current
-				float passValueNeeded = this->_playerPopulation.size() * 0.10f;
+				float passValueNeeded = this->_playerPopulation.size() * 0.80f;
 				int runningTotal = 0;
 				for (NNControlledPlayer& nnplayer : this->_playerPopulation) {
 					if (nnplayer.getNetworkController()->getFitnessScore() >= 100.0f) {

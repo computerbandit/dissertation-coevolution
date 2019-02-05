@@ -175,6 +175,9 @@
     <Text Include="Resources\level\level1.txt" />
     <Text Include="Resources\level\level2.txt" />
     <Text Include="Resources\level\level3.txt" />
+    <Text Include="Resources\level\level4.txt" />
+    <Text Include="Resources\level\level5.txt" />
+    <Text Include="Resources\level\level6.txt" />
     <Text Include="Resources\networks\test.txt" />
   </ItemGroup>
   <ItemGroup>
