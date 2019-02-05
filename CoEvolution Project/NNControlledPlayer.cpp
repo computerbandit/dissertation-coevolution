@@ -20,9 +20,14 @@ void NNControlledPlayer::die()
 {
 	if (!_finished) {
 		_networkController->setFitnessScore(getProgress());
+		//_networkController->setFitnessScore(0.0f);
 	}
 	else { //if the player has finished then the controller gets loads more fitness points
-		_networkController->setFitnessScore(getProgress() + 1000.0f);
+		float leveltime = this->_timer.getElapsedTime().asSeconds();
+		float timepoints = ((leveltime * this->_data->gameSpeedMultiplier) - this->_levels->at(this->_currentLevel).getLevelTime()) * 10;
+		_networkController->setFitnessScore(getProgress());
+		//_networkController->setFitnessScore(getProgress() + 100.0f + timepoints);
+		//_networkController->setFitnessScore(1000.0f * (1.0f + ((float)this->_currentLevel/10)));
 	}
 	this->_lives = 0;
 	this->_previousProgress = 0.0f;

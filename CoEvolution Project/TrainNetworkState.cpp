@@ -4,14 +4,14 @@
 #include <iostream>
 #include "DEFINITIONS.h"
 
-#define DEFUALT_TRAINNING_POPULATION_SIZE 70
+#define DEFUALT_TRAINNING_POPULATION_SIZE 150
 
 
 #define INPUT_LAYER_SIZE (2+1+2) * (2+1+2)	
 
 TrainNetworkState::TrainNetworkState(GameDataRef data, float timetolive, float speedMultiplier, bool display): _data(data), _display(display), _ttl(timetolive)
 {
-	_ga = NeuralNetworkGA(NeuralNetwork::generatePopulation(DEFUALT_TRAINNING_POPULATION_SIZE, {INPUT_LAYER_SIZE, 6, 3}), STARTING_TRAINNING_MUTATION_RATE);
+	_ga = NeuralNetworkGA(NeuralNetwork::generatePopulation(DEFUALT_TRAINNING_POPULATION_SIZE, {INPUT_LAYER_SIZE, 3}), STARTING_TRAINNING_MUTATION_RATE);
 	this->_levels = std::vector<Level>();
 	this->_data->gameSpeedMultiplier = speedMultiplier;
 	this->_token = std::to_string(time(0));
@@ -20,13 +20,13 @@ TrainNetworkState::TrainNetworkState(GameDataRef data, float timetolive, float s
 void TrainNetworkState::init()
 {
 	//load the levels in the order to play them;
-	//_levels.push_back(Level(_data, TRAINNING_LEVEL_1));
-	//_levels.push_back(Level(_data, TRAINNING_LEVEL_2));
-	//_levels.push_back(Level(_data, TRAINNING_LEVEL_3));
-	_levels.push_back(Level(_data, TRAINNING_LEVEL_4));
-	_levels.push_back(Level(_data, TRAINNING_LEVEL_5));
-	//_levels.push_back(Level(_data, TRAINNING_LEVEL_6));
-	//_levels.push_back(Level(_data, TRAINNING_LEVEL_7));
+	_levels.push_back(Level(_data, TRAINNING_LEVEL_1, LEVEL_1_TIME));
+	_levels.push_back(Level(_data, TRAINNING_LEVEL_2, LEVEL_2_TIME));
+	_levels.push_back(Level(_data, TRAINNING_LEVEL_3, LEVEL_3_TIME));
+	//_levels.push_back(Level(_data, TRAINNING_LEVEL_4, LEVEL_4_TIME));
+	//_levels.push_back(Level(_data, TRAINNING_LEVEL_5, LEVEL_5_TIME));
+	//_levels.push_back(Level(_data, TRAINNING_LEVEL_6, LEVEL_6_TIME));
+	//_levels.push_back(Level(_data, TRAINNING_LEVEL_7, LEVEL_7_TIME));
 
 	_info.setFont(this->_data->assetManager.getFont("Menu Font"));
 	_info.setCharacterSize(20);
@@ -71,6 +71,10 @@ void TrainNetworkState::handleEvents()
 		}
 		
 		if (sf::Event::KeyPressed == event.type) {
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+				this->_ga.saveGAData(this->_token);
+				std::cout << "GA DATA Saved!" << std::endl;
+			}
 
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1)) {
 				this->_data->gameSpeedMultiplier = 1.0f;
@@ -178,12 +182,10 @@ void TrainNetworkState::draw(float dt)
 			this->_ga.evalutePopulation();
 
 			//find the best controller
+			
 			NNControlledPlayer& bestController = this->_playerPopulation.front();
-			float mostProgess = bestController.getProgress();
-			float averageProgress = this->_ga.averageFitness();
 
-			std::cout << "Generation [" << this->_ga.getGeneration() << "] -> Percentage Progress: " << averageProgress << "% average, " << mostProgess << "% best controller" << "\r";
-
+			_info.setString("Generation [" + std::to_string(this->_ga.getGeneration()) + "] -> Average Fitness: " + std::to_string(this->_ga.averageFitness()) + "\n\t"+ "Best Fitness: " + std::to_string(bestController.getNetworkController()->getFitnessScore()) + "\nSpeed: " + std::to_string(this->_data->gameSpeedMultiplier) + "x");
 
 			if (bestController.getNetworkController()->getFitnessScore() >= 100.0f) {
 
@@ -212,6 +214,7 @@ void TrainNetworkState::draw(float dt)
 			}
 			else {
 				this->_ga.saveFittestNetwork(this->_token);
+				this->_ga.saveGAData(this->_token);
 				std::cout << "Player has beaten the game, well done!\n" << std::endl;
 				this->_data->stateMachine.popState();
 			}
@@ -222,7 +225,6 @@ void TrainNetworkState::draw(float dt)
 
 	this->_data->window.clear(sf::Color::White);
 	if (this->_display) {
-		_info.setString("Speed: " + std::to_string(this->_data->gameSpeedMultiplier) + "x\n Generation: " + std::to_string(this->_ga.getGeneration()));
 		_info.setPosition(this->_data->camera.getCameraBox().left, this->_data->camera.getCameraBox().top);
 
 		this->_levels.at(this->_currentLevel).draw();

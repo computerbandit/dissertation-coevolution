@@ -15,6 +15,7 @@ class NeuralNetworkGA{
 	int _populationSize = 0, _generation = 0;
 	float _mutationRate = 0.05f;
 	bool _solution = false;
+	std::string _gaData = "";
 
 public:
 
@@ -46,4 +47,6 @@ public:
 	void saveFittestNetwork(std::string token);
 	float averageFitness();
 	const NeuralNetwork& fittestNetwork();
+
+	void saveGAData(std::string token);
 };

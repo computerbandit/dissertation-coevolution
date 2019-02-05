@@ -37,6 +37,19 @@
 #define TRAINNING_LEVEL_5 "Resources/level/level5.txt"
 #define TRAINNING_LEVEL_6 "Resources/level/level6.txt"
 #define TRAINNING_LEVEL_7 "Resources/level/level7.txt"
+#define TRAINNING_LEVEL_8 "Resources/level/level8.txt"
+#define TRAINNING_LEVEL_9 "Resources/level/level9.txt"
+
+//Level Times
+#define LEVEL_1_TIME 5
+#define LEVEL_2_TIME 7
+#define LEVEL_3_TIME 10
+#define LEVEL_4_TIME 15
+#define LEVEL_5_TIME 15
+#define LEVEL_6_TIME 15
+#define LEVEL_7_TIME 15
+
+
 //Spritesheets
 #define TILES "Tile_Sheet"
 #define TILE_SHEET "Resources/res/Tile_Sheet.png"

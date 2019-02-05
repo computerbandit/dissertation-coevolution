@@ -9,6 +9,7 @@
 NeuralNetworkGA::NeuralNetworkGA(std::vector<NeuralNetwork> population, float mRate): _population(population), _mutationRate(mRate)
 {
 	_populationSize = (int)_population.size();
+	this->_gaData.append("Gen Num , Highest Fitness, Average Fitness, Population Size: " + std::to_string(_populationSize) + "\n");
 }
 
 void NeuralNetworkGA::run(std::vector<float> input)
@@ -76,6 +77,8 @@ void NeuralNetworkGA::evalutePopulation()
 	
 
 	//TODO: After the population has been evaluated we need to export some of this data to th csv file, so we can look at the percentage error as the agents are lerning the levels
+
+	this->_gaData.append(std::to_string(this->getGeneration()) +" , " + std::to_string(this->fittestNetwork().getFitnessScore()) + " , " + std::to_string(this->averageFitness()) + "\n");
 
 	//std::ofstream csvfile;
 	//csvfile.open("Resources/networkdata/" +  + ".csv");
@@ -158,7 +161,7 @@ void NeuralNetworkGA::mutate(NeuralNetwork & network)
 		for (std::vector<float>& layer : m) {
 			for (float& w : layer) {
 				if (NeuralNetwork::randomFloat(0.0f, 1.0f) >= this->_mutationRate) {
-					w += NeuralNetwork::randomFloatNromalDist(0.0f, 0.35f);
+					w += NeuralNetwork::randomFloatNromalDist(0.0f, 0.2f);
 					if (w > 1.0f || w < -1.0f) {
 						w = std::max(-1.0f, std::min(w, 1.0f));
 					}
@@ -239,10 +242,7 @@ CrossoverProduct NeuralNetworkGA::Crossover(NeuralNetwork & A,NeuralNetwork & B)
 		}
 	}
 
-	NeuralNetwork childA = NeuralNetwork(A.getTopology(), newChromeosomeA);
-	NeuralNetwork childB = NeuralNetwork(B.getTopology(), newChromeosomeB);
-	CrossoverProduct product = CrossoverProduct(childA, childB);
-	return product;
+	return CrossoverProduct(NeuralNetwork(A.getTopology(), newChromeosomeA), NeuralNetwork(B.getTopology(), newChromeosomeB));;
 }
 
 void NeuralNetworkGA::saveFittestNetwork(std::string token)
@@ -264,4 +264,17 @@ float NeuralNetworkGA::averageFitness()
 const NeuralNetwork & NeuralNetworkGA::fittestNetwork()
 {
 	return _population.front();
+}
+
+void NeuralNetworkGA::saveGAData(std::string token)
+{
+	std::string topologyString = "";
+	for (int i = 0; i < (int)this->_population.back().getTopology().size(); i++) {
+		topologyString.append(std::to_string(this->_population.back().getTopology().at(i)) + ((i == (int)this->_population.back().getTopology().size() - 1) ? "" : "_"));
+	}
+
+	std::ofstream csv;
+	csv.open("Resources/networkdata/" + topologyString + "-" + token + ".csv");
+	csv << this->_gaData;
+	csv.close();
 }

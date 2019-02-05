@@ -44,7 +44,7 @@ void Camera::update(sf::Vector2f point)
 {
 	//camera gets locked when going backwards so that when the player respawns the cam goes to the char faster
 	float dampx = (point.x - (_view.getCenter().x - _view.getSize().x / 4));
-	float dampy = (point.y - _view.getCenter().y); 
+	float dampy = (point.y - (_view.getCenter().y + (1 * _view.getSize().y / 10))) / 200;
 
 	if (dampx >= 0) {
 		dampx /= 300;

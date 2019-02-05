@@ -8,7 +8,7 @@ typedef std::vector<Tile> Tilemap;
 
 class Level {
 public:
-	Level(GameDataRef data, std::string filePath);
+	Level(GameDataRef data, std::string filePath, float time);
 	~Level() {}
 
 	void draw();
@@ -19,6 +19,8 @@ public:
 	const sf::Vector2f& getCheckpoint(int num) const;
 	bool lastCheckpoint(int num);
 	const sf::Vector2f& getFinishFlagPosition() const;
+
+	const float& getLevelTime() const;
 	
 private:
 
@@ -31,4 +33,5 @@ private:
 	int _width, _height;
 	std::vector<sf::Vector2f> _checkpoint;
 	sf::Sprite _background;
+	float _timeToComplete;
 };

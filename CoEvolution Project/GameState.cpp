@@ -11,11 +11,13 @@ GameState::GameState(GameDataRef data) : _data(data)
 void GameState::init()
 {
 	//load the levels in to the level vector
-	_levels.push_back(Level(_data, TRAINNING_LEVEL_1));
-	_levels.push_back(Level(_data, TRAINNING_LEVEL_2));
-	_levels.push_back(Level(_data, TRAINNING_LEVEL_3));
-	_levels.push_back(Level(_data, TRAINNING_LEVEL_4));
-	_levels.push_back(Level(_data, TRAINNING_LEVEL_5));
+	//_levels.push_back(Level(_data, TRAINNING_LEVEL_1, LEVEL_1_TIME));
+	//_levels.push_back(Level(_data, TRAINNING_LEVEL_2, LEVEL_2_TIME));
+	//_levels.push_back(Level(_data, TRAINNING_LEVEL_3, LEVEL_3_TIME));
+	//_levels.push_back(Level(_data, TRAINNING_LEVEL_4, LEVEL_4_TIME));
+	//_levels.push_back(Level(_data, TRAINNING_LEVEL_5, LEVEL_5_TIME));
+	_levels.push_back(Level(_data, TRAINNING_LEVEL_6, LEVEL_6_TIME));
+	_levels.push_back(Level(_data, TRAINNING_LEVEL_7, LEVEL_7_TIME));
 	
 
 	//init Player

@@ -5,7 +5,7 @@
 #include <sstream>
 #include "DEFINITIONS.h"
 
-Level::Level(GameDataRef data, std::string filePath): _data(data)
+Level::Level(GameDataRef data, std::string filePath, float time): _data(data), _timeToComplete(time)
 {
 	loadLevelFromTextFile(filePath);
 }
@@ -130,4 +130,9 @@ bool Level::lastCheckpoint(int num)
 const sf::Vector2f & Level::getFinishFlagPosition() const
 {
 	return this->_checkpoint.back();
+}
+
+const float & Level::getLevelTime() const
+{
+	return this->_timeToComplete;
 }
