@@ -4,14 +4,14 @@
 #include <iostream>
 #include "DEFINITIONS.h"
 
-#define DEFUALT_TRAINNING_POPULATION_SIZE 150
+#define DEFUALT_TRAINNING_POPULATION_SIZE 100
 
 
-#define INPUT_LAYER_SIZE (2+1+2) * (2+1+2)	
+#define INPUT_LAYER_SIZE (2+1+2) * (2+1+4)	
 
 TrainNetworkState::TrainNetworkState(GameDataRef data, float timetolive, float speedMultiplier, bool display): _data(data), _display(display), _ttl(timetolive)
 {
-	_ga = NeuralNetworkGA(NeuralNetwork::generatePopulation(DEFUALT_TRAINNING_POPULATION_SIZE, {INPUT_LAYER_SIZE, 3}), STARTING_TRAINNING_MUTATION_RATE);
+	_ga = NeuralNetworkGA(NeuralNetwork::generatePopulation(DEFUALT_TRAINNING_POPULATION_SIZE, {INPUT_LAYER_SIZE , 10, 5, 3}), STARTING_TRAINNING_MUTATION_RATE);
 	this->_levels = std::vector<Level>();
 	this->_data->gameSpeedMultiplier = speedMultiplier;
 	this->_token = std::to_string(time(0));
@@ -112,7 +112,7 @@ void TrainNetworkState::update(float dt)
 	for (NNControlledPlayer* nnplayer : this->_populationChunk) {
 		if (nnplayer->isAlive() && !nnplayer->isFinished()) {
 			//need to get a set of inputs from the ray cast info from each of the players
-			nnplayer->getNetworkController()->run(nnplayer->controllersViewOfLevel(2, 2, 2, 2));
+			nnplayer->getNetworkController()->run(nnplayer->controllersViewOfLevel(2, 2, 2, 4));
 			 output = nnplayer->getNetworkController()->getOutput();
 			//given the outputs of the network 
 			
@@ -223,7 +223,7 @@ void TrainNetworkState::draw(float dt)
 		this->selectLevelForChunk();
 	}
 
-	this->_data->window.clear(sf::Color::White);
+	this->_data->window.clear(sf::Color(234, 212, 170, 255));
 	if (this->_display) {
 		_info.setPosition(this->_data->camera.getCameraBox().left, this->_data->camera.getCameraBox().top);
 
@@ -264,7 +264,7 @@ NNControlledPlayer * TrainNetworkState::getBestController()
 	float mostProgress = 0.0f;
 	NNControlledPlayer* bestController = nullptr;
 	for (NNControlledPlayer* nnplayer : this->_populationChunk) {
-		nnplayer->setColor(sf::Color::Blue);
+		//nnplayer->setColor(sf::Color::Blue);
 		if (nnplayer->getProgress() > mostProgress) {
 			bestController = &(*nnplayer);
 			mostProgress = nnplayer->getProgress();
