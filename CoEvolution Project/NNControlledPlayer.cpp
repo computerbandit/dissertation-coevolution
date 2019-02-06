@@ -24,10 +24,11 @@ void NNControlledPlayer::die()
 	}
 	else { //if the player has finished then the controller gets loads more fitness points
 		float leveltime = this->_timer.getElapsedTime().asSeconds();
-		float timepoints = ((leveltime * this->_data->gameSpeedMultiplier) - this->_levels->at(this->_currentLevel).getLevelTime()) * 10;
-		_networkController->setFitnessScore(getProgress());
-		//_networkController->setFitnessScore(getProgress() + 100.0f + timepoints);
-		//_networkController->setFitnessScore(1000.0f * (1.0f + ((float)this->_currentLevel/10)));
+		float timepoints = ((leveltime * this->_data->gameSpeedMultiplier) - this->_levels->at(this->_currentLevel).getLevelTime()) * 2;
+		//_networkController->setFitnessScore(getProgress());
+		_networkController->setFitnessScore(getProgress() + 500.0f);
+		//_networkController->setFitnessScore(getProgress() + 1000.0f + timepoints);
+		//_networkController->setFitnessScore((getProgress() + 500.0f + timepoints ) * (1.0f + ((float)this->_currentLevel/10)));
 	}
 	this->_lives = 0;
 	this->_previousProgress = 0.0f;
@@ -54,7 +55,7 @@ std::vector<float> NNControlledPlayer::controllersViewOfLevel(int up, int down, 
 	//assign the value of the tile to a number for the controllers perception
 	for (int i = 0; i < (int)tilesInArea.size(); i++) {
 		if (tilesInArea.at(i)->isSolid()) {
-			value = 15.0f;
+			value = 10.0f;
 		}
 		else {
 			switch (tilesInArea.at(i)->getTileID())
@@ -63,10 +64,10 @@ std::vector<float> NNControlledPlayer::controllersViewOfLevel(int up, int down, 
 				value = -100.0f;
 				break;
 			case CHECKPOINT_TILE:
-				value = 50.0f;
+				value = 0.0f;
 				break;
 			case FINISH_LINE_TILE:
-				value = 1000.0f;
+				value = 0.0f;
 				break;
 			default:
 				value = 0.0f;

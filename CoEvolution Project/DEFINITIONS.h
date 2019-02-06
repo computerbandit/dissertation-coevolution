@@ -15,9 +15,6 @@
 //trainning defines
 
 #define DISPLAY_TRAINNING true
-#define STARTING_TRAINNING_MUTATION_RATE 0.9f
-#define DEFUALT_TRAINNGNG_TIME_TO_LIVE 30.0f
-#define DEFUALT_TRAINNING_SPEED_MULTIPLIER 1.0f
 
 //Font
 #define MENU_FONT_PATH "Resources/fonts/Menu_Font.ttf"
@@ -48,6 +45,7 @@
 #define LEVEL_5_TIME 15
 #define LEVEL_6_TIME 15
 #define LEVEL_7_TIME 15
+#define LEVEL_8_TIME 15
 
 
 //Spritesheets

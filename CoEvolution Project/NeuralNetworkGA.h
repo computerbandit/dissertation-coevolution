@@ -43,10 +43,12 @@ public:
 
 	void nextGeneration();
 	void mutate(NeuralNetwork& network);
-	CrossoverProduct Crossover(NeuralNetwork& A, NeuralNetwork& B);
+	CrossoverProduct crossover(NeuralNetwork& A, NeuralNetwork& B);
 	void saveFittestNetwork(std::string token);
 	float averageFitness();
 	const NeuralNetwork& fittestNetwork();
 
+
+	int numberOfNNAboveFitness(float fitnessmarker);
 	void saveGAData(std::string token);
 };

@@ -78,7 +78,7 @@ void NeuralNetworkGA::evalutePopulation()
 
 	//TODO: After the population has been evaluated we need to export some of this data to th csv file, so we can look at the percentage error as the agents are lerning the levels
 
-	this->_gaData.append(std::to_string(this->getGeneration()) +" , " + std::to_string(this->fittestNetwork().getFitnessScore()) + " , " + std::to_string(this->averageFitness()) + "\n");
+	this->_gaData.append(std::to_string(this->getGeneration()) +" , " + std::to_string(this->fittestNetwork().getFitnessScore()) + " , " + std::to_string(this->averageFitness()) + " , " + std::to_string(this->numberOfNNAboveFitness(100.0f)) + "\n");
 
 	//std::ofstream csvfile;
 	//csvfile.open("Resources/networkdata/" +  + ".csv");
@@ -129,7 +129,7 @@ void NeuralNetworkGA::nextGeneration()
 	//std::cout << "Generating next generation ... ";
 	for (int i = 0; i < (_populationSize/2); i++) {
 		//crossover
-		CrossoverProduct child = Crossover(selectParent(), selectParent());
+		CrossoverProduct child = crossover(selectParent(), selectParent());
 
 		//make sure the the networks that were selected can be selected in the next loop
 
@@ -161,7 +161,7 @@ void NeuralNetworkGA::mutate(NeuralNetwork & network)
 		for (std::vector<float>& layer : m) {
 			for (float& w : layer) {
 				if (NeuralNetwork::randomFloat(0.0f, 1.0f) >= this->_mutationRate) {
-					w += NeuralNetwork::randomFloatNromalDist(0.0f, 0.2f);
+					w += NeuralNetwork::randomFloatNromalDist(0.0f, 0.3f);
 					if (w > 1.0f || w < -1.0f) {
 						w = std::max(-1.0f, std::min(w, 1.0f));
 					}
@@ -171,32 +171,9 @@ void NeuralNetworkGA::mutate(NeuralNetwork & network)
 	}
 
 	network.setLayers(layers);
-
-
-
-	/* randomly select connections in the network to be mutated
-	
-	int numOfChanges = 2;
-
-	for (int i = 0; i < numOfChanges; i++) {
-		//pick a random weight in the network
-		int layernum = NeuralNetwork::randomInt(0, layers.size() - 1);
-		int row = NeuralNetwork::randomInt(0, layers[layernum].size() - 1);
-		int coloumn = NeuralNetwork::randomInt(0, layers[layernum][row].size() - 1);
-
-		//mutate this random weight that we have selected and clamp it to -1 <-> 1 range
-		float& wieght = layers[layernum][row][coloumn];
-		wieght += NeuralNetwork::randomFloatNromalDist(0.0f, 0.4f);
-		if (wieght > 1.0f || wieght < -1.0f) {
-			wieght = std::max(-1.0f, std::min(wieght, 1.0f));
-		}
-	}
-
-	*/
-
 }
 
-CrossoverProduct NeuralNetworkGA::Crossover(NeuralNetwork & A,NeuralNetwork & B)
+CrossoverProduct NeuralNetworkGA::crossover(NeuralNetwork & A,NeuralNetwork & B)
 {
 	std::vector<float> chromeosomeA = A.matricesToChromesome();
 	std::vector<float> chromeosomeB = B.matricesToChromesome();
@@ -206,15 +183,9 @@ CrossoverProduct NeuralNetworkGA::Crossover(NeuralNetwork & A,NeuralNetwork & B)
 	std::vector<float> newChromeosomeA = std::vector<float>(connections);
 	std::vector<float> newChromeosomeB = std::vector<float>(connections);
 
-	int numOfCrossoverPoints = NeuralNetwork::randomInt(3,10);
-
+	//int numOfCrossoverPoints = NeuralNetwork::randomInt((chromeosomeA.size()-1)/4, (chromeosomeA.size() - 1) / 2);
+	int numOfCrossoverPoints = NeuralNetwork::randomInt(10, (chromeosomeA.size() - 1) / 2);
 	std::vector<int> crossoverPoints = std::vector<int>(numOfCrossoverPoints);
-
-	if (connections == 0) {
-		//stop plz
-		int i = 0;
-	}
-
 
 	for (int i = 0; i < numOfCrossoverPoints; i++) {
 		crossoverPoints[i] = NeuralNetwork::randomInt(0, (connections-1) < 0 ? connections : (connections - 1));
@@ -233,6 +204,17 @@ CrossoverProduct NeuralNetworkGA::Crossover(NeuralNetwork & A,NeuralNetwork & B)
 			index = (index + 1) % crossoverPoints.size();
 		}
 		if (parentToggle) {
+			//1% change to average the wieghts
+			/*
+			if (NeuralNetwork::randomFloat(0.0f, 1.0f) >= 0.999f) {
+				float sum = (chromeosomeB[i] + chromeosomeA[i]) / 2.0f;
+				newChromeosomeA[i] = sum;
+				newChromeosomeB[i] = sum;
+			}
+			else {
+				newChromeosomeA[i] = chromeosomeB[i];
+				newChromeosomeB[i] = chromeosomeA[i];
+			}*/
 			newChromeosomeA[i] = chromeosomeB[i];
 			newChromeosomeB[i] = chromeosomeA[i];
 		}
@@ -264,6 +246,17 @@ float NeuralNetworkGA::averageFitness()
 const NeuralNetwork & NeuralNetworkGA::fittestNetwork()
 {
 	return _population.front();
+}
+
+int NeuralNetworkGA::numberOfNNAboveFitness(float fitnessmarker)
+{
+	int count = 0;
+	for (NeuralNetwork& n : this->_population) {
+		if (n.getFitnessScore() >= fitnessmarker) {
+			count++;
+		}
+	}
+	return count;
 }
 
 void NeuralNetworkGA::saveGAData(std::string token)

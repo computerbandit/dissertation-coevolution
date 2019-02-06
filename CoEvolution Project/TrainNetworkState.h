@@ -8,7 +8,7 @@
 
 class TrainNetworkState : public State {
 public:
-	TrainNetworkState(GameDataRef data, float timetolive,  float speedMultiplier, bool display = false);
+	TrainNetworkState(GameDataRef data, bool display = false);
 	// Inherited via State
 	virtual void init() override;
 	virtual void cleanup() override;

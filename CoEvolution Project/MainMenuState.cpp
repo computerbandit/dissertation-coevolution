@@ -76,7 +76,7 @@ void MainMenuState::handleEvents()
 			}
 			else if (this->_data->inputManager.isSpriteClicked(_buttons[_strings[1]]._sprite, sf::Mouse::Button::Left, this->_data->window))
 			{
-				this->_data->stateMachine.pushState(StateRef(new TrainNetworkState(_data,DEFUALT_TRAINNGNG_TIME_TO_LIVE, DEFUALT_TRAINNING_SPEED_MULTIPLIER, DISPLAY_TRAINNING)),false);
+				this->_data->stateMachine.pushState(StateRef(new TrainNetworkState(_data, DISPLAY_TRAINNING)),false);
 			}
 			else if (this->_data->inputManager.isSpriteClicked(_buttons["Test"]._sprite, sf::Mouse::Button::Left, this->_data->window))
 			{
