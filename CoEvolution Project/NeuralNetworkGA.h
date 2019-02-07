@@ -3,6 +3,7 @@
 #include <map>
 #include "NeuralNetwork.h"
 
+
 struct CrossoverProduct
 {
 	NeuralNetwork A, B;

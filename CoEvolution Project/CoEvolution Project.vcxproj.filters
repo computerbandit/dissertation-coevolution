@@ -15,135 +15,135 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AssetManager.cpp">
+    <ClCompile Include="Framework\StateMachine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Camera.cpp">
+    <ClCompile Include="Framework\Texturesheet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Game.cpp">
+    <ClCompile Include="Framework\Tile.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GameState.cpp">
+    <ClCompile Include="Framework\Player.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="InputManager.cpp">
+    <ClCompile Include="Framework\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Level.cpp">
+    <ClCompile Include="Framework\Level.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="main.cpp">
+    <ClCompile Include="Framework\InputManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="MainMenuState.cpp">
+    <ClCompile Include="Framework\GameObjectManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Player.cpp">
+    <ClCompile Include="Framework\Game.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SplashState.cpp">
+    <ClCompile Include="Framework\Camera.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="StateMachine.cpp">
+    <ClCompile Include="Framework\AssetManager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Tile.cpp">
+    <ClCompile Include="Framework\AnimationController.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="GameObjectManager.cpp">
+    <ClCompile Include="States\GameState.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Texturesheet.cpp">
+    <ClCompile Include="States\MainMenuState.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TrainNetworkState.cpp">
+    <ClCompile Include="States\TestNetworkState.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="NNControlledPlayer.cpp">
+    <ClCompile Include="States\TrainNetworkState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="States\SplashState.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Neural\NeuralNetwork.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="NeuralNetworkGA.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="NeuralNetwork.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TestNetworkState.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="AnimationController.cpp">
+    <ClCompile Include="Neural\NNControlledPlayer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AssetManager.h">
+    <ClInclude Include="Framework\StateMachine.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Camera.h">
+    <ClInclude Include="Framework\State.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DEFINITIONS.h">
+    <ClInclude Include="Framework\Texturesheet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Game.h">
+    <ClInclude Include="Framework\Tile.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GameState.h">
+    <ClInclude Include="Framework\TILE_DEFINITIONS.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="IEntity.h">
+    <ClInclude Include="Framework\Player.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="InputManager.h">
+    <ClInclude Include="Framework\Level.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Level.h">
+    <ClInclude Include="Framework\InputManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="MainMenuState.h">
+    <ClInclude Include="Framework\IEntity.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Player.h">
+    <ClInclude Include="Framework\GameObjectManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SplashState.h">
+    <ClInclude Include="Framework\Game.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="State.h">
+    <ClInclude Include="Framework\DEFINITIONS.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="StateMachine.h">
+    <ClInclude Include="Framework\Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Tile.h">
+    <ClInclude Include="Framework\AssetManager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="GameObjectManager.h">
+    <ClInclude Include="Framework\AnimationController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TILE_DEFINITIONS.h">
+    <ClInclude Include="States\GameState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Texturesheet.h">
+    <ClInclude Include="States\MainMenuState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TrainNetworkState.h">
+    <ClInclude Include="States\TestNetworkState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="NNControlledPlayer.h">
+    <ClInclude Include="States\TrainNetworkState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="States\SplashState.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Neural\NNControlledPlayer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Neural\NeuralNetwork.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="NeuralNetworkGA.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="NeuralNetwork.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TestNetworkState.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="AnimationController.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -2,6 +2,7 @@
 #include "DEFINITIONS.h"
 #include <iostream>
 
+
 NNControlledPlayer::NNControlledPlayer(GameDataRef data, std::vector<Level>* levels, sf::Vector2f wh, NeuralNetwork* networkController): Player::Player(data, levels, wh), _networkController(networkController)
 {
 }

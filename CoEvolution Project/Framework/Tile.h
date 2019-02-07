@@ -18,4 +18,5 @@ private:
 	sf::FloatRect _box;
 	int _tileID;
 	bool _solid;
+	bool _interactable;
 };
