@@ -2,10 +2,11 @@
 #include <iostream>
 #include "SplashState.h"
 #include "MainMenuState.h"
-#include "DEFINITIONS.h"
+#include "../Framework/DEFINITIONS.h"
 
 SplashState::SplashState(GameDataRef data) : _data(data)
 {
+	this->_loadAssets = true;
 }
 
 void SplashState::init()
@@ -39,6 +40,16 @@ void SplashState::handleEvents()
 
 void SplashState::update(float dt)
 {
+	if (this->_loadAssets) {
+		this->_data->assetManager.loadTexturesheet(TILES, TILE_SHEET, sf::Vector2u(TEXTURE_SIZE, TEXTURE_SIZE));
+		this->_data->assetManager.loadTexturesheet(PLAYER, PLAYER_SHEET, sf::Vector2u(TEXTURE_SIZE, TEXTURE_SIZE));
+
+		this->_data->assetManager.loadAnimationState(PLAYER_IDLE, &this->_data->assetManager.getTexturesheet(PLAYER), 0, 8, 500.0f, false);
+
+
+		this->_loadAssets = false;
+	}
+
 	if (this->_clock.getElapsedTime().asSeconds() > SPLASH_STATE_SHOW_TIME) {
 		this->_data->stateMachine.pushState(StateRef(new MainMenuState(this->_data)));
 	}
@@ -49,4 +60,10 @@ void SplashState::draw(float dt)
 	this->_data->window.clear(sf::Color::Black);
 	this->_data->window.draw(_background);
 	this->_data->window.display();
+}
+
+void SplashState::loadingPhase()
+{
+	this->_data->assetManager.loadTexturesheet(TILES, TILE_SHEET, sf::Vector2u(TEXTURE_SIZE, TEXTURE_SIZE));
+	this->_data->assetManager.loadTexturesheet(PLAYER, PLAYER_SHEET, sf::Vector2u(TEXTURE_SIZE, TEXTURE_SIZE));
 }

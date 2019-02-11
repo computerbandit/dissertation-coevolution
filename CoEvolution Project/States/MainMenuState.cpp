@@ -2,7 +2,7 @@
 #include "TrainNetworkState.h"
 #include "TestNetworkState.h"
 #include "GameState.h"
-#include "DEFINITIONS.h"
+#include "../Framework/DEFINITIONS.h"
 #include <iostream>
 
 MainMenuState::MainMenuState(GameDataRef data) : _data(data)
@@ -46,9 +46,6 @@ void MainMenuState::init()
 		pos.y += buttonSprite.getLocalBounds().height + 25;
 		_buttons[s] = Button(buttonSprite, text);
 	}
-
-	this->_data->assetManager.loadTexturesheet(TILES, TILE_SHEET, sf::Vector2u(TEXTURE_SIZE, TEXTURE_SIZE));
-	this->_data->assetManager.loadTexturesheet(PLAYER, PLAYER_SHEET, sf::Vector2u(TEXTURE_SIZE, TEXTURE_SIZE));
 }
 
 void MainMenuState::cleanup()

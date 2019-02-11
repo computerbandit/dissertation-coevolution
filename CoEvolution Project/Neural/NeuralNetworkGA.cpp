@@ -4,7 +4,7 @@
 #include <fstream>
 #include <string>
 
-
+//this a comment
 NeuralNetworkGA::NeuralNetworkGA(std::vector<NeuralNetwork> population, float mRate): _population(population), _mutationRate(mRate)
 {
 	_populationSize = (int)_population.size();

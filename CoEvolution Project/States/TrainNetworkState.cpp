@@ -2,7 +2,7 @@
 #include "MainMenuState.h"
 #include <string>
 #include <iostream>
-#include "DEFINITIONS.h"
+#include "../Framework/DEFINITIONS.h"
 
 #define DEFUALT_TRAINNING_POPULATION_SIZE 300
 #define STARTING_TRAINNING_MUTATION_RATE 0.90f

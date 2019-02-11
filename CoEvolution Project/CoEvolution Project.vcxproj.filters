@@ -69,10 +69,10 @@
     <ClCompile Include="Neural\NeuralNetwork.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="NeuralNetworkGA.cpp">
+    <ClCompile Include="Neural\NNControlledPlayer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="Neural\NNControlledPlayer.cpp">
+    <ClCompile Include="Neural\NeuralNetworkGA.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -137,13 +137,13 @@
     <ClInclude Include="States\SplashState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Neural\NNControlledPlayer.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Neural\NeuralNetwork.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="NeuralNetworkGA.h">
+    <ClInclude Include="Neural\NNControlledPlayer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Neural\NeuralNetworkGA.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

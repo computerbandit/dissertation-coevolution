@@ -1,5 +1,5 @@
 #pragma once
-#include "SFML/Graphics.hpp"
+#include <SFML/Graphics.hpp>
 #define ASPECT_RATIO_WIDTH 4
 #define ASPECT_RATIO_HEIGHT 3
 

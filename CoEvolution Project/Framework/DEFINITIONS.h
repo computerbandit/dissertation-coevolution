@@ -53,3 +53,9 @@
 #define TILE_SHEET "Resources/res/Tile_Sheet.png"
 #define PLAYER "Player_Sheet"
 #define PLAYER_SHEET "Resources/res/Player_Sheet.png"
+
+
+
+//Animation States
+
+#define PLAYER_IDLE "Player_Idle"

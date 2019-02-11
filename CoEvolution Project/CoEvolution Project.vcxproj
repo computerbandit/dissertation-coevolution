@@ -134,7 +134,7 @@
     <ClCompile Include="Framework\Camera.cpp" />
     <ClCompile Include="Framework\GameObjectManager.cpp" />
     <ClCompile Include="Framework\Game.cpp" />
-    <ClCompile Include="NeuralNetworkGA.cpp" />
+    <ClCompile Include="Neural\NeuralNetworkGA.cpp" />
     <ClCompile Include="Neural\NNControlledPlayer.cpp" />
     <ClCompile Include="States\GameState.cpp" />
     <ClCompile Include="Framework\InputManager.cpp" />
@@ -157,7 +157,7 @@
     <ClInclude Include="Framework\DEFINITIONS.h" />
     <ClInclude Include="Framework\GameObjectManager.h" />
     <ClInclude Include="Framework\Game.h" />
-    <ClInclude Include="NeuralNetworkGA.h" />
+    <ClInclude Include="Neural\NeuralNetworkGA.h" />
     <ClInclude Include="States\GameState.h" />
     <ClInclude Include="Framework\IEntity.h" />
     <ClInclude Include="Framework\InputManager.h" />

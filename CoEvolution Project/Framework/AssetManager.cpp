@@ -30,6 +30,16 @@ Texturesheet & AssetManager::getTexturesheet(std::string name)
 	return this->_texturesheets.at(name);
 }
 
+void AssetManager::loadAnimationState(std::string name, Texturesheet * sheet, int startindex, int length, float time, bool single)
+{
+	this->_animinations[name] = AnimationState(name, sheet, startindex, length, time, single);
+}
+
+AnimationState & AssetManager::getAnimationState(std::string name)
+{
+	return this->_animinations.at(name);
+}
+
 void AssetManager::loadFont(std::string name, std::string fileName)
 {
 	sf::Font font;

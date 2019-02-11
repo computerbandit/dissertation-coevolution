@@ -1,8 +1,8 @@
 #pragma once
-#include "State.h"
-#include "Game.h"
-#include "Level.h"
-#include "NNControlledPlayer.h"
+#include "../Framework/State.h"
+#include "../Framework/Game.h"
+#include "../Framework/Level.h"
+#include "../Neural/NNControlledPlayer.h"
 #include <SFML/Graphics.hpp>
 
 class TestNetworkState : public State {

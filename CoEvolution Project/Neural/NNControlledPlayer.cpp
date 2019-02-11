@@ -1,5 +1,5 @@
 #include "NNControlledPlayer.h"
-#include "DEFINITIONS.h"
+#include "../Framework/DEFINITIONS.h"
 #include <iostream>
 
 

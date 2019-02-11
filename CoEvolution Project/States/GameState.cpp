@@ -1,5 +1,5 @@
-#include "GameState.h"
-#include "DEFINITIONS.h"
+#include "../States/GameState.h"
+#include "../Framework/DEFINITIONS.h"
 #include <iostream>
 
 GameState::GameState(GameDataRef data) : _data(data)

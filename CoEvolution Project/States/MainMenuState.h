@@ -1,6 +1,6 @@
 #pragma once
-#include "State.h"
-#include "Game.h"
+#include "../Framework/State.h"
+#include "../Framework/Game.h"
 #include <map>
 #include <SFML/Graphics.hpp>
 

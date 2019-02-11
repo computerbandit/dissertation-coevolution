@@ -1,6 +1,6 @@
 #include "Player.h"
 #include "Tile.h"
-#include "MainMenuState.h"
+#include "../States/MainMenuState.h"
 #include "DEFINITIONS.h"
 #include <iostream>
 
@@ -8,9 +8,13 @@ Player::Player(GameDataRef data, std::vector<Level>* levels, sf::Vector2f wh) : 
 {
 	this->_speed = 300.0f;
 	this->_jumpVelocity = 450.0f;
-	this->_sprite.setTexture(this->_data->assetManager.getTexturesheet(PLAYER).getTexture(0));
-	AssetManager::rescale(_sprite, wh);
 	this->_animController = new AnimationController(this->_sprite);
+	std::vector<std::string> animNames = std::vector<std::string>();
+	animNames.push_back(PLAYER_IDLE);
+
+	this->_animController->mapAnimations(&this->_data->assetManager,animNames);
+	this->_animController->nextAnimation(PLAYER_IDLE, true);
+
 	this->init();
 }
 
@@ -136,6 +140,7 @@ void Player::update(float dt)
 
 void Player::draw(float dt)
 {
+	this->_animController->update();
 	this->_data->window.draw(this->_sprite);
 }
 
