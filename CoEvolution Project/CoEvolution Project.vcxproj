@@ -129,6 +129,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Entity\Coin.cpp" />
     <ClCompile Include="Framework\AnimationController.cpp" />
     <ClCompile Include="Framework\AssetManager.cpp" />
     <ClCompile Include="Framework\Camera.cpp" />
@@ -142,7 +143,7 @@
     <ClCompile Include="Framework\main.cpp" />
     <ClCompile Include="States\MainMenuState.cpp" />
     <ClCompile Include="Neural\NeuralNetwork.cpp" />
-    <ClCompile Include="Framework\Player.cpp" />
+    <ClCompile Include="Entity\Player.cpp" />
     <ClCompile Include="States\SplashState.cpp" />
     <ClCompile Include="Framework\StateMachine.cpp" />
     <ClCompile Include="States\TestNetworkState.cpp" />
@@ -151,6 +152,7 @@
     <ClCompile Include="States\TrainNetworkState.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Entity\Coin.h" />
     <ClInclude Include="Framework\AnimationController.h" />
     <ClInclude Include="Framework\AssetManager.h" />
     <ClInclude Include="Framework\Camera.h" />
@@ -165,14 +167,13 @@
     <ClInclude Include="States\MainMenuState.h" />
     <ClInclude Include="Neural\NeuralNetwork.h" />
     <ClInclude Include="Neural\NNControlledPlayer.h" />
-    <ClInclude Include="Framework\Player.h" />
+    <ClInclude Include="Entity\Player.h" />
     <ClInclude Include="States\SplashState.h" />
     <ClInclude Include="States\TestNetworkState.h" />
     <ClInclude Include="Framework\Texturesheet.h" />
     <ClInclude Include="Framework\State.h" />
     <ClInclude Include="Framework\StateMachine.h" />
     <ClInclude Include="Framework\Tile.h" />
-    <ClInclude Include="Framework\TILE_DEFINITIONS.h" />
     <ClInclude Include="States\TrainNetworkState.h" />
   </ItemGroup>
   <ItemGroup>

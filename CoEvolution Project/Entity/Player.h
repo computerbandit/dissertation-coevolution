@@ -1,8 +1,8 @@
 #pragma once
-#include "Game.h"
-#include "Level.h"
-#include "IEntity.h"
-#include "AnimationController.h"
+#include "../Framework/Game.h"
+#include "../Framework/Level.h"
+#include "../Framework/IEntity.h"
+#include "../Framework/AnimationController.h"
 
 class Player : virtual public IEntity {
 

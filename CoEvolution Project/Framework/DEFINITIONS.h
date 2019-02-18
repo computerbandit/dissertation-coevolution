@@ -1,5 +1,4 @@
 #pragma once
-#include "TILE_DEFINITIONS.h"
 
 #define SCREEN_WIDTH 800
 #define SCREEN_HEIGHT 600
@@ -12,9 +11,18 @@
 #define SPLASH_STATE_SHOW_TIME 0.5f
 #define SPLASH_STATE_BACKGROUND_PATH "Resources/res/Splash_Background.png"
 
-//trainning defines
 
-#define DISPLAY_TRAINNING true
+//Spritesheets
+#define TILES "Tile_Sheet"
+#define TILE_SHEET "Resources/res/Tile_Sheet.png"
+#define EXTRA "Extra_Sheet"
+#define EXTRA_SHEET "Resources/res/Extra_Sheet.png"
+#define PLAYER "Player_Sheet"
+#define PLAYER_SHEET "Resources/res/Player_Sheet.png"
+
+//Animation States
+#define PLAYER_IDLE "Player_Idle"
+#define COIN_IDLE "Coin_Idle"
 
 //Font
 #define MENU_FONT_PATH "Resources/fonts/Menu_Font.ttf"
@@ -47,15 +55,5 @@
 #define LEVEL_7_TIME 15
 #define LEVEL_8_TIME 15
 
-
-//Spritesheets
-#define TILES "Tile_Sheet"
-#define TILE_SHEET "Resources/res/Tile_Sheet.png"
-#define PLAYER "Player_Sheet"
-#define PLAYER_SHEET "Resources/res/Player_Sheet.png"
-
-
-
-//Animation States
-
-#define PLAYER_IDLE "Player_Idle"
+//trainning defines
+#define DISPLAY_TRAINNING true

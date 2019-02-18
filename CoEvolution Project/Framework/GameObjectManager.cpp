@@ -10,6 +10,12 @@ void GameObjectManager::addEntity(IEntity * e)
 	this->_entities.push_back(e);
 }
 
+void GameObjectManager::removeEntity(IEntity * e)
+{
+	auto it = std::find(_entities.begin(), _entities.end(), e);
+	if (it != _entities.end()) { _entities.erase(it); }
+}
+
 
 void GameObjectManager::clearEntities()
 {
@@ -31,11 +37,11 @@ void GameObjectManager::update(float dt)
 	for(int i = 0; i < (int)_entities.size(); i++){
 		if (_entities[i]->isActive()) {
 			_entities[i]->update(dt);
-		}/*
-		else {
+		}
+		else if(_entities[i]->toBeDestroyed()) {
 			//deactivate / remove the entity;
 			_entities.erase(_entities.begin() + i);
-		}*/
+		}
 	}
 }
 

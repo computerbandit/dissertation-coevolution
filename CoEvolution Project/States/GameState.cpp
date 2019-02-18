@@ -20,12 +20,16 @@ void GameState::init()
 	_levels.push_back(Level(_data, TRAINNING_LEVEL_7, LEVEL_7_TIME));
 	
 
+	_coin = new Coin(_data);
+	this->_data->gameObjectManager.addEntity(_coin);
+
+
 	//init Player
-	_player = new Player(_data, &_levels, sf::Vector2f(TILE_SIZE / 4, TILE_SIZE / 4));
+	_player = new Player(_data, &_levels, sf::Vector2f(TILE_SIZE / 2, TILE_SIZE / 2));
 	this->_data->gameObjectManager.addEntity(_player);
 
 	this->_data->camera = Camera(&(this->_data->window), this->_data->window.getSize(), sf::Vector2f(0, 0));
-	this->_data->camera.zoom(1.1f);
+	this->_data->camera.zoom(1.4f);
 }
 
 void GameState::cleanup()

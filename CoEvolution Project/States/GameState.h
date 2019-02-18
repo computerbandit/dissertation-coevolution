@@ -2,7 +2,8 @@
 #include "../Framework/State.h"
 #include "../Framework/Game.h"
 #include "../Framework/Level.h"
-#include "../Framework/Player.h"
+#include "../Entity/Player.h"
+#include "../Entity/Coin.h"
 #include <SFML/Graphics.hpp>
 
 class GameState : public State {
@@ -19,4 +20,5 @@ private:
 	std::vector<Level> _levels;
 	int _currentLevel;
 	Player * _player;
+	Coin * _coin;
 };

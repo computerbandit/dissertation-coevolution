@@ -12,10 +12,7 @@ struct AnimationState {
 	float _time = 1000.0f;
 	bool _static = true;
 	AnimationState() {}
-	AnimationState(std::string name , Texturesheet* sheet, int startindex, int length, float time, bool single) : _name(name), _sheet(sheet), _startindex(startindex), _length(length), _time(time), _static(single)
-	{
-		
-	}
+	AnimationState(std::string name , Texturesheet* sheet, int startindex, int length, float time, bool single) : _name(name), _sheet(sheet), _startindex(startindex), _length(length), _time(time), _static(single){}
 };
 
 class AnimationController {

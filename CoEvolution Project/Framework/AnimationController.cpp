@@ -44,7 +44,7 @@ void AnimationController::update()
 	if (this->_clock.getElapsedTime().asMilliseconds() >= this->_tpf) {
 
 		if (this->_loop) {
-			this->_frame = (this->_frame + 1) % this->_currentAnimationState->_length;
+			this->_frame = ((this->_frame + 1) % this->_currentAnimationState->_length) + this->_currentAnimationState->_startindex;
 		}
 		else {
 			if (this->_frame + 1 >= (this->_currentAnimationState->_startindex + (this->_currentAnimationState->_length - 1))) {

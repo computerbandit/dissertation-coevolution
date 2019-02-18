@@ -1,7 +1,7 @@
 #include "Player.h"
-#include "Tile.h"
+#include "../Framework/Tile.h"
 #include "../States/MainMenuState.h"
-#include "DEFINITIONS.h"
+#include "../Framework/DEFINITIONS.h"
 #include <iostream>
 
 Player::Player(GameDataRef data, std::vector<Level>* levels, sf::Vector2f wh) : _data(data), _levels(levels), _currentLevel(0)
@@ -11,9 +11,9 @@ Player::Player(GameDataRef data, std::vector<Level>* levels, sf::Vector2f wh) : 
 	this->_animController = new AnimationController(this->_sprite);
 	std::vector<std::string> animNames = std::vector<std::string>();
 	animNames.push_back(PLAYER_IDLE);
-
 	this->_animController->mapAnimations(&this->_data->assetManager,animNames);
 	this->_animController->nextAnimation(PLAYER_IDLE, true);
+	AssetManager::rescale(this->_sprite, wh);
 
 	this->init();
 }

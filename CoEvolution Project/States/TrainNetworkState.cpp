@@ -51,6 +51,7 @@ void TrainNetworkState::init()
 	this->selectLevelForChunk();
 
 	this->_data->camera = Camera(&(this->_data->window), this->_data->window.getSize(), sf::Vector2f(0, 0));
+	this->_data->camera.zoom(1.4f);
 	//the init ttl should be v small just so the networks can rapidly get to the point where they have some features to evolve.
 	_info.setString("Controller View Size: " + std::to_string(INPUT_LAYER_SIZE) + "\nPopulation Size:" + std::to_string(this->_playerPopulation.size()) + "\nGeneration [" + std::to_string(this->_ga.getGeneration()) + "] \nAverage Fitness: " + std::to_string(this->_ga.averageFitness()) + "\nBest Fitness: 0\nSpeed: " + std::to_string(this->_data->gameSpeedMultiplier) + "x");
 }

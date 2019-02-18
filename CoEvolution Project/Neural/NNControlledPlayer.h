@@ -1,6 +1,6 @@
 #pragma once
 #include "NeuralNetwork.h"
-#include "../Framework/Player.h"
+#include "../Entity/Player.h"
 
 class NNControlledPlayer : public Player {
 public:

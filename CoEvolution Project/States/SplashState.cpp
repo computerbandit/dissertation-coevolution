@@ -43,9 +43,10 @@ void SplashState::update(float dt)
 	if (this->_loadAssets) {
 		this->_data->assetManager.loadTexturesheet(TILES, TILE_SHEET, sf::Vector2u(TEXTURE_SIZE, TEXTURE_SIZE));
 		this->_data->assetManager.loadTexturesheet(PLAYER, PLAYER_SHEET, sf::Vector2u(TEXTURE_SIZE, TEXTURE_SIZE));
+		this->_data->assetManager.loadTexturesheet(EXTRA, EXTRA_SHEET, sf::Vector2u(TEXTURE_SIZE, TEXTURE_SIZE));
 
-		this->_data->assetManager.loadAnimationState(PLAYER_IDLE, &this->_data->assetManager.getTexturesheet(PLAYER), 0, 8, 500.0f, false);
-
+		this->_data->assetManager.loadAnimationState(PLAYER_IDLE, &this->_data->assetManager.getTexturesheet(PLAYER), 8, 8, 500.0f, false);
+		this->_data->assetManager.loadAnimationState(COIN_IDLE, &this->_data->assetManager.getTexturesheet(EXTRA), 0, 8, 1000.0f, true);
 
 		this->_loadAssets = false;
 	}

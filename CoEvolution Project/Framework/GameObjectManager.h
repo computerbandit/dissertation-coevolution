@@ -9,8 +9,8 @@ public:
 	~GameObjectManager();
 
 	void addEntity(IEntity* e);
+	void removeEntity(IEntity* e);
 	void clearEntities();
-
 
 	void draw(float dt);
 	void update(float dt);

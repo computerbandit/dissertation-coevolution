@@ -12,6 +12,16 @@ public:
 	bool isActive() {
 		return _active;
 	}
+
+	bool toBeDestroyed() {
+		return _destroy;
+	}
+
+	void destory() {
+		deactivate();
+		_destroy = true;
+	}
+
 	void deactivate() {
 		_active = false;
 	}
@@ -23,4 +33,5 @@ protected:
 	sf::Vector2f _velocity;
 	sf::Vector2f _position;
 	bool _active = true;
+	bool _destroy = false;
 };

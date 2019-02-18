@@ -1,4 +1,6 @@
 #include "Texturesheet.h"
+#include "AssetManager.h"
+#include "DEFINITIONS.h"
 
 Texturesheet::Texturesheet(sf::Image texturesheet, sf::Vector2u texturesize) : _texturesize(texturesize) 
 {

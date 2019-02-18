@@ -30,7 +30,7 @@ void Level::loadLevelFromTextFile(std::string filePath)
 				int tileID = std::stoi(token);
 				sf::Sprite spriteTile;
 				spriteTile.setTexture(this->_data->assetManager.getTexturesheet(TILES).getTexture(tileID));
-				AssetManager::rescale(spriteTile, SCALE_FACTOR);
+				AssetManager::rescale(spriteTile, ZOOM_FACTOR);
 				//change the width and height scaling
 				sf::Vector2f pos(j*TILE_SIZE, i*TILE_SIZE);
 				spriteTile.setPosition(pos);
