@@ -12,6 +12,9 @@ public:
 	// Inherited via State
 	virtual void init() override;
 	virtual void cleanup() override;
+
+	virtual void resume() override;
+
 	virtual void handleEvents() override;
 	virtual void update(float dt) override;
 	virtual void draw(float dt) override;

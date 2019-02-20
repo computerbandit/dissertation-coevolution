@@ -19,10 +19,10 @@ void StateMachine::processStateChanges()
 	{
 		this->_states.top()->cleanup();
 		this->_states.pop();
+		this->_isRemoving = false;
 		if (!this->_states.empty()) {
 			this->_states.top()->resume();
 		}
-		this->_isRemoving = false;
 	}
 
 	if (this->_isAdding) {
@@ -39,6 +39,26 @@ void StateMachine::processStateChanges()
 		this->_states.top()->init();
 		this->_isAdding = false;
 	}
+
+	//if there is a change on the transition flags then call the relevant state transition function
+	if (getSTF() != NEUTRAL) {
+		getAvtiveState()->handleStateTransition();
+	}
+}
+
+void StateMachine::setSTF(char flag)
+{
+	_stateTransitionFlag = flag;
+}
+
+void StateMachine::resetSTF()
+{
+	_stateTransitionFlag = NEUTRAL;
+}
+
+char & StateMachine::getSTF()
+{
+	return _stateTransitionFlag;
 }
 
 StateRef & StateMachine::getAvtiveState()

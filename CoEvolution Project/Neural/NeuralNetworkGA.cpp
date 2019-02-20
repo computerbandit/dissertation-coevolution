@@ -183,7 +183,7 @@ CrossoverProduct NeuralNetworkGA::crossover(NeuralNetwork & A,NeuralNetwork & B)
 	std::vector<float> newChromeosomeB = std::vector<float>(connections);
 
 	
-	if (NeuralNetwork::randomFloat(0.0f, 1.0f) >= 0.95f) {
+	if (NeuralNetwork::randomFloat(0.0f, 1.0f) >= 0.90f) {
 		//int numOfCrossoverPoints = NeuralNetwork::randomInt((chromeosomeA.size()-1)/4, (chromeosomeA.size() - 1) / 2);
 		int numOfCrossoverPoints = 1;
 		//int numOfCrossoverPoints = NeuralNetwork::randomInt(10, (chromeosomeA.size() - 1) / 2);
@@ -202,7 +202,7 @@ CrossoverProduct NeuralNetworkGA::crossover(NeuralNetwork & A,NeuralNetwork & B)
 		int index = 0;
 		//0.1% change to average the wieghts
 
-		if (NeuralNetwork::randomFloat(0.0f, 1.0f) >= 0.9999f) {
+		if (NeuralNetwork::randomFloat(0.0f, 1.0f) >= 0.99f) {
 			for (int i = 0; i < (int)chromeosomeA.size(); i++) {
 				float sum = (chromeosomeB[i] + chromeosomeA[i]) / 2.0f;
 				newChromeosomeA[i] = sum;

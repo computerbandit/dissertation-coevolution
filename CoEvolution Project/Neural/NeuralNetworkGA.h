@@ -14,7 +14,7 @@ class NeuralNetworkGA{
 
 	std::vector<NeuralNetwork> _population;
 	int _populationSize = 0, _generation = 0;
-	float _mutationRate = 0.05f;
+	float _mutationRate = 0.999f;
 	bool _solution = false;
 	std::string _gaData = "";
 

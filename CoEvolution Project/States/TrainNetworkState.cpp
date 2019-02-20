@@ -1,37 +1,37 @@
 #include "TrainNetworkState.h"
-#include "MainMenuState.h"
+#include "TrainingPauseState.h"
 #include <string>
 #include <iostream>
 #include "../Framework/DEFINITIONS.h"
 
-#define DEFUALT_TRAINNING_POPULATION_SIZE 300
-#define STARTING_TRAINNING_MUTATION_RATE 0.90f
-#define TRAINNING_MUTATION_RATE 0.9998f
-#define DEFUALT_TRAINNGNG_TIME_TO_LIVE 30.0f
-#define DEFUALT_TRAINNING_SPEED_MULTIPLIER 1.0f
-#define PASS_PERCENT_NEEDED 0.90f
+#define DEFUALT_TRAINING_POPULATION_SIZE 100
+#define STARTING_TRAINING_MUTATION_RATE 0.95f
+#define TRAINING_MUTATION_RATE 0.99f
+#define DEFUALT_TRAINING_TIME_TO_LIVE 30.0f
+#define DEFUALT_TRAINING_SPEED_MULTIPLIER 1.0f
+#define PASS_PERCENT_NEEDED 0.99f
 
 #define INPUT_LAYER_SIZE (2+1+2) * (2+1+2)	
 
-TrainNetworkState::TrainNetworkState(GameDataRef data, bool display): _data(data), _display(display), _ttl(DEFUALT_TRAINNGNG_TIME_TO_LIVE)
+TrainNetworkState::TrainNetworkState(GameDataRef data, bool display): _data(data), _display(display), _ttl(DEFUALT_TRAINING_TIME_TO_LIVE)
 {
-	_ga = NeuralNetworkGA(NeuralNetwork::generatePopulation(DEFUALT_TRAINNING_POPULATION_SIZE, {INPUT_LAYER_SIZE,  6, 6 , 3}), STARTING_TRAINNING_MUTATION_RATE);
+	_ga = NeuralNetworkGA(NeuralNetwork::generatePopulation(DEFUALT_TRAINING_POPULATION_SIZE, {INPUT_LAYER_SIZE, 6, 6 , 2}), STARTING_TRAINING_MUTATION_RATE);
 	this->_levels = std::vector<Level>();
-	this->_data->gameSpeedMultiplier = DEFUALT_TRAINNING_SPEED_MULTIPLIER;
+	this->_data->gameSpeedMultiplier = DEFUALT_TRAINING_SPEED_MULTIPLIER;
 	this->_token = std::to_string(time(0));
 }
 
 void TrainNetworkState::init()
 {
 	//load the levels in the order to play them;
-	_levels.push_back(Level(_data, TRAINNING_LEVEL_1, LEVEL_1_TIME));
-	//_levels.push_back(Level(_data, TRAINNING_LEVEL_2, LEVEL_2_TIME));
-	//_levels.push_back(Level(_data, TRAINNING_LEVEL_3, LEVEL_3_TIME));
-	//_levels.push_back(Level(_data, TRAINNING_LEVEL_4, LEVEL_4_TIME));
-	//_levels.push_back(Level(_data, TRAINNING_LEVEL_5, LEVEL_5_TIME));
-	//_levels.push_back(Level(_data, TRAINNING_LEVEL_6, LEVEL_6_TIME));
-	//_levels.push_back(Level(_data, TRAINNING_LEVEL_7, LEVEL_7_TIME));
-	_levels.push_back(Level(_data, TRAINNING_LEVEL_8, LEVEL_8_TIME));
+	_levels.push_back(Level(_data, TRAINING_LEVEL_1, LEVEL_1_TIME));
+	//_levels.push_back(Level(_data, TRAINING_LEVEL_2, LEVEL_2_TIME));
+	//_levels.push_back(Level(_data, TRAINING_LEVEL_3, LEVEL_3_TIME));
+	//_levels.push_back(Level(_data, TRAINING_LEVEL_4, LEVEL_4_TIME));
+	//_levels.push_back(Level(_data, TRAINING_LEVEL_5, LEVEL_5_TIME));
+	_levels.push_back(Level(_data, TRAINING_LEVEL_6, LEVEL_6_TIME));
+	_levels.push_back(Level(_data, TRAINING_LEVEL_7, LEVEL_7_TIME));
+	//_levels.push_back(Level(_data, TRAINNING_LEVEL_8, LEVEL_8_TIME));
 
 	_info.setFont(this->_data->assetManager.getFont("Menu Font"));
 	_info.setCharacterSize(20);
@@ -41,7 +41,7 @@ void TrainNetworkState::init()
 	_playerPopulation = std::vector<NNControlledPlayer>();
 	std::vector<NeuralNetwork>& gapop = _ga.getPopulation();
 	for (int i = 0; i < (int)_ga.getPopulation().size(); i++) {
-		_playerPopulation.push_back(NNControlledPlayer(_data, &_levels, sf::Vector2f(TILE_SIZE/2, TILE_SIZE/2), &gapop.at(i)));
+		_playerPopulation.push_back(NNControlledPlayer(_data, &_levels, sf::Vector2f(TILE_SIZE/4, TILE_SIZE/4), &gapop.at(i)));
 	}
 	for (NNControlledPlayer& n : _playerPopulation) {
 		this->_data->gameObjectManager.addEntity(&n);
@@ -62,6 +62,14 @@ void TrainNetworkState::cleanup()
 	this->_data->gameObjectManager.clearEntities();
 	this->_playerPopulation.clear();
 	this->_levels.clear();
+}
+
+void TrainNetworkState::resume()
+{
+	if (this->_data->stateMachine.getSTF() == EXIT) {
+		this->_data->stateMachine.popState();
+		this->_data->stateMachine.resetSTF();
+	}
 }
 
 void TrainNetworkState::handleEvents()
@@ -100,7 +108,7 @@ void TrainNetworkState::handleEvents()
 			}
 
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
-				this->_data->stateMachine.popState();
+				this->_data->stateMachine.pushState(StateRef(new TrainingPauseState(_data)), false);
 			}
 		}
 	}
@@ -117,17 +125,16 @@ void TrainNetworkState::update(float dt)
 			 output = nnplayer->getNetworkController()->getOutput();
 			//given the outputs of the network 
 			
-			 if (output.size() == 3) {
+			 if (output.size() == 2) {
 				 //go left 
 				 if (output.at(0) > 0.9f) {
 					 nnplayer->right();
 				 }
-				 // go right
-				 if (output.at(1) > 0.9f) {
+				 else if (output.at(0) < -0.9f) {
 					 nnplayer->left();
-				 }
+				 } 
 				 // Jump
-				 if (output.at(2) > 0.9f) {
+				 if (output.at(1) > 0.9f) {
 					 nnplayer->jump();
 				 }
 				 else {
@@ -150,9 +157,9 @@ void TrainNetworkState::draw(float dt)
 	
 
 	if (bestController != nullptr) {
-		if (_ttl < 1.0f && bestController->getNetworkController()->getFitnessScore() > 0.0f) {
-			_ttl = DEFUALT_TRAINNGNG_TIME_TO_LIVE;
-			this->_ga.setMutationRate(TRAINNING_MUTATION_RATE);
+		if (bestController->getNetworkController()->getFitnessScore() > 1.0f) {
+			_ttl = DEFUALT_TRAINING_TIME_TO_LIVE;
+			this->_ga.setMutationRate(TRAINING_MUTATION_RATE);
 		}
 		if (_display) {
 			bestController->setColor(sf::Color::Red);
@@ -187,7 +194,7 @@ void TrainNetworkState::draw(float dt)
 			int nnPassed = this->_ga.numberOfNNAboveFitness(100.0f);
 			NNControlledPlayer& bestController = this->_playerPopulation.front();
 
-			_info.setString("Controller View Size: " + std::to_string(INPUT_LAYER_SIZE) + "\nPopulation Size:" + std::to_string(this->_playerPopulation.size()) + "\nGeneration [" + std::to_string(this->_ga.getGeneration()) + "] \nAverage Fitness: " + std::to_string(this->_ga.averageFitness()) + "\nBest Fitness: " + std::to_string(bestController.getNetworkController()->getFitnessScore()) + "\nPPC: " + std::to_string(nnPassed) +" of "+ std::to_string((int)(PASS_PERCENT_NEEDED*DEFUALT_TRAINNING_POPULATION_SIZE)) + "\nSpeed: " + std::to_string(this->_data->gameSpeedMultiplier) + "x");
+			_info.setString("Controller View Size: " + std::to_string(INPUT_LAYER_SIZE) + "\nPopulation Size:" + std::to_string(this->_playerPopulation.size()) + "\nGeneration [" + std::to_string(this->_ga.getGeneration()) + "] \nAverage Fitness: " + std::to_string(this->_ga.averageFitness()) + "\nBest Fitness: " + std::to_string(bestController.getNetworkController()->getFitnessScore()) + "\nPPC: " + std::to_string(nnPassed) +" of "+ std::to_string((int)(PASS_PERCENT_NEEDED*DEFUALT_TRAINING_POPULATION_SIZE)) + "\nSpeed: " + std::to_string(this->_data->gameSpeedMultiplier) + "x");
 
 
 			if (((float)nnPassed/(int)_playerPopulation.size()) >= PASS_PERCENT_NEEDED) {

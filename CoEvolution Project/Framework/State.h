@@ -7,6 +7,7 @@ public:
 
 	virtual void pause() {}
 	virtual void resume() {}
+	virtual void handleStateTransition() {}
 
 	virtual void handleEvents() = 0;
 	virtual void update(float dt) = 0;
