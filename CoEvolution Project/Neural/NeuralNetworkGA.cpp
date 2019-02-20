@@ -182,46 +182,62 @@ CrossoverProduct NeuralNetworkGA::crossover(NeuralNetwork & A,NeuralNetwork & B)
 	std::vector<float> newChromeosomeA = std::vector<float>(connections);
 	std::vector<float> newChromeosomeB = std::vector<float>(connections);
 
-	//int numOfCrossoverPoints = NeuralNetwork::randomInt((chromeosomeA.size()-1)/4, (chromeosomeA.size() - 1) / 2);
-	int numOfCrossoverPoints = NeuralNetwork::randomInt(10, (chromeosomeA.size() - 1) / 2);
-	std::vector<int> crossoverPoints = std::vector<int>(numOfCrossoverPoints);
+	
+	if (NeuralNetwork::randomFloat(0.0f, 1.0f) >= 0.95f) {
+		//int numOfCrossoverPoints = NeuralNetwork::randomInt((chromeosomeA.size()-1)/4, (chromeosomeA.size() - 1) / 2);
+		int numOfCrossoverPoints = 1;
+		//int numOfCrossoverPoints = NeuralNetwork::randomInt(10, (chromeosomeA.size() - 1) / 2);
+		std::vector<int> crossoverPoints = std::vector<int>(numOfCrossoverPoints);
 
-	for (int i = 0; i < numOfCrossoverPoints; i++) {
-		crossoverPoints[i] = NeuralNetwork::randomInt(0, (connections-1) < 0 ? connections : (connections - 1));
-	}
-
-	std::sort(crossoverPoints.begin(), crossoverPoints.end());
-	crossoverPoints.erase(std::unique(crossoverPoints.begin(), crossoverPoints.end()), crossoverPoints.end());
-
-	//perform the corssover on the chromeosomes
-	//child A
-	bool parentToggle = false;
-	int index = 0;
-	for (int i = 0; i < (int)chromeosomeA.size(); i++) {
-		if (i == crossoverPoints[index]) {
-			parentToggle = !parentToggle;
-			index = (index + 1) % crossoverPoints.size();
+		for (int i = 0; i < numOfCrossoverPoints; i++) {
+			crossoverPoints[i] = NeuralNetwork::randomInt(0, (connections - 1) < 0 ? connections : (connections - 1));
 		}
-		if (parentToggle) {
-			//1% change to average the wieghts
-			/*
-			if (NeuralNetwork::randomFloat(0.0f, 1.0f) >= 0.999f) {
+
+		std::sort(crossoverPoints.begin(), crossoverPoints.end());
+		crossoverPoints.erase(std::unique(crossoverPoints.begin(), crossoverPoints.end()), crossoverPoints.end());
+
+		//perform the corssover on the chromeosomes
+		//child A
+		bool parentToggle = false;
+		int index = 0;
+		//0.1% change to average the wieghts
+
+		if (NeuralNetwork::randomFloat(0.0f, 1.0f) >= 0.9999f) {
+			for (int i = 0; i < (int)chromeosomeA.size(); i++) {
 				float sum = (chromeosomeB[i] + chromeosomeA[i]) / 2.0f;
 				newChromeosomeA[i] = sum;
 				newChromeosomeB[i] = sum;
 			}
-			else {
-				newChromeosomeA[i] = chromeosomeB[i];
-				newChromeosomeB[i] = chromeosomeA[i];
-			}*/
-			newChromeosomeA[i] = chromeosomeB[i];
-			newChromeosomeB[i] = chromeosomeA[i];
 		}
 		else {
-			newChromeosomeA[i] = chromeosomeA[i];
-			newChromeosomeB[i] = chromeosomeB[i];
+			for (int i = 0; i < (int)chromeosomeA.size(); i++) {
+				if (i == crossoverPoints[index]) {
+					parentToggle = !parentToggle;
+					index = (index + 1) % crossoverPoints.size();
+				}
+				if (parentToggle) {
+					newChromeosomeA[i] = chromeosomeB[i];
+					newChromeosomeB[i] = chromeosomeA[i];
+				}
+				else {
+					newChromeosomeA[i] = chromeosomeA[i];
+					newChromeosomeB[i] = chromeosomeB[i];
+				}
+			}
 		}
 	}
+	else {
+		if (NeuralNetwork::randomFloat(0.0f, 1.0f) >= 0.50f) {
+			newChromeosomeA = chromeosomeA;
+			newChromeosomeB = chromeosomeA;
+		}
+		else {
+			newChromeosomeA = chromeosomeB;
+			newChromeosomeB = chromeosomeB;
+		}
+	}
+
+
 
 	return CrossoverProduct(NeuralNetwork(A.getTopology(), newChromeosomeA), NeuralNetwork(B.getTopology(), newChromeosomeB));;
 }

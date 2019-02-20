@@ -9,7 +9,7 @@
 #define TRAINNING_MUTATION_RATE 0.9998f
 #define DEFUALT_TRAINNGNG_TIME_TO_LIVE 30.0f
 #define DEFUALT_TRAINNING_SPEED_MULTIPLIER 1.0f
-#define PASS_PERCENT_NEEDED 0.80f
+#define PASS_PERCENT_NEEDED 0.90f
 
 #define INPUT_LAYER_SIZE (2+1+2) * (2+1+2)	
 
@@ -25,13 +25,13 @@ void TrainNetworkState::init()
 {
 	//load the levels in the order to play them;
 	_levels.push_back(Level(_data, TRAINNING_LEVEL_1, LEVEL_1_TIME));
-	_levels.push_back(Level(_data, TRAINNING_LEVEL_2, LEVEL_2_TIME));
+	//_levels.push_back(Level(_data, TRAINNING_LEVEL_2, LEVEL_2_TIME));
 	//_levels.push_back(Level(_data, TRAINNING_LEVEL_3, LEVEL_3_TIME));
 	//_levels.push_back(Level(_data, TRAINNING_LEVEL_4, LEVEL_4_TIME));
 	//_levels.push_back(Level(_data, TRAINNING_LEVEL_5, LEVEL_5_TIME));
 	//_levels.push_back(Level(_data, TRAINNING_LEVEL_6, LEVEL_6_TIME));
 	//_levels.push_back(Level(_data, TRAINNING_LEVEL_7, LEVEL_7_TIME));
-	//_levels.push_back(Level(_data, TRAINNING_LEVEL_8, LEVEL_8_TIME));
+	_levels.push_back(Level(_data, TRAINNING_LEVEL_8, LEVEL_8_TIME));
 
 	_info.setFont(this->_data->assetManager.getFont("Menu Font"));
 	_info.setCharacterSize(20);
@@ -41,7 +41,7 @@ void TrainNetworkState::init()
 	_playerPopulation = std::vector<NNControlledPlayer>();
 	std::vector<NeuralNetwork>& gapop = _ga.getPopulation();
 	for (int i = 0; i < (int)_ga.getPopulation().size(); i++) {
-		_playerPopulation.push_back(NNControlledPlayer(_data, &_levels, sf::Vector2f(TILE_SIZE/4, TILE_SIZE/4), &gapop.at(i)));
+		_playerPopulation.push_back(NNControlledPlayer(_data, &_levels, sf::Vector2f(TILE_SIZE/2, TILE_SIZE/2), &gapop.at(i)));
 	}
 	for (NNControlledPlayer& n : _playerPopulation) {
 		this->_data->gameObjectManager.addEntity(&n);
@@ -51,7 +51,7 @@ void TrainNetworkState::init()
 	this->selectLevelForChunk();
 
 	this->_data->camera = Camera(&(this->_data->window), this->_data->window.getSize(), sf::Vector2f(0, 0));
-	this->_data->camera.zoom(1.4f);
+	this->_data->camera.zoom(1.2f);
 	//the init ttl should be v small just so the networks can rapidly get to the point where they have some features to evolve.
 	_info.setString("Controller View Size: " + std::to_string(INPUT_LAYER_SIZE) + "\nPopulation Size:" + std::to_string(this->_playerPopulation.size()) + "\nGeneration [" + std::to_string(this->_ga.getGeneration()) + "] \nAverage Fitness: " + std::to_string(this->_ga.averageFitness()) + "\nBest Fitness: 0\nSpeed: " + std::to_string(this->_data->gameSpeedMultiplier) + "x");
 }

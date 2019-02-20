@@ -20,7 +20,6 @@
 #define BLUE_TILE 13
 #define GRAY_TILE 14
 
-
 #define CHECKPOINT_TILE 32
 #define FINISH_LINE_TILE 33
 

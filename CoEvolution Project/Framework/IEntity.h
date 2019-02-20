@@ -1,6 +1,6 @@
 #pragma once
 #include "SFML/Graphics.hpp"
-class IEntity{
+class IEntity {
 public:
 
 	~IEntity() {}
@@ -9,25 +9,18 @@ public:
 	virtual void update(float dt) = 0;
 	virtual void draw(float dt) = 0;
 
-	bool isActive() {
-		return _active;
-	}
+	inline bool isActive() { return _active; }
 
-	bool toBeDestroyed() {
-		return _destroy;
-	}
+	inline bool toBeDestroyed() { return _destroy; }
 
-	void destory() {
+	inline void destory() {
 		deactivate();
 		_destroy = true;
 	}
 
-	void deactivate() {
-		_active = false;
-	}
-	void activate() {
-		_active = true;
-	}
+	inline void deactivate() { _active = false; }
+
+	inline void activate() { _active = true; }
 
 protected:
 	sf::Vector2f _velocity;
