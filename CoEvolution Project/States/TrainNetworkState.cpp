@@ -15,7 +15,7 @@
 
 TrainNetworkState::TrainNetworkState(GameDataRef data, bool display): _data(data), _display(display), _ttl(DEFUALT_TRAINING_TIME_TO_LIVE)
 {
-	_ga = NeuralNetworkGA(NeuralNetwork::generatePopulation(DEFUALT_TRAINING_POPULATION_SIZE, {INPUT_LAYER_SIZE, 6, 6 , 2}), STARTING_TRAINING_MUTATION_RATE);
+	_ga = NeuralNetworkGA(NeuralNetwork::generatePopulation(DEFUALT_TRAINING_POPULATION_SIZE, {INPUT_LAYER_SIZE, 2}), STARTING_TRAINING_MUTATION_RATE);
 	this->_levels = std::vector<Level>();
 	this->_data->gameSpeedMultiplier = DEFUALT_TRAINING_SPEED_MULTIPLIER;
 	this->_token = std::to_string(time(0));
@@ -25,12 +25,12 @@ void TrainNetworkState::init()
 {
 	//load the levels in the order to play them;
 	_levels.push_back(Level(_data, TRAINING_LEVEL_1, LEVEL_1_TIME));
-	//_levels.push_back(Level(_data, TRAINING_LEVEL_2, LEVEL_2_TIME));
+	_levels.push_back(Level(_data, TRAINING_LEVEL_2, LEVEL_2_TIME));
 	//_levels.push_back(Level(_data, TRAINING_LEVEL_3, LEVEL_3_TIME));
 	//_levels.push_back(Level(_data, TRAINING_LEVEL_4, LEVEL_4_TIME));
 	//_levels.push_back(Level(_data, TRAINING_LEVEL_5, LEVEL_5_TIME));
-	_levels.push_back(Level(_data, TRAINING_LEVEL_6, LEVEL_6_TIME));
-	_levels.push_back(Level(_data, TRAINING_LEVEL_7, LEVEL_7_TIME));
+	//_levels.push_back(Level(_data, TRAINING_LEVEL_6, LEVEL_6_TIME));
+	//_levels.push_back(Level(_data, TRAINING_LEVEL_7, LEVEL_7_TIME));
 	//_levels.push_back(Level(_data, TRAINNING_LEVEL_8, LEVEL_8_TIME));
 
 	_info.setFont(this->_data->assetManager.getFont("Menu Font"));

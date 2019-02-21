@@ -13,7 +13,6 @@ Level::Level(GameDataRef data, std::string filePath, float time): _data(data), _
 void Level::loadLevelFromTextFile(std::string filePath)
 {
 	this->_tilemap = std::vector<Tile>();
-	this->_tilemap = std::vector<Tile>();
 	this->_checkpoint = std::vector<sf::Vector2f>();
 	int i = 0, j = 0;
 	this->_width = 0;

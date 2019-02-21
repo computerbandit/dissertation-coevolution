@@ -21,8 +21,10 @@
 #define PLAYER_SHEET "Resources/res/Player_Sheet.png"
 
 //Animation States
-#define PLAYER_IDLE "Player_Idle"
-#define COIN_IDLE "Coin_Idle"
+#define ERROR_TILE 0
+#define PLAYER_IDLE 1
+#define PLAYER_RUN 2
+#define COIN_IDLE 10
 
 //Font
 #define MENU_FONT_PATH "Resources/fonts/Menu_Font.ttf"

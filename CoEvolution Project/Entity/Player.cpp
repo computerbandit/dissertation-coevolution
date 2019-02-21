@@ -9,11 +9,13 @@ Player::Player(GameDataRef data, std::vector<Level>* levels, sf::Vector2f wh) : 
 	this->_speed = 300.0f;
 	this->_jumpVelocity = 450.0f;
 	this->_animController = new AnimationController(this->_sprite);
-	std::vector<std::string> animNames = std::vector<std::string>();
-	animNames.push_back(PLAYER_IDLE);
-	this->_animController->mapAnimations(&this->_data->assetManager,animNames);
-	this->_animController->nextAnimation(PLAYER_IDLE, true);
+	std::vector<unsigned int> animIds = std::vector<unsigned int>();
+	animIds.push_back(PLAYER_IDLE);
+	animIds.push_back(PLAYER_RUN);
+	this->_animController->mapAnimations(&this->_data->assetManager, animIds);
+	this->_animController->nextAnimation(PLAYER_IDLE, false, false);
 	AssetManager::rescale(this->_sprite, wh);
+	this->_sprite.setOrigin(sf::Vector2f(0.0f, 0.0f));
 
 	this->init();
 }
@@ -71,6 +73,9 @@ void Player::update(float dt)
 	if (!_direction == 0) {
 		this->_velocity.x = _speed * _direction;
 	}
+	else {
+		this->_animController->nextAnimation(PLAYER_IDLE, true, false);
+	}
 	if (!_grounded && this->_velocity.x != 0.0f) {
 		this->_velocity.x -= this->_velocity.x * (0.1f);
 	}
@@ -91,7 +96,7 @@ void Player::update(float dt)
 
 	//collsison detection in 5 substeps with wall sliding
 	sf::Vector2f oldpos;
-	int num_steps = 3;
+	int num_steps = 1;
 
 	for (int i = 0; i < num_steps; i++) {
 		oldpos = sf::Vector2f(this->_position);
@@ -160,11 +165,13 @@ void Player::stopJumping()
 
 void Player::left()
 {
+	this->_animController->nextAnimation(PLAYER_RUN, true, true);
 	_direction = -1;
 }
 
 void Player::right()
 {
+	this->_animController->nextAnimation(PLAYER_RUN, true, false);
 	_direction = 1;
 }
 

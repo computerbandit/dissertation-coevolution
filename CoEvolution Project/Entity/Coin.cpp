@@ -5,10 +5,10 @@ Coin::Coin(GameDataRef data): _data(data)
 	AssetManager::rescale(this->_sprite, ZOOM_FACTOR);
 	this->_position = sf::Vector2f(180.0f, 64.0f);
 	this->_animController = new AnimationController(this->_sprite);
-	std::vector<std::string> animNames = std::vector<std::string>();
-	animNames.push_back(COIN_IDLE);
-	this->_animController->mapAnimations(&this->_data->assetManager, animNames);
-	this->_animController->nextAnimation(COIN_IDLE, true);
+	std::vector<unsigned int> animIds = std::vector<unsigned int>();
+	animIds.push_back(COIN_IDLE);
+	this->_animController->mapAnimations(&this->_data->assetManager, animIds);
+	this->_animController->nextAnimation(COIN_IDLE, true, false);
 }
 
 Coin::~Coin()
