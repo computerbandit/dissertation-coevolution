@@ -5,28 +5,29 @@
 GameState::GameState(GameDataRef data) : _data(data)
 {
 	//load camera, levels the player and add the player to the list of entities in the level.
+	this->_coin = nullptr;
+	this->_player = nullptr;
+	this->_currentLevel = 0;
 	this->_levels = std::vector<Level>();
 }
 
 void GameState::init()
 {
+	_levels.push_back(Level(Noise::GenHeightMap(sf::Vector2i(1000, 10), 9, 2, 1), _data, "levelgentest-1", 15.0f));
 	//load the levels in to the level vector
-	_levels.push_back(Level(_data, TRAINING_LEVEL_1, LEVEL_1_TIME));
-	_levels.push_back(Level(_data, TRAINING_LEVEL_2, LEVEL_2_TIME));
-	_levels.push_back(Level(_data, TRAINING_LEVEL_3, LEVEL_3_TIME));
-	_levels.push_back(Level(_data, TRAINING_LEVEL_4, LEVEL_4_TIME));
-	_levels.push_back(Level(_data, TRAINING_LEVEL_5, LEVEL_5_TIME));
-	_levels.push_back(Level(_data, TRAINING_LEVEL_6, LEVEL_6_TIME));
-	_levels.push_back(Level(_data, TRAINING_LEVEL_7, LEVEL_7_TIME));
+	//_levels.push_back(Level(_data, TRAINING_LEVEL_1, LEVEL_1_TIME));
+	//_levels.push_back(Level(_data, TRAINING_LEVEL_2, LEVEL_2_TIME));
+	//_levels.push_back(Level(_data, TRAINING_LEVEL_3, LEVEL_3_TIME));
+	//_levels.push_back(Level(_data, TRAINING_LEVEL_4, LEVEL_4_TIME));
+	//_levels.push_back(Level(_data, TRAINING_LEVEL_5, LEVEL_5_TIME));
+	//_levels.push_back(Level(_data, TRAINING_LEVEL_6, LEVEL_6_TIME));
+	//_levels.push_back(Level(_data, TRAINING_LEVEL_7, LEVEL_7_TIME));
 	
-
+	//init entities
 	_coin = new Coin(_data);
-	this->_data->gameObjectManager.addEntity(_coin);
-
-
-	//init Player
 	_player = new Player(_data, &_levels, sf::Vector2f(TILE_SIZE / 2, TILE_SIZE / 2));
 	this->_data->gameObjectManager.addEntity(_player);
+	this->_data->gameObjectManager.addEntity(_coin);
 
 	this->_data->camera = Camera(&(this->_data->window), this->_data->window.getSize(), sf::Vector2f(0, 0));
 	this->_data->camera.zoom(1.4f);

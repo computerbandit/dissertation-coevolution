@@ -157,15 +157,10 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Resources\level\level1.txt" />
-    <Text Include="Resources\level\level2.txt" />
-    <Text Include="Resources\level\level3.txt" />
     <Text Include="Resources\networks\test.txt" />
-    <Text Include="Resources\level\level4.txt" />
-    <Text Include="Resources\level\level5.txt" />
-    <Text Include="Resources\level\level6.txt" />
-    <Text Include="Resources\level\level7.txt" />
     <Text Include="Resources\networks\test2.txt" />
+    <Text Include="Resources\level\level1.level" />
+    <Text Include="Resources\level\level2.level" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\res\Exit_Button.png">
@@ -198,5 +193,13 @@
   </ItemGroup>
   <ItemGroup>
     <Font Include="Resources\fonts\Menu_Font.ttf" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\level\level3.level" />
+    <None Include="Resources\level\level4.level" />
+    <None Include="Resources\level\level5.level" />
+    <None Include="Resources\level\level6.level" />
+    <None Include="Resources\level\level7.level" />
+    <None Include="Resources\level\level8.level" />
   </ItemGroup>
 </Project>

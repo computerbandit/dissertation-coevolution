@@ -5,12 +5,24 @@
 #include <sstream>
 #include "DEFINITIONS.h"
 
-Level::Level(GameDataRef data, std::string filePath, float time): _data(data), _timeToComplete(time)
+
+Level::Level(GameDataRef data, std::string fileName, float time) : _data(data), _timeToComplete(time), _fileName(fileName)
 {
-	loadLevelFromTextFile(filePath);
+	this->_width = 0;
+	this->_height = 0;
+	loadLevelFromTextFile(_fileName);
 }
 
-void Level::loadLevelFromTextFile(std::string filePath)
+Level::Level(HMap map, GameDataRef data, std::string fileName, float time) : _data(data), _timeToComplete(time), _fileName(fileName)
+{
+
+	this->_width = 0;
+	this->_height = 0;
+	this->createLevelFromHeightMap(map);
+	loadLevelFromTextFile(_fileName);
+}
+
+void Level::loadLevelFromTextFile(std::string fileName = "")
 {
 	this->_tilemap = std::vector<Tile>();
 	this->_checkpoint = std::vector<sf::Vector2f>();
@@ -19,6 +31,7 @@ void Level::loadLevelFromTextFile(std::string filePath)
 	this->_height = 0;
 	std::ifstream file;
 	std::string line;
+	std::string filePath = LEVEL_PATH + ((fileName == "") ? _fileName : fileName) + ".level";
 	file.open(filePath);
 	if (file.is_open()) {
 		while (!file.eof()) {
@@ -35,20 +48,120 @@ void Level::loadLevelFromTextFile(std::string filePath)
 				sf::Vector2f pos(j*TILE_SIZE, i*TILE_SIZE);
 				spriteTile.setPosition(pos);
 				_tilemap.push_back(Tile(tileID, spriteTile, Tile::getIfSolid(tileID)));
-				if (tileID == CHECKPOINT_TILE || tileID == FINISH_LINE_TILE) {
-					_checkpoint.push_back(pos);
-				}
 				j++;
 			}
 			i++;
-			if(this->_width == 0){
+			if (this->_width == 0) {
 				this->_width = j;
 			}
 			j = 0;
 		}
 	}
 	this->_height = i;
+	for (int x = 0; x < this->_width; x++) {
+		for (int y = 0; y < this->_height; y++) {
+			Tile& tile = _tilemap.at((y*this->_width) + x);
+			if (tile.getTileID() == CHECKPOINT_TILE || tile.getTileID() == FINISH_LINE_TILE) {
+				_checkpoint.push_back(sf::Vector2f(tile.getHitBox().left, tile.getHitBox().top));
+			}
+		}
+	}
 	file.close();
+}
+
+
+void Level::createLevelFromHeightMap(HMap map)
+{
+
+	this->_width = map.size();
+	//get the max height and add one for air
+	int heighest = 1;
+	for (int x = 0; x < this->_width; x++) {
+		if (map.at(x) > heighest) {
+			heighest = map.at(x);
+		}
+	}
+	//top level is all air - just how I have decied to do it
+	this->_height = heighest + 2;
+	std::vector<std::string> levelData = std::vector<std::string>(_height*_width);
+	int currentHeight = this->_height;
+	for (int x = 0; x < int(levelData.size()); x++) {
+		//bottom layer is death tiles
+		if ((x != 0) && (x%this->_width == 0)) {
+			currentHeight--;
+		}
+		
+		if (map.at(x%this->_width) >= currentHeight) {
+			int random = int(std::floor(Noise::randomFloat(11.0f, 15.0f)));
+			switch (random)
+			{
+			case 11:
+				levelData.at(x) = "11";
+				break;
+			case 12:
+				levelData.at(x) = "12";
+				break;
+			case 13:
+				levelData.at(x) = "13";
+				break;
+			case 14:
+				levelData.at(x) = "14";
+				break;
+			default:
+				levelData.at(x) = "14";
+				break;
+			}
+			
+		}
+		else {
+			levelData.at(x) = "00";
+		}
+		
+	}
+
+	for (int x = (this->_height - 1)*(this->_width); x < int(levelData.size()); x++) {
+		levelData.at(x) = "63";
+	}
+
+	//add checkpoints and final flag
+	for (int y = 1; y < int(levelData.size()); y += this->_width) {
+		//loop down each layers until you find the first solid block
+		if (levelData.at(y) != "00") {
+			levelData.at(y - this->_width) = "32";
+			break;
+		}
+	}
+	for (int y = this->_width - 2; y < int(levelData.size()); y += this->_width) {
+		//loop down each layers until you find the first solid block
+		if (levelData.at(y) != "00") {
+			levelData.at(y - this->_width) = "33";
+			break;
+		}
+	}
+
+	//parse the data to the level file
+	std::string formatedLvlData = "";
+	int y = 0;
+	for (int x = 0; x < int(levelData.size()); x++) {
+		if (x%this->_width == (this->_width - 1)) {
+			formatedLvlData.append(levelData.at((y*this->_width) + (x%this->_width)));
+
+		}
+		else if ((x != 0) && (x%this->_width) == 0) {
+			formatedLvlData.append("\n");
+			y++;
+			formatedLvlData.append(levelData.at((y*this->_width) + (x%this->_width)) + ",");
+		}
+		else {
+			formatedLvlData.append(levelData.at((y*this->_width) + (x%this->_width)) + ",");
+		}
+	}
+
+	std::ofstream csv;
+	csv.open(LEVEL_PATH + _fileName + ".level");
+	csv << formatedLvlData;
+	csv.close();
+
 }
 
 Tile * Level::tileAt(int i, int j)
@@ -112,7 +225,7 @@ bool Level::collisionWithTile(const sf::FloatRect &rect, int tileID)
 	return false;
 }
 
-const sf::Vector2f& Level::getCheckpoint(int num) const 
+const sf::Vector2f& Level::getCheckpoint(int num) const
 {
 	return _checkpoint.at(num);
 }
@@ -135,4 +248,67 @@ const sf::Vector2f & Level::getFinishFlagPosition() const
 const float & Level::getLevelTime() const
 {
 	return this->_timeToComplete;
+}
+
+
+//Noise functions
+HMap Noise::GenHeightMap(sf::Vector2i wh, int max, int min, int iota)
+{
+	//make sure the max and min are in range of the Widt and Height given
+	//if not clamp the values to -1/+1 the range
+	if (max >= wh.y) {
+		max = wh.y - 1;
+	}
+	if (min < 1) {
+		min = 2;
+	}
+	//needs to accomodate for level layout: air, start flag, whatever, finish flag, air;
+	if (max - min <= 0 || wh.x < 5) {
+		//this is an invalid map size try again
+		std::cout << "ERROR: Invalid Heightmap size or perams" << std::endl;
+		return HMap();
+	}
+
+	HMap map = HMap();
+	map.push_back(0);
+	//height is denoted by the magnitude of the int value in the vector
+	int xinit = (max + min) / 2.0f;
+	int delta = 0;
+	for (int x = 1; x < wh.x - 1; x++) {
+		//for each x value push a height value on the map vector
+		//TODO: add in the Iota value for the rate of change
+		float random = Noise::randomFloat(0.0f, 1.0f);
+		if (random <= 0.33f) {
+			delta = 0;
+		}
+		else if (random <= 0.66f) {
+			delta = iota;
+		}
+		else if (random <= 1.00f) {
+			delta = -iota;
+		}
+		xinit += delta;
+		//clamp value
+		if (xinit > max || xinit < min) {
+			xinit = std::max(min, std::min(xinit, max));
+		}
+		map.push_back(xinit);
+	}
+	map.push_back(0);
+	return map;
+}
+
+void Noise::ouputHeightMap(HMap& map)
+{
+	for (int x = 0; x < int(map.size()); x++) {
+		for (int y = 0; y < map.at(x); y++) {
+			std::cout << "[]";
+		}
+		std::cout << "\n";
+	}
+}
+
+float Noise::randomFloat(float Min, float Max)
+{
+	return ((float(rand()) / float(RAND_MAX)) * (Max - Min)) + Min;
 }

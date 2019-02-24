@@ -6,7 +6,7 @@ class AssetManager;
 
 struct AnimationState {
 	unsigned int _id = 0;
-	Texturesheet* _sheet;
+	Texturesheet* _sheet = nullptr;
 	int _startindex = 0;
 	int _length = 1;
 	float _time = 1000.0f;

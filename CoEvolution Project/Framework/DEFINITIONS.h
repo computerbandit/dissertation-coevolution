@@ -37,15 +37,16 @@
 #define PLAYER_TEX_PATH "Resources/res/Player_Sprite.png"
 
 //Level 
-#define TRAINING_LEVEL_1 "Resources/level/level1.txt"
-#define TRAINING_LEVEL_2 "Resources/level/level2.txt"
-#define TRAINING_LEVEL_3 "Resources/level/level3.txt"
-#define TRAINING_LEVEL_4 "Resources/level/level4.txt"
-#define TRAINING_LEVEL_5 "Resources/level/level5.txt"
-#define TRAINING_LEVEL_6 "Resources/level/level6.txt"
-#define TRAINING_LEVEL_7 "Resources/level/level7.txt"
-#define TRAINING_LEVEL_8 "Resources/level/level8.txt"
-#define TRAINING_LEVEL_9 "Resources/level/level9.txt"
+#define LEVEL_PATH "Resources/level/"
+#define TRAINING_LEVEL_1 "level1"
+#define TRAINING_LEVEL_2 "level2"
+#define TRAINING_LEVEL_3 "level3"
+#define TRAINING_LEVEL_4 "level4"
+#define TRAINING_LEVEL_5 "level5"
+#define TRAINING_LEVEL_6 "level6"
+#define TRAINING_LEVEL_7 "level7"
+#define TRAINING_LEVEL_8 "level8"
+#define TRAINING_LEVEL_9 "level9"
 
 //Level Times
 #define LEVEL_1_TIME 5

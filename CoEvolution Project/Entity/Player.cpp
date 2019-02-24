@@ -13,7 +13,7 @@ Player::Player(GameDataRef data, std::vector<Level>* levels, sf::Vector2f wh) : 
 	animIds.push_back(PLAYER_IDLE);
 	animIds.push_back(PLAYER_RUN);
 	this->_animController->mapAnimations(&this->_data->assetManager, animIds);
-	this->_animController->nextAnimation(PLAYER_IDLE, false, false);
+	this->_animController->nextAnimation(PLAYER_IDLE, true, false);
 	AssetManager::rescale(this->_sprite, wh);
 	this->_sprite.setOrigin(sf::Vector2f(0.0f, 0.0f));
 
@@ -28,12 +28,7 @@ Player::~Player()
 
 void Player::init()
 {
-	_jump = false;
-	_falling = true;
-	_jumping = false;
-	_holdingJump = false; 
-	_grounded = false;
-	_finished = false;
+
 	this->respawn();
 }
 
@@ -96,7 +91,7 @@ void Player::update(float dt)
 
 	//collsison detection in 5 substeps with wall sliding
 	sf::Vector2f oldpos;
-	int num_steps = 1;
+	int num_steps = 3;
 
 	for (int i = 0; i < num_steps; i++) {
 		oldpos = sf::Vector2f(this->_position);
@@ -126,7 +121,7 @@ void Player::update(float dt)
 		this->die();
 	}
 
-	//if the next checkpoint is the of the level then when the player passes it they win finish
+	//if the next checkpoint is the end of the level then when the player passes it they win finish
 	if (this->_levels->at(this->_currentLevel).lastCheckpoint(_currentCheckpoint + 1)) {
 		if (this->_position.x >= this->_levels->at(this->_currentLevel).getCheckpoint(_currentCheckpoint + 1).x) {
 			//player beat the level.
@@ -277,7 +272,7 @@ const sf::Vector2f & Player::getPosition() const
 	return this->_position;
 }
 
-const sf::Vector2f & Player::getSpriteCenterPosition() const
+const sf::Vector2f Player::getSpriteCenterPosition() const
 {
 	float w = this->_sprite.getGlobalBounds().width;
 	float h = this->_sprite.getGlobalBounds().height;

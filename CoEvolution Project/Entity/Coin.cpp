@@ -3,7 +3,7 @@
 Coin::Coin(GameDataRef data): _data(data)
 {
 	AssetManager::rescale(this->_sprite, ZOOM_FACTOR);
-	this->_position = sf::Vector2f(180.0f, 64.0f);
+	this->_position = sf::Vector2f(0.0f, 0.0f);
 	this->_animController = new AnimationController(this->_sprite);
 	std::vector<unsigned int> animIds = std::vector<unsigned int>();
 	animIds.push_back(COIN_IDLE);
@@ -18,7 +18,7 @@ Coin::~Coin()
 
 void Coin::init()
 {
-	this->_velocity = sf::Vector2f(10.0f, 10.0f);
+	//this->_velocity = sf::Vector2f(10.0f, 10.0f);
 	//this->activate();
 }
 
@@ -35,8 +35,11 @@ void Coin::draw(float dt)
 
 void Coin::collect()
 {
+	
 	// play sound
 	// have destroy time out
 	// destroy the entity
+	//change to animation state collected and start anim timer
+	//in the update function call destroy after the the anim is done
 	destory();
 }

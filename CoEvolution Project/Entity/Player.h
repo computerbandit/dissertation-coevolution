@@ -35,7 +35,7 @@ public:
 	void setColor(sf::Color color);
 	const float& getProgress() const;
 	const sf::Vector2f& getPosition() const;
-	const sf::Vector2f& getSpriteCenterPosition() const;
+	const sf::Vector2f getSpriteCenterPosition() const;
 protected:
 	GameDataRef _data;
 
@@ -48,6 +48,7 @@ protected:
 	float _speed, _jumpVelocity;
 	const int _startingLives = 3;
 	int _direction = 0, _lives = _startingLives, _currentCheckpoint = 0;
-	bool _falling, _jumping, _holdingJump, _jump, _grounded, _finished, _exit;
+
+	bool _falling = true, _jumping = false, _holdingJump = false, _jump = false, _grounded = false, _finished = false;
 	float _progress = 0.0f;
 };

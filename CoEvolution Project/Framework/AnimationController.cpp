@@ -8,6 +8,7 @@ AnimationController::AnimationController(sf::Sprite& sprite) : _spriteRef(sprite
 	this->_frame = 0;
 	this->_loop = false;
 	this->_change = false;
+	this->_flippedx = false;
 }
 
 void AnimationController::mapAnimations(AssetManager* am, std::vector<unsigned int> animIds)
@@ -33,13 +34,13 @@ void AnimationController::nextAnimation(unsigned int id, bool loop, bool flipped
 			//flip sprite if the sprite needs to be flipped
 			this->_spriteRef.setOrigin(sf::Vector2f(this->_spriteRef.getLocalBounds().width/2, 0.0f));
 			this->_spriteRef.scale(sf::Vector2f(-1.0f, 1.0f));
-			this->_spriteRef.setOrigin(sf::Vector2f(0.0f, 0.0f));
+			//this->_spriteRef.setOrigin(sf::Vector2f(0.0f, 0.0f));
 			//then offset to ajust for the scale reposition
 			if (flippedx) {
 				//then offset to ajust for the scale reposition
 				
 			}
-			
+	
 			this->_flippedx = flippedx;
 		}
 		this->_spriteRef.setTexture(this->_currentAnimationState->_sheet->getTexture(this->_frame));
@@ -53,10 +54,8 @@ void AnimationController::update()
 			this->_clock.restart();
 			this->_change = false;
 		}
-		if (this->_currentAnimationState->_static) {
-
-
-		}else if (this->_clock.getElapsedTime().asMilliseconds() >= this->_tpf) {
+		if (!this->_currentAnimationState->_static && 
+			this->_clock.getElapsedTime().asMilliseconds() >= this->_tpf) {
 
 			if (this->_loop) {
 				this->_frame = ((this->_frame + 1) % this->_currentAnimationState->_length) + this->_currentAnimationState->_startindex;

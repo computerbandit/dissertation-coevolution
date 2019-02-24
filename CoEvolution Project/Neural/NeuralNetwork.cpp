@@ -128,7 +128,7 @@ std::vector<float> NeuralNetwork::matrixOutput(const Matrix& m, std::vector<floa
 void NeuralNetwork::run(std::vector<float> input)
 {	
 	for (int i = 0 ; i < (int)_layer.size(); i++){
-		input = this->matrixOutput(_layer.at(i), input, (i == (int)_layer.size()-1)? HARDLIM : SIGMOID);
+		input = this->matrixOutput(_layer.at(i), input, (i == (int)_layer.size()-1)? SIGMOID : SIGMOID);
 	}
 	_output = input;
 }

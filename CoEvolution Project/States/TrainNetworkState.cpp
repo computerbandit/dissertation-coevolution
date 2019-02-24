@@ -5,11 +5,11 @@
 #include "../Framework/DEFINITIONS.h"
 
 #define DEFUALT_TRAINING_POPULATION_SIZE 100
-#define STARTING_TRAINING_MUTATION_RATE 0.95f
-#define TRAINING_MUTATION_RATE 0.99f
+#define STARTING_TRAINING_MUTATION_RATE 0.80f
+#define TRAINING_MUTATION_RATE 0.90f
 #define DEFUALT_TRAINING_TIME_TO_LIVE 30.0f
 #define DEFUALT_TRAINING_SPEED_MULTIPLIER 1.0f
-#define PASS_PERCENT_NEEDED 0.99f
+#define PASS_PERCENT_NEEDED 0.85f
 
 #define INPUT_LAYER_SIZE (2+1+2) * (2+1+2)	
 
@@ -23,15 +23,19 @@ TrainNetworkState::TrainNetworkState(GameDataRef data, bool display): _data(data
 
 void TrainNetworkState::init()
 {
+	
+	_levels.push_back(Level(Noise::GenHeightMap(sf::Vector2i(10, 10), 8, 3, 1), _data, "levelgentest-1", 15.0f));
+
+
 	//load the levels in the order to play them;
-	_levels.push_back(Level(_data, TRAINING_LEVEL_1, LEVEL_1_TIME));
-	_levels.push_back(Level(_data, TRAINING_LEVEL_2, LEVEL_2_TIME));
+	//_levels.push_back(Level(_data, TRAINING_LEVEL_1, LEVEL_1_TIME));
+	//_levels.push_back(Level(_data, TRAINING_LEVEL_2, LEVEL_2_TIME));
 	//_levels.push_back(Level(_data, TRAINING_LEVEL_3, LEVEL_3_TIME));
 	//_levels.push_back(Level(_data, TRAINING_LEVEL_4, LEVEL_4_TIME));
 	//_levels.push_back(Level(_data, TRAINING_LEVEL_5, LEVEL_5_TIME));
 	//_levels.push_back(Level(_data, TRAINING_LEVEL_6, LEVEL_6_TIME));
 	//_levels.push_back(Level(_data, TRAINING_LEVEL_7, LEVEL_7_TIME));
-	//_levels.push_back(Level(_data, TRAINNING_LEVEL_8, LEVEL_8_TIME));
+	//_levels.push_back(Level(_data, TRAINING_LEVEL_8, LEVEL_8_TIME));
 
 	_info.setFont(this->_data->assetManager.getFont("Menu Font"));
 	_info.setCharacterSize(20);
@@ -198,12 +202,15 @@ void TrainNetworkState::draw(float dt)
 
 
 			if (((float)nnPassed/(int)_playerPopulation.size()) >= PASS_PERCENT_NEEDED) {
+				//we could add another level in when the level has reached satasfactory pass rate
 				this->_ga.solved();
 			}
 			
 
 			if (!_ga.isSolved()) {
 				this->_ga.nextGeneration();
+				this->_levels.clear();
+				this->_levels.push_back(Level(Noise::GenHeightMap(sf::Vector2i(10, 10), 8, 3, 1), _data, "levelgentest-1", 15.0f));
 				std::vector<NeuralNetwork>& gapop = this->_ga.getPopulation();
 				for (int i = 0; i < (int)gapop.size(); i++) {
 					NNControlledPlayer& nnplayer = this->_playerPopulation.at(i);

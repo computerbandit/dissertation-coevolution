@@ -4,7 +4,6 @@
 #include <fstream>
 #include <string>
 
-//this a comment
 NeuralNetworkGA::NeuralNetworkGA(std::vector<NeuralNetwork> population, float mRate): _population(population), _mutationRate(mRate)
 {
 	_populationSize = (int)_population.size();
@@ -160,7 +159,7 @@ void NeuralNetworkGA::mutate(NeuralNetwork & network)
 		for (std::vector<float>& layer : m) {
 			for (float& w : layer) {
 				if (NeuralNetwork::randomFloat(0.0f, 1.0f) >= this->_mutationRate) {
-					w += NeuralNetwork::randomFloatNromalDist(0.0f, 0.3f);
+					w += NeuralNetwork::randomFloatNromalDist(0.0f, 0.4f);
 					if (w > 1.0f || w < -1.0f) {
 						w = std::max(-1.0f, std::min(w, 1.0f));
 					}
@@ -185,24 +184,27 @@ CrossoverProduct NeuralNetworkGA::crossover(NeuralNetwork & A,NeuralNetwork & B)
 	
 	if (NeuralNetwork::randomFloat(0.0f, 1.0f) >= 0.90f) {
 		//int numOfCrossoverPoints = NeuralNetwork::randomInt((chromeosomeA.size()-1)/4, (chromeosomeA.size() - 1) / 2);
-		int numOfCrossoverPoints = 1;
 		//int numOfCrossoverPoints = NeuralNetwork::randomInt(10, (chromeosomeA.size() - 1) / 2);
-		std::vector<int> crossoverPoints = std::vector<int>(numOfCrossoverPoints);
 
+		int numOfCrossoverPoints = 1;
+		std::vector<int> crossoverPoints = std::vector<int>();
+		crossoverPoints.push_back(int(std::floor((chromeosomeA.size() - 1) / 2)));
+		//randomly selects random points on the chromeosome and then sorts them
+		/*
 		for (int i = 0; i < numOfCrossoverPoints; i++) {
 			crossoverPoints[i] = NeuralNetwork::randomInt(0, (connections - 1) < 0 ? connections : (connections - 1));
 		}
-
 		std::sort(crossoverPoints.begin(), crossoverPoints.end());
 		crossoverPoints.erase(std::unique(crossoverPoints.begin(), crossoverPoints.end()), crossoverPoints.end());
+		*/
 
 		//perform the corssover on the chromeosomes
 		//child A
 		bool parentToggle = false;
 		int index = 0;
-		//0.1% change to average the wieghts
+		//1% change to average the wieghts
 
-		if (NeuralNetwork::randomFloat(0.0f, 1.0f) >= 0.99f) {
+		if (NeuralNetwork::randomFloat(0.0f, 1.0f) >= 0.90f) {
 			for (int i = 0; i < (int)chromeosomeA.size(); i++) {
 				float sum = (chromeosomeB[i] + chromeosomeA[i]) / 2.0f;
 				newChromeosomeA[i] = sum;

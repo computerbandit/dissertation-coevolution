@@ -40,7 +40,7 @@ private:
 	StateRef _newState;
 
 	char _stateTransitionFlag = NEUTRAL;
-	bool _isRemoving;
-	bool _isAdding;
-	bool _isRelplacing;
+	bool _isRemoving = false;
+	bool _isAdding = false;
+	bool _isRelplacing = false;
 };

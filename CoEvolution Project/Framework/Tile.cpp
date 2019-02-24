@@ -3,6 +3,7 @@
 
 Tile::Tile(int tileID, sf::Sprite sprite, bool solid):_sprite(sprite), _solid(solid), _tileID(tileID)
 {
+	this->_interactable = false;
 	this->_box = this->_sprite.getGlobalBounds();
 }
 

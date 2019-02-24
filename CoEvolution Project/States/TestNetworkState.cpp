@@ -5,6 +5,7 @@
 
 TestNetworkState::TestNetworkState(GameDataRef data) :_data(data)
 {
+	this->_player = nullptr;
 	 _levels = std::vector<Level>();
 }
 

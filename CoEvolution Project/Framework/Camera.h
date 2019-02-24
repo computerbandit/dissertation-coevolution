@@ -20,7 +20,7 @@ public:
 
 	void resize(sf::Event event);
 private:
-	sf::RenderWindow* _window;
+	sf::RenderWindow* _window = nullptr;
 	sf::View _view;
 	sf::Vector2f _offset;
 	sf::Vector2f _wh;

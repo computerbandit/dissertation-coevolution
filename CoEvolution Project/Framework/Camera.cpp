@@ -47,7 +47,7 @@ void Camera::update(sf::Vector2f point)
 	float dampy = (point.y - (_view.getCenter().y + (1 * _view.getSize().y / 10))) / 200;
 
 	if (dampx >= 0) {
-		dampx /= 300;
+		dampx /= 30;
 	}
 	else {
 		dampx /= 10;

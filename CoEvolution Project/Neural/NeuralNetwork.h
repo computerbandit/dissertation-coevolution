@@ -49,9 +49,6 @@ public:
 	const bool& isSelected() const;
 	void setSelected(bool selected);
 
-	const float& getMutationRate() const;
-	void setMutationRate(float rate);
-
 	const std::vector<float>& getChromeosome() const;
 
 	static std::vector<Matrix> chromeosomeToMatrices(std::vector<int> topology, std::vector<float> chromeosome);
