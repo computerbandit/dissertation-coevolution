@@ -11,7 +11,7 @@ class Level {
 public:
 	Level(GameDataRef data, std::string fileName, float time);
 	Level(HMap map, GameDataRef data, std::string fileName, float time);
-	Level(Level lvlA, Level lvlB);
+	Level(Level lvlA, Level lvlB, std::string fileName);
 	~Level() {}
 
 	void draw();
@@ -24,11 +24,19 @@ public:
 	const sf::Vector2f& getFinishFlagPosition() const;
 	const float& getLevelTime() const;
 
+	inline std::string& getFileName() { return _fileName; }
+	inline Tilemap& getTileMap() { return _tilemap; }
+	inline int& getWidth() { return _width; }
+	inline int& getHeight() { return _height; }
+	inline std::vector<sf::Vector2f>& getCheckpoint() { return _checkpoint; }
+	inline float& getTimeToComplete() { return _timeToComplete; }
+
 private:
 
 	void loadLevelFromTextFile(std::string fileName);
-
+	void writeLevelData(std::vector<std::string> levelData);
 	void createLevelFromHeightMap(HMap map);
+	void stichLevels(Level& lvlA, Level& lvlB);
 	Tile* tileAt(int i, int j);
 
 	GameDataRef _data;

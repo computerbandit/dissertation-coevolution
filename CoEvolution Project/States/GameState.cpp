@@ -13,7 +13,11 @@ GameState::GameState(GameDataRef data) : _data(data)
 
 void GameState::init()
 {
-	_levels.push_back(Level(Noise::GenHeightMap(sf::Vector2i(1000, 10), 9, 2, 1), _data, "levelgentest-1", 15.0f));
+	Level A = Level(Noise::GenHeightMap(sf::Vector2i(6, 10), 9, 2, 1), _data, "levelgentest-1", 15.0f);
+	Level B = Level(Noise::GenHeightMap(sf::Vector2i(10, 15), 13, 2, 1), _data, "levelgentest-2", 15.0f);
+	_levels.push_back(Level(A, B, "stichleveltest"));
+
+
 	//load the levels in to the level vector
 	//_levels.push_back(Level(_data, TRAINING_LEVEL_1, LEVEL_1_TIME));
 	//_levels.push_back(Level(_data, TRAINING_LEVEL_2, LEVEL_2_TIME));

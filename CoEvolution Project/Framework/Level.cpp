@@ -15,10 +15,18 @@ Level::Level(GameDataRef data, std::string fileName, float time) : _data(data), 
 
 Level::Level(HMap map, GameDataRef data, std::string fileName, float time) : _data(data), _timeToComplete(time), _fileName(fileName)
 {
-
 	this->_width = 0;
 	this->_height = 0;
 	this->createLevelFromHeightMap(map);
+	loadLevelFromTextFile(_fileName);
+}
+
+Level::Level(Level lvlA, Level lvlB, std::string fileName): _fileName(fileName)
+{
+	this->_width = 0;
+	this->_height = 0;
+	//stich levels together function;
+	stichLevels(lvlA, lvlB);
 	loadLevelFromTextFile(_fileName);
 }
 
@@ -69,76 +77,8 @@ void Level::loadLevelFromTextFile(std::string fileName = "")
 	file.close();
 }
 
-
-void Level::createLevelFromHeightMap(HMap map)
+void Level::writeLevelData(std::vector<std::string> levelData)
 {
-
-	this->_width = map.size();
-	//get the max height and add one for air
-	int heighest = 1;
-	for (int x = 0; x < this->_width; x++) {
-		if (map.at(x) > heighest) {
-			heighest = map.at(x);
-		}
-	}
-	//top level is all air - just how I have decied to do it
-	this->_height = heighest + 2;
-	std::vector<std::string> levelData = std::vector<std::string>(_height*_width);
-	int currentHeight = this->_height;
-	for (int x = 0; x < int(levelData.size()); x++) {
-		//bottom layer is death tiles
-		if ((x != 0) && (x%this->_width == 0)) {
-			currentHeight--;
-		}
-		
-		if (map.at(x%this->_width) >= currentHeight) {
-			int random = int(std::floor(Noise::randomFloat(11.0f, 15.0f)));
-			switch (random)
-			{
-			case 11:
-				levelData.at(x) = "11";
-				break;
-			case 12:
-				levelData.at(x) = "12";
-				break;
-			case 13:
-				levelData.at(x) = "13";
-				break;
-			case 14:
-				levelData.at(x) = "14";
-				break;
-			default:
-				levelData.at(x) = "14";
-				break;
-			}
-			
-		}
-		else {
-			levelData.at(x) = "00";
-		}
-		
-	}
-
-	for (int x = (this->_height - 1)*(this->_width); x < int(levelData.size()); x++) {
-		levelData.at(x) = "63";
-	}
-
-	//add checkpoints and final flag
-	for (int y = 1; y < int(levelData.size()); y += this->_width) {
-		//loop down each layers until you find the first solid block
-		if (levelData.at(y) != "00") {
-			levelData.at(y - this->_width) = "32";
-			break;
-		}
-	}
-	for (int y = this->_width - 2; y < int(levelData.size()); y += this->_width) {
-		//loop down each layers until you find the first solid block
-		if (levelData.at(y) != "00") {
-			levelData.at(y - this->_width) = "33";
-			break;
-		}
-	}
-
 	//parse the data to the level file
 	std::string formatedLvlData = "";
 	int y = 0;
@@ -161,7 +101,148 @@ void Level::createLevelFromHeightMap(HMap map)
 	csv.open(LEVEL_PATH + _fileName + ".level");
 	csv << formatedLvlData;
 	csv.close();
+}
 
+
+void Level::createLevelFromHeightMap(HMap map)
+{
+
+	this->_width = map.size();
+	//get the max height and add one for air
+	int heighest = 1;
+	for (int x = 0; x < this->_width; x++) {
+		if (map.at(x) > heighest) {
+			heighest = map.at(x);
+		}
+	}
+	//top level is all air - just how I have decied to do it
+	this->_height = heighest + 2;
+	std::vector<std::string> levelData = std::vector<std::string>(_height*_width);
+	int currentHeight = this->_height;
+	for (int x = 0; x < int(levelData.size()); x++) {
+		//bottom layer is death tiles
+		if ((x != 0) && (x%this->_width == 0)) {
+			currentHeight--;
+		}
+
+		if (map.at(x%this->_width) >= currentHeight) {
+			int random = int(std::floor(Noise::randomFloat(11.0f, 15.0f)));
+			switch (random)
+			{
+			case 11:
+				levelData.at(x) = "11";
+				break;
+			case 12:
+				levelData.at(x) = "12";
+				break;
+			case 13:
+				levelData.at(x) = "13";
+				break;
+			case 14:
+				levelData.at(x) = "14";
+				break;
+			default:
+				levelData.at(x) = "14";
+				break;
+			}
+
+		}
+		else {
+			levelData.at(x) = "00";
+		}
+
+	}
+
+	for (int x = (this->_height - 1)*(this->_width); x < int(levelData.size()); x++) {
+		levelData.at(x) = "63";
+	}
+
+	//add checkpoints and final flag
+	for (int y = 1; y < int(levelData.size()); y += this->_width) {
+		//loop down each layers until you find the first solid block
+		if (levelData.at(y) != "00") {
+			levelData.at(y - this->_width) = "32";
+			break;
+		}
+	}
+	for (int y = this->_width - 2; y < int(levelData.size()); y += this->_width) {
+		//loop down each layers until you find the first solid block
+		if (levelData.at(y) != "00") {
+			levelData.at(y - this->_width) = "33";
+			break;
+		}
+	}
+
+	writeLevelData(levelData);
+
+}
+
+void Level::stichLevels(Level & lvlA, Level & lvlB)
+{
+	this->_height = std::max(lvlA.getHeight(), lvlB.getHeight());
+	this->_width = lvlA.getWidth() + lvlB.getWidth() - 3; //accounting for the stiching process.
+	Tilemap& tilemapA = lvlA.getTileMap();
+	Tilemap& tilemapB = lvlB.getTileMap();
+
+	int yposA = 0;
+	for (int y = lvlA.getWidth() - 2; y < lvlA.getHeight()*lvlA.getWidth(); y += lvlA.getWidth()) {
+		Tile& tile = tilemapA.at(y);
+		if (tile.getTileID() == FINISH_LINE_TILE) {
+			yposA = (y + 2) / lvlA.getWidth();
+			break;
+		}
+	}
+	int yposB = 0;
+	for (int y = 1; y < lvlB.getHeight()*lvlB.getWidth(); y += lvlB.getWidth()) {
+		Tile& tile = tilemapB.at(y);
+		if (tile.getTileID() == CHECKPOINT_TILE) {
+			yposB = (y + lvlB.getWidth() - 1) / lvlB.getWidth();
+			break;
+		}
+	}
+
+	int flagYPosDelta = yposA - yposB;//if its negative then add air to that number of air rows to the top 
+	bool partA = (flagYPosDelta > 0) ? true : false;
+
+	//given these two levels can we put them together to make a bigger one
+
+	std::vector<std::string> levelData = std::vector<std::string>(this->_height*this->_width);
+	for (std::string& td : levelData) {
+		td = "00";
+	}
+	int index = 0;
+	Tile& tile = tilemapA.at(0);
+	std::string tileData = "00";
+	for (int x = 0; x < this->_width; x++) {
+		for (int y = 0; y < this->_height; y++) {
+			
+			if (x <= lvlA.getWidth() - 3 && y < lvlA.getHeight()) {
+				index = y * lvlA.getWidth() + (x% this->getWidth());
+				tile = tilemapA.at(index);
+				tileData = std::to_string(tile.getTileID());
+				tileData = (tile.getTileID() < 10) ? "0" + tileData : tileData;
+				if (partA) {
+					levelData.at((flagYPosDelta + y)*lvlA.getWidth() + x) = tileData;
+				}
+				else {
+					levelData.at((y)*lvlA.getWidth() + x) = tileData;
+				}
+			}
+			else if(x > lvlA.getWidth() - 3 && y < lvlB.getHeight()){
+				index = y * lvlB.getWidth() + ((x - lvlA.getWidth() + 2) % (lvlB.getWidth()));
+				tile = tilemapB.at(index);
+				tileData = std::to_string(tile.getTileID());
+				tileData = (tile.getTileID() < 10) ? "0" + tileData : tileData;
+				if (partA) {
+					levelData.at((y)*lvlB.getWidth() + x) = tileData;
+				}
+				else {
+					levelData.at((-flagYPosDelta + y)*lvlB.getWidth() + x) = tileData;
+				}
+			}
+		}
+	}
+	writeLevelData(levelData);
 }
 
 Tile * Level::tileAt(int i, int j)
