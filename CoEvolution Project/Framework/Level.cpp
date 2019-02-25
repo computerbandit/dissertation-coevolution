@@ -6,14 +6,14 @@
 #include "DEFINITIONS.h"
 
 
-Level::Level(GameDataRef data, std::string fileName, float time) : _data(data), _timeToComplete(time), _fileName(fileName)
+Level::Level(GameDataRef data, std::string fileName, float time) : _data(data), _fileName(fileName)
 {
 	this->_width = 0;
 	this->_height = 0;
 	loadLevelFromTextFile(_fileName);
 }
 
-Level::Level(HMap map, GameDataRef data, std::string fileName, float time) : _data(data), _timeToComplete(time), _fileName(fileName)
+Level::Level(HMap map, GameDataRef data, std::string fileName, float time) : _data(data), _fileName(fileName)
 {
 	this->_width = 0;
 	this->_height = 0;
@@ -21,7 +21,7 @@ Level::Level(HMap map, GameDataRef data, std::string fileName, float time) : _da
 	loadLevelFromTextFile(_fileName);
 }
 
-Level::Level(Level lvlA, Level lvlB, std::string fileName): _fileName(fileName)
+Level::Level(Level lvlA, Level lvlB, std::string fileName): _fileName(fileName), _data(lvlA._data)
 {
 	this->_width = 0;
 	this->_height = 0;
@@ -46,7 +46,6 @@ void Level::loadLevelFromTextFile(std::string fileName = "")
 			std::getline(file, line);
 			std::stringstream ss(line);
 			std::string token;
-
 			while (std::getline(ss, token, ',')) {
 				int tileID = std::stoi(token);
 				sf::Sprite spriteTile;
@@ -145,13 +144,48 @@ void Level::createLevelFromHeightMap(HMap map)
 				levelData.at(x) = "14";
 				break;
 			}
-
 		}
 		else {
 			levelData.at(x) = "00";
 		}
 
 	}
+	//add the pit falls and danger tiles
+	//drop some random bad tiles on the top level
+	//this could incoperate the some kind of difficulty rating
+
+	//IMP1
+	//gen a new height map with same dimentions but large Iota value
+	//invert the map and perfom a boolean subtract on the current level to make the pit falls
+	//this is so that the player has to jump, increasing the complexity of the level
+
+	std::vector<bool> pitfallMarker = std::vector<bool>(this->_width);
+	for (int i = 0; i < int(pitfallMarker.size()); i++) {
+		pitfallMarker[i] = false;
+	}
+	for (int x = 2; x < this->_width - 2; x++) {
+		//make sure 3 drops can't be made
+		if (pitfallMarker.at(x-1) && !pitfallMarker.at(x-2)) {
+			//if there was one last column then the is a much lower chance to make other
+			if (Noise::randomFloat(0.0f, 1.00f) >= 0.95f) {
+				pitfallMarker.at(x) = true;
+			}
+		}
+		else if(!pitfallMarker.at(x-1)) {
+			if (Noise::randomFloat(0.0f, 1.00f) >= 0.80f) {
+				pitfallMarker.at(x) = true;
+			}
+		}
+	}
+
+	for (int x = 2; x < this->_width - 2; x++) {
+		if (pitfallMarker.at(x)) {
+			for (int y = 0; y < this->_height; y++) {
+				levelData.at(y * this->_width + x) = "00";
+			}
+		}
+	}
+
 
 	for (int x = (this->_height - 1)*(this->_width); x < int(levelData.size()); x++) {
 		levelData.at(x) = "63";
@@ -202,7 +236,10 @@ void Level::stichLevels(Level & lvlA, Level & lvlB)
 	}
 
 	int flagYPosDelta = yposA - yposB;//if its negative then add air to that number of air rows to the top 
-	bool partA = (flagYPosDelta > 0) ? true : false;
+	bool partAShift = (flagYPosDelta < 0) ? true : false;
+	flagYPosDelta = std::abs(flagYPosDelta);
+	this->_height += flagYPosDelta;
+
 
 	//given these two levels can we put them together to make a bigger one
 
@@ -213,32 +250,32 @@ void Level::stichLevels(Level & lvlA, Level & lvlB)
 	int index = 0;
 	Tile& tile = tilemapA.at(0);
 	std::string tileData = "00";
-	for (int x = 0; x < this->_width; x++) {
-		for (int y = 0; y < this->_height; y++) {
-			
-			if (x <= lvlA.getWidth() - 2 && y < lvlA.getHeight()) {
-				index = y * lvlA.getWidth() + (x% this->getWidth());
-				tile = tilemapA.at(index);
-				tileData = std::to_string(tile.getTileID());
-				tileData = (tile.getTileID() < 10) ? "0" + tileData : tileData;
-				if (partA) {
-					levelData.at((flagYPosDelta + y)*lvlA.getWidth() + x) = tileData;
-				}
-				else {
-					levelData.at((y)*lvlA.getWidth() + x) = tileData;
-				}
+	for (int x = 0; x < lvlA.getWidth()-1; x++) {
+		for (int y = 0; y < lvlA.getHeight(); y++) {
+			index = y * lvlA.getWidth() + x;
+			tile = tilemapA.at(index);
+			tileData = std::to_string(tile.getTileID());
+			tileData = (tile.getTileID() < 10) ? "0" + tileData : tileData;
+			if (partAShift) {
+				levelData.at((flagYPosDelta + y)*this->_width + x) = tileData;
 			}
-			else if(x > lvlA.getWidth() - 2 && y < lvlB.getHeight()){
-				index = y * lvlB.getWidth() + ((x - lvlA.getWidth() + 2) % (lvlB.getWidth()));
-				tile = tilemapB.at(index);
-				tileData = std::to_string(tile.getTileID());
-				tileData = (tile.getTileID() < 10) ? "0" + tileData : tileData;
-				if (partA) {
-					levelData.at((y)*lvlB.getWidth() + x) = tileData;
-				}
-				else {
-					levelData.at((-flagYPosDelta + y)*lvlB.getWidth() + x) = tileData;
-				}
+			else {
+				levelData.at(y*this->_width + x) = tileData;
+			}
+		}
+	}
+
+	for (int x = 1; x < lvlB.getWidth(); x++) {
+		for (int y = 0; y < lvlB.getHeight(); y++) {
+			index = y * lvlB.getWidth() + x;
+			tile = tilemapB.at(index);
+			tileData = std::to_string(tile.getTileID());
+			tileData = (tile.getTileID() < 10) ? "0" + tileData : tileData;
+			if (partAShift) {
+				levelData.at((y*this->_width) + (x + lvlA.getWidth() - 3)) = tileData;
+			}
+			else {
+				levelData.at(((flagYPosDelta + y)* this->_width) + (x + lvlA.getWidth() - 3)) = tileData;
 			}
 		}
 	}
@@ -326,12 +363,6 @@ const sf::Vector2f & Level::getFinishFlagPosition() const
 	return this->_checkpoint.back();
 }
 
-const float & Level::getLevelTime() const
-{
-	return this->_timeToComplete;
-}
-
-
 //Noise functions
 HMap Noise::GenHeightMap(sf::Vector2i wh, int max, int min, int iota)
 {
@@ -344,7 +375,7 @@ HMap Noise::GenHeightMap(sf::Vector2i wh, int max, int min, int iota)
 		min = 2;
 	}
 	//needs to accomodate for level layout: air, start flag, whatever, finish flag, air;
-	if (max - min <= 0 || wh.x < 5) {
+	if (max - min <= 0 || wh.x < 5 || wh.y < 4) {
 		//this is an invalid map size try again
 		std::cout << "ERROR: Invalid Heightmap size or perams" << std::endl;
 		return HMap();

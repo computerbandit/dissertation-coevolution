@@ -24,7 +24,8 @@ TrainNetworkState::TrainNetworkState(GameDataRef data, bool display): _data(data
 void TrainNetworkState::init()
 {
 	
-	_levels.push_back(Level(Noise::GenHeightMap(sf::Vector2i(10, 10), 8, 3, 1), _data, "levelgentest-1", 15.0f));
+	Level A = Level(Noise::GenHeightMap(sf::Vector2i(10, 4), 3, 2, 1), _data, "levelgentest-1", 15.0f);
+	_levels.push_back(A);
 
 
 	//load the levels in the order to play them;
@@ -136,7 +137,10 @@ void TrainNetworkState::update(float dt)
 				 }
 				 else if (output.at(0) < -0.9f) {
 					 nnplayer->left();
-				 } 
+				 }
+				 else {
+					 nnplayer->stop();
+				 }
 				 // Jump
 				 if (output.at(1) > 0.9f) {
 					 nnplayer->jump();
@@ -180,7 +184,7 @@ void TrainNetworkState::draw(float dt)
 	checkProgress(1.0f);
 
 
-	if (this->_ttlClock.getElapsedTime().asSeconds() > (this->_ttl / this->_data->gameSpeedMultiplier) || AreAllDead()) {
+	if (this->_ttlClock.getElapsedTime().asSeconds() > (this->_ttl / this->_data->gameSpeedMultiplier) || areAllDead()) {
 		this->_ttlClock.restart();
 		//if there are any controllers still alive after the ttl clock 
 		//killing the rest off will give them a fitnessScore
@@ -191,6 +195,10 @@ void TrainNetworkState::draw(float dt)
 		}
 
 		if (this->_lastChunk) {
+			//work out the times of the players then add the corrospoding fitness to that player
+			
+
+
 			this->_ga.evalutePopulation();
 
 			//find the best controller
@@ -203,14 +211,26 @@ void TrainNetworkState::draw(float dt)
 
 			if (((float)nnPassed/(int)_playerPopulation.size()) >= PASS_PERCENT_NEEDED) {
 				//we could add another level in when the level has reached satasfactory pass rate
-				this->_ga.solved();
+				int levelsToPass = 4;
+				static int levelsCompleted = 0;
+				
+				if (++levelsCompleted < levelsToPass) {
+					Level nextlvl = Level(this->_levels.front(), Level(Noise::GenHeightMap(sf::Vector2i(20, 10), 8, 2, 1), _data, "levelgentest-1", 15.0f), "recursionlvl");
+					this->_levels.pop_back();
+					this->_levels.push_back(nextlvl);
+				}
+				else {
+					this->_ga.solved();
+				}
+				
+				
 			}
 			
 
 			if (!_ga.isSolved()) {
 				this->_ga.nextGeneration();
-				this->_levels.clear();
-				this->_levels.push_back(Level(Noise::GenHeightMap(sf::Vector2i(10, 10), 8, 3, 1), _data, "levelgentest-1", 15.0f));
+				//this->_levels.clear();
+
 				std::vector<NeuralNetwork>& gapop = this->_ga.getPopulation();
 				for (int i = 0; i < (int)gapop.size(); i++) {
 					NNControlledPlayer& nnplayer = this->_playerPopulation.at(i);
@@ -294,7 +314,7 @@ void TrainNetworkState::checkProgress(float interval)
 	}
 }
 
-bool TrainNetworkState::AreAllDead()
+bool TrainNetworkState::areAllDead()
 {
 	bool allDead = false;
 	for (NNControlledPlayer* nnplayer : this->_populationChunk) {

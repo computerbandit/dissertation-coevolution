@@ -51,4 +51,5 @@ protected:
 
 	bool _falling = true, _jumping = false, _holdingJump = false, _jump = false, _grounded = false, _finished = false;
 	float _progress = 0.0f;
+	float _levelTime = 15.0f;
 };

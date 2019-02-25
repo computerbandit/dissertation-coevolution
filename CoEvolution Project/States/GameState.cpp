@@ -88,6 +88,8 @@ void GameState::update(float dt)
 	this->_data->gameObjectManager.update(dt);
 
 	if (_player->isFinished()) {
+		Level nextlvl = Level(this->_levels.back(), Level(Noise::GenHeightMap(sf::Vector2i(20, 10), 8, 2, 1), _data, "levelgentest-1", 15.0f), "recursionlvl");
+		this->_levels.push_back(nextlvl);
 		if (_currentLevel + 1 < (int)this->_levels.size()) {
 
 			std::cout << "\n Level Completed" << std::endl;
