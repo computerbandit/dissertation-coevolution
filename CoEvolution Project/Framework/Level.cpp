@@ -216,7 +216,7 @@ void Level::stichLevels(Level & lvlA, Level & lvlB)
 	for (int x = 0; x < this->_width; x++) {
 		for (int y = 0; y < this->_height; y++) {
 			
-			if (x <= lvlA.getWidth() - 3 && y < lvlA.getHeight()) {
+			if (x <= lvlA.getWidth() - 2 && y < lvlA.getHeight()) {
 				index = y * lvlA.getWidth() + (x% this->getWidth());
 				tile = tilemapA.at(index);
 				tileData = std::to_string(tile.getTileID());
@@ -228,7 +228,7 @@ void Level::stichLevels(Level & lvlA, Level & lvlB)
 					levelData.at((y)*lvlA.getWidth() + x) = tileData;
 				}
 			}
-			else if(x > lvlA.getWidth() - 3 && y < lvlB.getHeight()){
+			else if(x > lvlA.getWidth() - 2 && y < lvlB.getHeight()){
 				index = y * lvlB.getWidth() + ((x - lvlA.getWidth() + 2) % (lvlB.getWidth()));
 				tile = tilemapB.at(index);
 				tileData = std::to_string(tile.getTileID());
