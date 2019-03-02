@@ -35,6 +35,11 @@ private:
 	void writeLevelData(std::vector<std::string> levelData);
 	void createLevelFromHeightMap(HMap map);
 	void stichLevels(Level& lvlA, Level& lvlB);
+
+	void pitFallLevel(std::vector<std::string>& levelData, HMap& map, float pitRate);
+	void trapLevel(std::vector<std::string>& levelData, HMap& map, float trapRate);
+	void platformLevel(std::vector<std::string>& levelData);
+
 	Tile* tileAt(int i, int j);
 
 	GameDataRef _data;

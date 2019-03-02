@@ -13,9 +13,7 @@ GameState::GameState(GameDataRef data) : _data(data)
 
 void GameState::init()
 {
-	Level A = Level(Noise::GenHeightMap(sf::Vector2i(10, 10), 9, 2, 1), _data, "levelgentest-1", 15.0f);
-	Level B = Level(Noise::GenHeightMap(sf::Vector2i(10, 10), 9, 2, 1), _data, "levelgentest-2", 15.0f);
-	_levels.push_back(Level(A, B, "stichleveltest"));
+	
 
 
 	//load the levels in to the level vector
@@ -27,6 +25,11 @@ void GameState::init()
 	//_levels.push_back(Level(_data, TRAINING_LEVEL_6, LEVEL_6_TIME));
 	//_levels.push_back(Level(_data, TRAINING_LEVEL_7, LEVEL_7_TIME));
 	
+
+	Level A = Level(Noise::GenHeightMap(sf::Vector2i(100, 10), 9, 2, 1), _data, "levelgentest-1", 15.0f);
+	Level B = Level(Noise::GenHeightMap(sf::Vector2i(100, 10), 9, 2, 1), _data, "levelgentest-2", 15.0f);
+	_levels.push_back(Level(A, B, "stichleveltest"));
+
 	//init entities
 	_coin = new Coin(_data);
 	_player = new Player(_data, &_levels, sf::Vector2f(TILE_SIZE / 2, TILE_SIZE / 2));
@@ -88,7 +91,7 @@ void GameState::update(float dt)
 	this->_data->gameObjectManager.update(dt);
 
 	if (_player->isFinished()) {
-		Level nextlvl = Level(this->_levels.back(), Level(Noise::GenHeightMap(sf::Vector2i(10, 10), 9, 2, 1), _data, "levelgentest-2", 15.0f), "recursionlvl");
+		Level nextlvl = Level(Level(Noise::GenHeightMap(sf::Vector2i(100, 10), 9, 2, 1), _data, "levelgentest-1", 15.0f) ,Level(Noise::GenHeightMap(sf::Vector2i(100, 10), 9, 2, 1), _data, "levelgentest-2", 15.0f), "recursionlvl");
 		this->_levels.push_back(nextlvl);
 		if (_currentLevel + 1 < (int)this->_levels.size()) {
 

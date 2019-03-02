@@ -17,7 +17,7 @@
 
 TrainNetworkState::TrainNetworkState(GameDataRef data) : _data(data), _ttl(DEFUALT_TRAINING_TIME_TO_LIVE)
 {
-	_ga = NeuralNetworkGA(NeuralNetwork::generatePopulation(DEFUALT_TRAINING_POPULATION_SIZE, { INPUT_LAYER_SIZE, 2 }), STARTING_TRAINING_MUTATION_RATE);
+	_ga = NeuralNetworkGA(NeuralNetwork::generatePopulation(DEFUALT_TRAINING_POPULATION_SIZE, { INPUT_LAYER_SIZE ,INPUT_LAYER_SIZE/4 , 2 }), STARTING_TRAINING_MUTATION_RATE);
 	this->_levels = std::vector<Level>();
 	this->_token = std::to_string(time(0));
 }
