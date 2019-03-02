@@ -280,5 +280,10 @@ const sf::Vector2f Player::getSpriteCenterPosition() const
 	return sf::Vector2f((w / 2) + this->_position.x, (h / 2) + this->_position.y);
 }
 
+const float & Player::getLevelTime() const
+{
+	return this->_levelTime;
+}
+
 
 

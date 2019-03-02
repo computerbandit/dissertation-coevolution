@@ -9,9 +9,9 @@
 #define TRAINING_MUTATION_RATE 0.90f
 #define DEFUALT_TRAINING_TIME_TO_LIVE 30.0f
 #define DEFUALT_TRAINING_SPEED_MULTIPLIER 1.0f
-#define PASS_PERCENT_NEEDED 0.85f
+#define PASS_PERCENT_NEEDED 0.35f
 
-#define INPUT_LAYER_SIZE (2+1+2) * (2+1+2)	
+#define INPUT_LAYER_SIZE (3+1+3) * (3+1+3)	
 
 TrainNetworkState::TrainNetworkState(GameDataRef data, bool display): _data(data), _display(display), _ttl(DEFUALT_TRAINING_TIME_TO_LIVE)
 {
@@ -126,7 +126,7 @@ void TrainNetworkState::update(float dt)
 	for (NNControlledPlayer* nnplayer : this->_populationChunk) {
 		if (nnplayer->isAlive() && !nnplayer->isFinished()) {
 			//need to get a set of inputs from the ray cast info from each of the players
-			nnplayer->getNetworkController()->run(nnplayer->controllersViewOfLevel(2, 2, 2, 2));
+			nnplayer->getNetworkController()->run(nnplayer->controllersViewOfLevel(3, 3, 3, 3));
 			 output = nnplayer->getNetworkController()->getOutput();
 			//given the outputs of the network 
 			
@@ -196,7 +196,8 @@ void TrainNetworkState::draw(float dt)
 
 		if (this->_lastChunk) {
 			//work out the times of the players then add the corrospoding fitness to that player
-			
+			//sort the network based on the player time they got, low to high
+
 
 
 			this->_ga.evalutePopulation();
