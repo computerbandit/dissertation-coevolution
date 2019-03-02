@@ -29,10 +29,17 @@ void Game::Run()
 		currentTime = newTime;
 		accumulator += frameTime;
 
-		while (accumulator >= dt) {
+		if (!this->_data->releaseAccumulator) {
+			while (accumulator >= dt) {
+				this->_data->stateMachine.getAvtiveState()->handleEvents();
+				this->_data->stateMachine.getAvtiveState()->update(dt);
+				accumulator -= dt;
+			}
+		}
+		else
+		{
 			this->_data->stateMachine.getAvtiveState()->handleEvents();
-			this->_data->stateMachine.getAvtiveState()->update(dt*this->_data->gameSpeedMultiplier);
-			accumulator -= dt;
+			this->_data->stateMachine.getAvtiveState()->update(dt);
 		}
 
 		interpolation = accumulator / dt;

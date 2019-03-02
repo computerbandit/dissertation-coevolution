@@ -25,7 +25,7 @@ void TestNetworkState::init()
 	std::cout << "\n Enter name of the network file: ";
 	std::cin >> fileName;
 	this->_data->window.requestFocus();
-	_player = new NNControlledPlayer(this->_data, &_levels, sf::Vector2f(16, 16), new NeuralNetwork("Resources/networks/"+ fileName + ".txt"));
+	_player = new NNControlledPlayer(this->_data, &_levels, sf::Vector2f(16, 16), new NeuralNetwork("Resources/networks/"+ fileName + ".txt"), 3, 2, 2, 3);
 
 	this->_data->gameObjectManager.addEntity(_player);
 
@@ -52,22 +52,7 @@ void TestNetworkState::handleEvents()
 
 		if (sf::Event::KeyPressed == event.type) {
 
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num1)) {
-				this->_data->gameSpeedMultiplier = 1.0f;
-			}
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num2)) {
-				this->_data->gameSpeedMultiplier = 2.0f;
-			}
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num3)) {
-				this->_data->gameSpeedMultiplier = 3.0f;
-			}
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num4)) {
-				this->_data->gameSpeedMultiplier = 4.0f;
-			}
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Num5)) {
-				this->_data->gameSpeedMultiplier = 5.0f;
-			}
-
+			
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
 				this->_data->stateMachine.popState();
 			}
@@ -78,7 +63,8 @@ void TestNetworkState::handleEvents()
 
 void TestNetworkState::update(float dt)
 {
-	_player->getNetworkController()->run(_player->controllersViewOfLevel(2, 2, 2, 2));
+
+	_player->getNetworkController()->run(_player->controllersViewOfLevel());
 	std::vector<float> output = _player->getNetworkController()->getOutput();
 	//given the outputs of the network 
 

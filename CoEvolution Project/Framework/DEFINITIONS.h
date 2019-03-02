@@ -57,6 +57,3 @@
 #define LEVEL_6_TIME 15
 #define LEVEL_7_TIME 15
 #define LEVEL_8_TIME 15
-
-//trainning defines
-#define DISPLAY_TRAINNING true

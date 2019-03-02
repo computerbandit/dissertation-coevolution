@@ -16,8 +16,8 @@ struct GameData {
 	AssetManager assetManager;
 	InputManager inputManager;
 	GameObjectManager gameObjectManager;
-	float gameSpeedMultiplier = 1.0f;
 	sf::Vector2f gravity = sf::Vector2f(0.0f, 1000.0f);
+	bool releaseAccumulator = false;
 };
 
 typedef std::shared_ptr<GameData> GameDataRef;
@@ -28,7 +28,6 @@ public:
 private:
 	const float dt = 1.0f / 60.0f;
 	sf::Clock _clock;
-
 	GameDataRef _data = std::make_shared<GameData>();
 
 	void Run();

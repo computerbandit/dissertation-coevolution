@@ -8,7 +8,7 @@
 
 class TrainNetworkState : public State {
 public:
-	TrainNetworkState(GameDataRef data, bool display = false);
+	TrainNetworkState(GameDataRef data);
 	// Inherited via State
 	virtual void init() override;
 	virtual void cleanup() override;
@@ -40,7 +40,6 @@ private:
 
 	sf::Clock _ttlClock;
 	sf::Clock _checkProgressClock;
-	bool _display;
 	float _ttl;
 	sf::Text _info;
 	std::string _token;

@@ -13,8 +13,8 @@ GameState::GameState(GameDataRef data) : _data(data)
 
 void GameState::init()
 {
-	Level A = Level(Noise::GenHeightMap(sf::Vector2i(6, 10), 9, 2, 1), _data, "levelgentest-1", 15.0f);
-	Level B = Level(Noise::GenHeightMap(sf::Vector2i(10, 15), 13, 2, 1), _data, "levelgentest-2", 15.0f);
+	Level A = Level(Noise::GenHeightMap(sf::Vector2i(10, 10), 9, 2, 1), _data, "levelgentest-1", 15.0f);
+	Level B = Level(Noise::GenHeightMap(sf::Vector2i(10, 10), 9, 2, 1), _data, "levelgentest-2", 15.0f);
 	_levels.push_back(Level(A, B, "stichleveltest"));
 
 
@@ -88,7 +88,7 @@ void GameState::update(float dt)
 	this->_data->gameObjectManager.update(dt);
 
 	if (_player->isFinished()) {
-		Level nextlvl = Level(this->_levels.back(), Level(Noise::GenHeightMap(sf::Vector2i(20, 10), 8, 2, 1), _data, "levelgentest-1", 15.0f), "recursionlvl");
+		Level nextlvl = Level(this->_levels.back(), Level(Noise::GenHeightMap(sf::Vector2i(10, 10), 9, 2, 1), _data, "levelgentest-2", 15.0f), "recursionlvl");
 		this->_levels.push_back(nextlvl);
 		if (_currentLevel + 1 < (int)this->_levels.size()) {
 
