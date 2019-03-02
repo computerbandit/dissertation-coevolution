@@ -201,12 +201,13 @@ void Player::restart()
 	this->_lives = this->_startingLives;
 	this->_currentCheckpoint = 0;
 	this->_finished = false;
-	this->_timer.restart();
 	this->respawn();
+	this->_timer.restart();
 }
 
 void Player::finish()
 {
+	this->_levelTime = this->_timer.getElapsedTime().asSeconds();
 	//player has finished the level...
 	this->_finished = true;
 	//could start a clock and have the next level after like 2 secs;
@@ -277,6 +278,11 @@ const sf::Vector2f Player::getSpriteCenterPosition() const
 	float w = this->_sprite.getGlobalBounds().width;
 	float h = this->_sprite.getGlobalBounds().height;
 	return sf::Vector2f((w / 2) + this->_position.x, (h / 2) + this->_position.y);
+}
+
+const float & Player::getLevelTime() const
+{
+	return this->_levelTime;
 }
 
 

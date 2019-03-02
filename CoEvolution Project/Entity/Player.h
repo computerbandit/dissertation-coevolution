@@ -36,6 +36,7 @@ public:
 	const float& getProgress() const;
 	const sf::Vector2f& getPosition() const;
 	const sf::Vector2f getSpriteCenterPosition() const;
+	const float& getLevelTime() const;
 protected:
 	GameDataRef _data;
 
@@ -51,4 +52,5 @@ protected:
 
 	bool _falling = true, _jumping = false, _holdingJump = false, _jump = false, _grounded = false, _finished = false;
 	float _progress = 0.0f;
+	float _levelTime = 15.0f;
 };

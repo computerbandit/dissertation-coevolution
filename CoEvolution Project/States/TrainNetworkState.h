@@ -23,7 +23,7 @@ private:
 	bool nextPopulationChunk();
 	NNControlledPlayer* getBestController();
 	void checkProgress(float interval);
-	bool AreAllDead();
+	bool areAllDead();
 	void selectLevelForChunk();
 
 

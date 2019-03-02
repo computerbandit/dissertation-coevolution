@@ -20,15 +20,16 @@ void NNControlledPlayer::setNNController(NeuralNetwork * network)
 void NNControlledPlayer::die()
 {
 	if (!_finished) {
-		//_networkController->setFitnessScore(getProgress());
-		_networkController->setFitnessScore(0.0f);
+		//make the time for the level 999
+		this->_levelTime = 999.0f;
+		_networkController->setFitnessScore(getProgress());
+		//_networkController->setFitnessScore(0.0f);
 	}
 	else { //if the player has finished then the controller gets loads more fitness points
-		float leveltime = this->_timer.getElapsedTime().asSeconds();
-		float timepoints = ((leveltime * this->_data->gameSpeedMultiplier) - this->_levels->at(this->_currentLevel).getLevelTime()) * 2;
-		_networkController->setFitnessScore(1000.0f);
+		float fitnessScore = getProgress() + 500.0f;
+		_networkController->setFitnessScore(fitnessScore);
+		//_networkController->setFitnessScore(1000.0f);
 		//_networkController->setFitnessScore(getProgress());
-		//_networkController->setFitnessScore(getProgress() + 500.0f);
 		//_networkController->setFitnessScore(getProgress() + 1000.0f + timepoints);
 		//_networkController->setFitnessScore((getProgress() + 500.0f + timepoints ) * (1.0f + ((float)this->_currentLevel/10)));
 	}
@@ -39,7 +40,7 @@ void NNControlledPlayer::die()
 
 void NNControlledPlayer::finish()
 {
-	this->_finished = true;
+	Player::finish();
 	this->die();
 }
 

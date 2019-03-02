@@ -22,14 +22,12 @@ public:
 	const sf::Vector2f& getCheckpoint(int num) const;
 	bool lastCheckpoint(int num);
 	const sf::Vector2f& getFinishFlagPosition() const;
-	const float& getLevelTime() const;
 
 	inline std::string& getFileName() { return _fileName; }
 	inline Tilemap& getTileMap() { return _tilemap; }
 	inline int& getWidth() { return _width; }
 	inline int& getHeight() { return _height; }
 	inline std::vector<sf::Vector2f>& getCheckpoint() { return _checkpoint; }
-	inline float& getTimeToComplete() { return _timeToComplete; }
 
 private:
 
@@ -45,7 +43,6 @@ private:
 	int _width, _height;
 	std::vector<sf::Vector2f> _checkpoint;
 	sf::Sprite _background;
-	float _timeToComplete;
 };
 
 class Noise {
