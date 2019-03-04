@@ -5,7 +5,6 @@
 GameState::GameState(GameDataRef data) : _data(data)
 {
 	//load camera, levels the player and add the player to the list of entities in the level.
-	this->_coin = nullptr;
 	this->_player = nullptr;
 	this->_currentLevel = 0;
 	this->_levels = std::vector<Level>();
@@ -24,15 +23,19 @@ void GameState::init()
 	//_levels.push_back(Level(_data, TRAINING_LEVEL_7, LEVEL_7_TIME));
 	
 
-	Level A = Level(Noise::GenHeightMap(sf::Vector2i(100, 10), 9, 2, 1), _data, "levelgentest-1", 15.0f);
-	Level B = Level(Noise::GenHeightMap(sf::Vector2i(100, 10), 9, 2, 1), _data, "levelgentest-2", 15.0f);
-	_levels.push_back(Level(A, B, "stichleveltest"));
+	Level A =  Level(Noise::GenHeightMap(sf::Vector2i(10, 4), 3, 2, 1), _data, "levelgentest-1", 15.0f);
+	Level B = Level(Noise::GenHeightMap(sf::Vector2i(10, 4), 3, 2, 1), _data, "levelgentest-2", 15.0f);
+	//_levels.push_back(Level(A, B, "stichleveltest"));
+	_levels.push_back(B);
 
 	//init entities
-	_coin = new Coin(_data);
 	_player = new Player(_data, &_levels, sf::Vector2f(TILE_SIZE / 2, TILE_SIZE / 2));
+	this->_data->gameObjectManager.clearEntities();
 	this->_data->gameObjectManager.addEntity(_player, PLAYER_LAYER);
-	this->_data->gameObjectManager.addEntity(_coin, COIN_LAYER);
+
+	//load the entites for the first level;
+	this->_levels.at(_currentLevel).spawnEntities();
+
 
 	this->_data->camera = Camera(&(this->_data->window), this->_data->window.getSize(), sf::Vector2f(0, 0));
 	this->_data->camera.zoom(1.4f);
@@ -96,12 +99,18 @@ void GameState::update(float dt)
 	this->_data->gameObjectManager.update(dt);
 
 	if (_player->isFinished()) {
-		Level nextlvl = Level(Level(Noise::GenHeightMap(sf::Vector2i(100, 10), 9, 2, 1), _data, "levelgentest-1", 15.0f) ,Level(Noise::GenHeightMap(sf::Vector2i(100, 10), 9, 2, 1), _data, "levelgentest-2", 15.0f), "recursionlvl");
+		Level nextlvl = Level(Noise::GenHeightMap(sf::Vector2i(100, 10), 9, 2, 1), _data, "levelgentest-1", 15.0f);
 		this->_levels.push_back(nextlvl);
 		if (_currentLevel + 1 < (int)this->_levels.size()) {
 
 			std::cout << "\n Level Completed" << std::endl;
 			this->_currentLevel++;
+			this->_data->gameObjectManager.clearEntities();
+			this->_data->gameObjectManager.addEntity(_player, PLAYER_LAYER);
+			//load the entites for the first level;
+
+			this->_levels.at(this->_currentLevel).spawnEntities();
+
 			this->_player->nextLevel();
 			this->_player->restart();
 		}
@@ -115,7 +124,7 @@ void GameState::update(float dt)
 void GameState::draw(float dt)
 {
 	this->_data->camera.update(_player->getSpriteCenterPosition());
-	this->_data->window.clear(sf::Color(234, 212, 170, 255));
+	this->_data->window.clear(sf::Color(99, 155, 255, 255));
 	this->_levels.at(this->_currentLevel).draw();
 	this->_data->gameObjectManager.draw(dt);
 	this->_data->window.display();

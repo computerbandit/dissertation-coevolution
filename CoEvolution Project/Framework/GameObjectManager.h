@@ -5,7 +5,7 @@
 #include "Tile.h"
 
 enum ObjectLayer {
-	PLAYER_LAYER, ENEMEY_LAYER, COIN_LAYER, LEVEL_LAYER, BACKGROUND_LAYER
+	BACKGROUND_LAYER, LEVEL_LAYER, COIN_LAYER, PLAYER_LAYER, ENEMEY_LAYER, TOP_LAYER
 };
 
 class GameObjectManager {
@@ -39,6 +39,7 @@ inline std::vector<T*> GameObjectManager::collisionCheck(sf::FloatRect hitBox, O
 				entitesInArea.push_back(eptr);
 			}
 		}
+
 	}
 	return entitesInArea;
 }

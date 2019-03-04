@@ -1,12 +1,14 @@
 #include "Coin.h"
 
-Coin::Coin(GameDataRef data): _data(data)
+Coin::Coin(GameDataRef data, sf::Vector2f pos): _data(data)
 {
 	AssetManager::rescale(this->_sprite, ZOOM_FACTOR);
-	this->_position = sf::Vector2f(200.0f, 64.0f);
+	this->_position = pos;
+	this->_sprite.setPosition(this->_position);
 	this->_animController = new AnimationController(this->_sprite);
 	std::vector<unsigned int> animIds = std::vector<unsigned int>();
 	animIds.push_back(COIN_IDLE);
+	animIds.push_back(COIN_COLLECTED);
 	this->_animController->mapAnimations(&this->_data->assetManager, animIds);
 	this->_animController->nextAnimation(COIN_IDLE, true, false);
 }
@@ -24,7 +26,9 @@ void Coin::init()
 
 void Coin::update(float dt)
 {
-	this->_sprite.setPosition(this->_position);
+	if (this->_collected && this->_animController->hasCurrentAnimTimedOut()) {
+		destory();
+	}
 }
 
 void Coin::draw(float dt)
@@ -35,11 +39,6 @@ void Coin::draw(float dt)
 
 void Coin::collect()
 {
-	
-	// play sound
-	// have destroy time out
-	// destroy the entity
-	//change to animation state collected and start anim timer
-	//in the update function call destroy after the the anim is done
-	destory();
+	this->_collected = true;
+	this->_animController->nextAnimation(COIN_COLLECTED, false, false);
 }

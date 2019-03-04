@@ -49,6 +49,7 @@ void SplashState::update(float dt)
 		this->_data->assetManager.loadAnimationState(PLAYER_IDLE, &this->_data->assetManager.getTexturesheet(PLAYER), 8, 8, 500.0f, false);
 		this->_data->assetManager.loadAnimationState(PLAYER_RUN, &this->_data->assetManager.getTexturesheet(PLAYER), 16, 8, 500.0f, false);
 		this->_data->assetManager.loadAnimationState(COIN_IDLE, &this->_data->assetManager.getTexturesheet(EXTRA), 8, 8, 1000.0f, false);
+		this->_data->assetManager.loadAnimationState(COIN_COLLECTED, &this->_data->assetManager.getTexturesheet(EXTRA), 16, 8, 500.0f, false);
 
 		this->_loadAssets = false;
 	}

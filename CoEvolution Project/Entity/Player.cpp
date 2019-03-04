@@ -117,8 +117,10 @@ void Player::update(float dt)
 
  
 	for (Coin* coin : this->_data->gameObjectManager.collisionCheck<Coin>(this->_sprite.getGlobalBounds(), COIN_LAYER)) {
-		coin->collect();
-		this->_score += 1;
+		if (!coin->isCollected()) {
+			coin->collect();
+			this->_score += 1;
+		}
 	}
 
 	//if the player collides with a death tile then die

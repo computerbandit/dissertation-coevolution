@@ -23,6 +23,8 @@ public:
 	void mapAnimations(AssetManager* am , std::vector<unsigned int> animIds);
 	void nextAnimation(unsigned int id, bool loop, bool flippedx);
 
+	inline bool& hasCurrentAnimTimedOut() { return _timeout; }
+
 	void update();
 private:
 	sf::Sprite& _spriteRef;
@@ -34,4 +36,5 @@ private:
 	bool _loop;
 	bool _flippedx;
 	bool _change;
+	bool _timeout;
 };

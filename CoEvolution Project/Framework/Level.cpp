@@ -1,4 +1,6 @@
 #include "Level.h"
+#include "GameObjectManager.h"
+#include "../Entity/Coin.h"
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -11,6 +13,7 @@ Level::Level(GameDataRef data, std::string fileName, float time) : _data(data), 
 	this->_width = 0;
 	this->_height = 0;
 	loadLevelFromTextFile(_fileName);
+	loadEntitiesFromTextFile(_fileName);
 }
 
 Level::Level(HMap map, GameDataRef data, std::string fileName, float time) : _data(data), _fileName(fileName)
@@ -19,6 +22,7 @@ Level::Level(HMap map, GameDataRef data, std::string fileName, float time) : _da
 	this->_height = 0;
 	this->createLevelFromHeightMap(map);
 	loadLevelFromTextFile(_fileName);
+	loadEntitiesFromTextFile(_fileName);
 }
 
 Level::Level(Level lvlA, Level lvlB, std::string fileName): _fileName(fileName), _data(lvlA._data)
@@ -28,6 +32,7 @@ Level::Level(Level lvlA, Level lvlB, std::string fileName): _fileName(fileName),
 	//stich levels together function;
 	stichLevels(lvlA, lvlB);
 	loadLevelFromTextFile(_fileName);
+	loadEntitiesFromTextFile(_fileName);
 }
 
 void Level::loadLevelFromTextFile(std::string fileName = "")
@@ -39,7 +44,7 @@ void Level::loadLevelFromTextFile(std::string fileName = "")
 	this->_height = 0;
 	std::ifstream file;
 	std::string line;
-	std::string filePath = LEVEL_PATH + ((fileName == "") ? _fileName : fileName) + ".level";
+	std::string filePath = LEVEL_PATH + ((fileName == "") ? _fileName : fileName) + ".tilemap";
 	file.open(filePath);
 	if (file.is_open()) {
 		while (!file.eof()) {
@@ -76,36 +81,136 @@ void Level::loadLevelFromTextFile(std::string fileName = "")
 	file.close();
 }
 
-void Level::writeLevelData(std::vector<std::string> levelData)
+void Level::loadEntitiesFromTextFile(std::string fileName)
+{
+	this->_entitymap = std::map<ObjectLayer, std::vector<IEntity*>>();
+	for (int i = 0; i <= int(TOP_LAYER); i++) {
+		std::vector<IEntity*> layer = std::vector<IEntity*>();
+		this->_entitymap.emplace(static_cast<ObjectLayer>(i), layer);
+	}
+	std::ifstream file;
+	std::string line;
+	std::string filePath = LEVEL_PATH + ((fileName == "") ? _fileName : fileName) + ".entitymap";
+	bool newLayer = false;
+	bool addEntity = false;
+	ObjectLayer layer = ObjectLayer::PLAYER_LAYER;
+	file.open(filePath);
+	if (file.is_open()) {
+		while (!file.eof()) {
+			std::getline(file, line);
+			std::stringstream ss(line);
+			std::string token;
+			while (std::getline(ss, token, ':')) {
+				if (token == "L") {
+					newLayer = true;
+					addEntity = false;
+				}
+				else if (token == "E") {
+					addEntity = true;
+					newLayer = false;
+				}
+				else {
+					if (newLayer) {
+						if (token == "BACKGROUND_LAYER") {
+							layer = ObjectLayer::BACKGROUND_LAYER;
+						}
+						else if (token == "LEVEL_LAYER") {
+							layer = ObjectLayer::LEVEL_LAYER;
+						}
+						else if (token == "COIN_LAYER") {
+							layer = ObjectLayer::COIN_LAYER;
+						}
+						else if (token == "PLAYER_LAYER") {
+							layer = ObjectLayer::PLAYER_LAYER;
+						}
+						else if (token == "ENEMEY_LAYER") {
+							layer = ObjectLayer::ENEMEY_LAYER;
+						}
+						else if (token == "TOP_LAYER") {
+							layer = ObjectLayer::TOP_LAYER;
+						}
+					}
+					else if (addEntity) {
+						std::stringstream ss(token);
+						std::string data;
+						float xpos = 0.0f, ypos = 0.0f;
+						int i = 0;
+						std::string eType = "";
+						while (std::getline(ss, data, ',')) {
+							if (i == 0) {
+								eType = data;
+								i++;
+								continue;
+							}
+							if (eType == "COIN") {
+								if (i == 1) {
+									xpos = TILE_SIZE * std::stof(data);
+								}
+								else if (i == 2) {
+									ypos = TILE_SIZE * std::stof(data);
+								}
+							}
+							i++;
+						}
+						if (eType == "COIN") {
+							this->_entitymap.at(layer).push_back(new Coin(this->_data, sf::Vector2f(xpos, ypos)));
+						}
+					}
+				}
+			}	
+		}
+	}
+	file.close();
+}
+
+void Level::writeTileData(std::vector<std::string> tileData)
 {
 	//parse the data to the level file
-	std::string formatedLvlData = "";
+	std::string formatedTileData = "";
 	int y = 0;
-	for (int x = 0; x < int(levelData.size()); x++) {
+	for (int x = 0; x < int(tileData.size()); x++) {
 		if (x%this->_width == (this->_width - 1)) {
-			formatedLvlData.append(levelData.at((y*this->_width) + (x%this->_width)));
+			formatedTileData.append(tileData.at((y*this->_width) + (x%this->_width)));
 
 		}
 		else if ((x != 0) && (x%this->_width) == 0) {
-			formatedLvlData.append("\n");
+			formatedTileData.append("\n");
 			y++;
-			formatedLvlData.append(levelData.at((y*this->_width) + (x%this->_width)) + ",");
+			formatedTileData.append(tileData.at((y*this->_width) + (x%this->_width)) + ",");
 		}
 		else {
-			formatedLvlData.append(levelData.at((y*this->_width) + (x%this->_width)) + ",");
+			formatedTileData.append(tileData.at((y*this->_width) + (x%this->_width)) + ",");
 		}
 	}
 
 	std::ofstream csv;
-	csv.open(LEVEL_PATH + _fileName + ".level");
-	csv << formatedLvlData;
+	csv.open(LEVEL_PATH + _fileName + ".tilemap");
+	csv << formatedTileData;
 	csv.close();
+}
+
+void Level::writeEntityData(std::vector<std::string> entityData)
+{
+	//parse the data to the level file
+	std::string formatedEntityData = "";
+	int y = 0;
+	for (int x = 0; x < int(entityData.size()); x++) {
+		formatedEntityData.append(entityData.at(x));
+		if (x < int(entityData.size()) - 1) {
+			formatedEntityData.append("\n");
+		}
+	}
+
+	std::ofstream csv;
+	csv.open(LEVEL_PATH + _fileName + ".entitymap");
+	csv << formatedEntityData;
+	csv.close();
+
 }
 
 
 void Level::createLevelFromHeightMap(HMap map)
 {
-
 	this->_width = map.size();
 	//get the max height and add one for air
 	int heighest = 1;
@@ -116,19 +221,19 @@ void Level::createLevelFromHeightMap(HMap map)
 	}
 	//top level is all air - just how I have decied to do it
 	this->_height = heighest + 2;
-	std::vector<std::string> levelData = std::vector<std::string>(_height*_width);
+	std::vector<std::string> tileData = std::vector<std::string>(_height*_width);
 	int currentHeight = this->_height;
-	for (int x = 0; x < int(levelData.size()); x++) {
+	for (int x = 0; x < int(tileData.size()); x++) {
 		//bottom layer is death tiles
 		if ((x != 0) && (x%this->_width == 0)) {
 			currentHeight--;
 		}
 
 		if (map.at(x%this->_width) >= currentHeight) {
-			levelData.at(x) = "00";
+			tileData.at(x) = "00";
 		}
 		else {
-			levelData.at(x) = "61";
+			tileData.at(x) = "61";
 		}
 
 	}
@@ -139,31 +244,38 @@ void Level::createLevelFromHeightMap(HMap map)
 	//this could incoperate the some kind of difficulty rating
 
 	//add pitfalls to the levelsection with 20% chance to make a pit each column.
-	trapLevel(levelData, map, 0.60f);
-	pitFallLevel(levelData, map, 0.50f);
+	trapLevel(tileData, map, 0.60f);
+	pitFallLevel(tileData, map, 0.50f);
 	
-
-	for (int x = (this->_height - 1)*(this->_width); x < int(levelData.size()); x++) {
-		levelData.at(x) = "60";
+	for (int x = (this->_height - 1)*(this->_width); x < int(tileData.size()); x++) {
+		tileData.at(x) = "60";
 	}
 
 	//add checkpoints and final flag
-	for (int y = 1; y < int(levelData.size()); y += this->_width) {
+	for (int y = 1; y < int(tileData.size()); y += this->_width) {
 		//loop down each layers until you find the first solid block
-		if (levelData.at(y) != "61") {
-			levelData.at(y - this->_width) = "32";
+		if (tileData.at(y) != "61") {
+			tileData.at(y - this->_width) = "32";
 			break;
 		}
 	}
-	for (int y = this->_width - 2; y < int(levelData.size()); y += this->_width) {
+	for (int y = this->_width - 2; y < int(tileData.size()); y += this->_width) {
 		//loop down each layers until you find the first solid block
-		if (levelData.at(y) != "61") {
-			levelData.at(y - this->_width) = "33";
+		if (tileData.at(y) != "61") {
+			tileData.at(y - this->_width) = "33";
 			break;
 		}
 
 	}
-	writeLevelData(levelData);
+
+	writeTileData(tileData);
+
+	//now add entities to the entity map
+	std::vector<std::string> entityData = std::vector<std::string>();
+	addCoins(tileData, entityData);
+	
+	writeEntityData(entityData);
+
 }
 
 void Level::stichLevels(Level & lvlA, Level & lvlB)
@@ -198,24 +310,24 @@ void Level::stichLevels(Level & lvlA, Level & lvlB)
 
 	//given these two levels can we put them together to make a bigger one
 
-	std::vector<std::string> levelData = std::vector<std::string>(this->_height*this->_width);
-	for (std::string& td : levelData) {
+	std::vector<std::string> tileData = std::vector<std::string>(this->_height*this->_width);
+	for (std::string& td : tileData) {
 		td = "61";
 	}
 	int index = 0;
 	Tile& tile = tilemapA.at(0);
-	std::string tileData = "61";
+	std::string tileString= "61";
 	for (int x = 0; x < lvlA.getWidth()-1; x++) {
 		for (int y = 0; y < lvlA.getHeight(); y++) {
 			index = y * lvlA.getWidth() + x;
 			tile = tilemapA.at(index);
-			tileData = std::to_string(tile.getTileID());
-			tileData = (tile.getTileID() < 10) ? "0" + tileData : tileData;
+			tileString = std::to_string(tile.getTileID());
+			tileString = (tile.getTileID() < 10) ? "0" + tileString : tileString;
 			if (partAShift) {
-				levelData.at((flagYPosDelta + y)*this->_width + x) = tileData;
+				tileData.at((flagYPosDelta + y)*this->_width + x) = tileString;
 			}
 			else {
-				levelData.at(y*this->_width + x) = tileData;
+				tileData.at(y*this->_width + x) = tileString;
 			}
 		}
 	}
@@ -224,20 +336,20 @@ void Level::stichLevels(Level & lvlA, Level & lvlB)
 		for (int y = 0; y < lvlB.getHeight(); y++) {
 			index = y * lvlB.getWidth() + x;
 			tile = tilemapB.at(index);
-			tileData = std::to_string(tile.getTileID());
-			tileData = (tile.getTileID() < 10) ? "0" + tileData : tileData;
+			tileString = std::to_string(tile.getTileID());
+			tileString = (tile.getTileID() < 10) ? "0" + tileString : tileString;
 			if (partAShift) {
-				levelData.at((y*this->_width) + (x + lvlA.getWidth() - 3)) = tileData;
+				tileData.at((y*this->_width) + (x + lvlA.getWidth() - 3)) = tileString;
 			}
 			else {
-				levelData.at(((flagYPosDelta + y)* this->_width) + (x + lvlA.getWidth() - 3)) = tileData;
+				tileData.at(((flagYPosDelta + y)* this->_width) + (x + lvlA.getWidth() - 3)) = tileString;
 			}
 		}
 	}
-	writeLevelData(levelData);
+	writeTileData(tileData);
 }
 
-void Level::pitFallLevel(std::vector<std::string>& levelData, HMap& map, float pitRate)
+void Level::pitFallLevel(std::vector<std::string>& tileData, HMap& map, float pitRate)
 {
 	std::vector<bool> pitfallMarker = std::vector<bool>(this->_width);
 	for (int i = 0; i < int(pitfallMarker.size()); i++) {
@@ -277,20 +389,20 @@ void Level::pitFallLevel(std::vector<std::string>& levelData, HMap& map, float p
 	for (int x = 2; x < this->_width - 2; x++) {
 		if (pitfallMarker.at(x)) {
 			for (int y = 0; y < this->_height; y++) {
-				levelData.at(y * this->_width + x) = "61";
+				tileData.at(y * this->_width + x) = "61";
 			}
 			if (!pitfallMarker.at(x - 1)) {
 				for (int y = 0; y < this->_height; y++) {
-					if (levelData.at(y * this->_width + (x - 1)) == "34") {
-						levelData.at(y * this->_width + (x - 1)) = "00";
+					if (tileData.at(y * this->_width + (x - 1)) == "34") {
+						tileData.at(y * this->_width + (x - 1)) = "00";
 						map.at(x - 1) += 1;
 					}
 				}
 			}
 			if (!pitfallMarker.at(x + 1)) {
 				for (int y = 0; y < this->_height; y++) {
-					if (levelData.at(y * this->_width + (x + 1)) == "34") {
-						levelData.at(y * this->_width + (x + 1)) = "00";
+					if (tileData.at(y * this->_width + (x + 1)) == "34") {
+						tileData.at(y * this->_width + (x + 1)) = "00";
 						map.at(x + 1) += 1;
 					}
 				}
@@ -302,7 +414,7 @@ void Level::pitFallLevel(std::vector<std::string>& levelData, HMap& map, float p
 
 
 //replace some of the level with traps 
-void Level::trapLevel(std::vector<std::string>& levelData, HMap& map, float trapRate)
+void Level::trapLevel(std::vector<std::string>& tileData, HMap& map, float trapRate)
 {
 	std::vector<bool> trapMarker = std::vector<bool>(this->_width);
 	for (int i = 0; i < int(trapMarker.size()); i++) {
@@ -331,8 +443,8 @@ void Level::trapLevel(std::vector<std::string>& levelData, HMap& map, float trap
 		if (trapMarker.at(x)) {
 			for (int y = 0; y < this->_height; y++) {
 				//less than 32 but not 0
-				if (levelData.at(y * this->_width + x) == "00") {
-					levelData.at(y * this->_width + x) = "34";
+				if (tileData.at(y * this->_width + x) == "00") {
+					tileData.at(y * this->_width + x) = "34";
 					map.at(x) -= 1;
 					break;
 				}
@@ -341,11 +453,36 @@ void Level::trapLevel(std::vector<std::string>& levelData, HMap& map, float trap
 	}
 }
 
-void Level::platformLevel(std::vector<std::string>& levelData)
+void Level::platformLevel(std::vector<std::string>& tileData)
 {
 
 
 }
+
+void Level::addCoins(std::vector<std::string>& tileData, std::vector<std::string>& entityData)
+{
+	std::string layer = "L:COIN_LAYER";
+	std::string eType = "E:COIN";
+	std::string xpos = "0";
+	std::string ypos = "0";
+	std::string coin = "";
+
+	entityData.push_back(layer);
+	for (int x = 2; x < this->_width - 2; x++) {
+		if (Noise::randomFloat(0.0f, 1.0f) >= 0.40f) {
+			for (int y = 0; y < this->_height-1; y++) {
+				if (tileData.at(y * this->_width + x) != "61") {
+					xpos = std::to_string(x);
+					ypos = std::to_string(y - 1);
+					coin = eType + "," + xpos + "," + ypos;
+					entityData.push_back(coin);
+					break;
+				}
+			}
+		}
+	}
+}
+ 
 
 Tile * Level::tileAt(int i, int j)
 {
@@ -361,6 +498,18 @@ void Level::draw()
 	for (Tile& tile : _tilemap) {
 		if (this->_data->camera.getCameraBox().intersects(tile.getSprite().getGlobalBounds())) {
 			this->_data->window.draw(tile.getSprite());
+		}
+	}
+}
+
+void Level::spawnEntities()
+{
+	for (int i = 0; i <= int(TOP_LAYER); i++) {
+		std::vector<IEntity*> layer = this->_entitymap.at(static_cast<ObjectLayer>(i));
+		int layerSize = int(layer.size());
+		for (int j = 0; j < layerSize; j++)
+		{
+			this->_data->gameObjectManager.addEntity(layer.at(j), static_cast<ObjectLayer>(i));
 		}
 	}
 }

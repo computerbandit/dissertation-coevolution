@@ -63,6 +63,10 @@ void AnimationController::update()
 			else {
 				if (this->_frame + 1 < (this->_currentAnimationState->_startindex + (this->_currentAnimationState->_length - 1))) {
 					this->_frame++;
+					this->_timeout = false;
+				}
+				else {
+					this->_timeout = true;
 				}
 			}
 			this->_spriteRef.setTexture(this->_currentAnimationState->_sheet->getTexture(this->_frame));

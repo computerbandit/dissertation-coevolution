@@ -1,10 +1,12 @@
 #pragma once
 #include <vector>
+#include <map>
 #include "SFML/Graphics.hpp"
 #include "Game.h"
 #include "Tile.h"
 
 typedef std::vector<Tile> Tilemap;
+typedef std::map<ObjectLayer, std::vector<IEntity*>> Entitymap;
 typedef std::vector<int> HMap;
 
 class Level {
@@ -15,6 +17,7 @@ public:
 	~Level() {}
 
 	void draw();
+	void spawnEntities();
 
 	bool collision(const sf::FloatRect &rect);
 	std::vector<Tile*> getTilesInArea(const sf::FloatRect &rect);
@@ -32,18 +35,23 @@ public:
 private:
 
 	void loadLevelFromTextFile(std::string fileName);
-	void writeLevelData(std::vector<std::string> levelData);
+	void loadEntitiesFromTextFile(std::string fileName);
+	void writeTileData(std::vector<std::string> tileData);
+	void writeEntityData(std::vector<std::string> entityData);
 	void createLevelFromHeightMap(HMap map);
 	void stichLevels(Level& lvlA, Level& lvlB);
 
-	void pitFallLevel(std::vector<std::string>& levelData, HMap& map, float pitRate);
-	void trapLevel(std::vector<std::string>& levelData, HMap& map, float trapRate);
-	void platformLevel(std::vector<std::string>& levelData);
+	void pitFallLevel(std::vector<std::string>& tileData, HMap& map, float pitRate);
+	void trapLevel(std::vector<std::string>& tileData, HMap& map, float trapRate);
+	void platformLevel(std::vector<std::string>& tileData);
+
+	void addCoins(std::vector<std::string>& tileData, std::vector<std::string>& entityData);
 
 	Tile* tileAt(int i, int j);
 
 	GameDataRef _data;
 	Tilemap _tilemap;
+	Entitymap _entitymap;
 	std::string _fileName;
 	int _width, _height;
 	std::vector<sf::Vector2f> _checkpoint;

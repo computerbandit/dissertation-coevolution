@@ -168,8 +168,8 @@
   <ItemGroup>
     <Text Include="Resources\networks\test.txt" />
     <Text Include="Resources\networks\test2.txt" />
-    <Text Include="Resources\level\level1.level" />
-    <Text Include="Resources\level\level2.level" />
+    <Text Include="Resources\level\level1.tilemap" />
+    <Text Include="Resources\level\level2.tilemap" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\res\Exit_Button.png">
@@ -204,11 +204,11 @@
     <Font Include="Resources\fonts\Menu_Font.ttf" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\level\level3.level" />
-    <None Include="Resources\level\level4.level" />
-    <None Include="Resources\level\level5.level" />
-    <None Include="Resources\level\level6.level" />
-    <None Include="Resources\level\level7.level" />
-    <None Include="Resources\level\level8.level" />
+    <None Include="Resources\level\level3.tilemap" />
+    <None Include="Resources\level\level4.tilemap" />
+    <None Include="Resources\level\level5.tilemap" />
+    <None Include="Resources\level\level6.tilemap" />
+    <None Include="Resources\level\level7.tilemap" />
+    <None Include="Resources\level\level8.tilemap" />
   </ItemGroup>
 </Project>

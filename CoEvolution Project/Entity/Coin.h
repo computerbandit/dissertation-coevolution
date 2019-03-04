@@ -8,7 +8,7 @@
 
 class Coin : public IEntity{
 public:
-	Coin(GameDataRef data);
+	Coin(GameDataRef data, sf::Vector2f pos);
 	~Coin();
 
 
@@ -18,9 +18,10 @@ public:
 	virtual void draw(float dt) override;
 
 	void collect();
-
+	inline bool isCollected() { return _collected; }
 private:
 	GameDataRef _data;
 	AnimationController* _animController;
+	bool _collected = false;
 };
 

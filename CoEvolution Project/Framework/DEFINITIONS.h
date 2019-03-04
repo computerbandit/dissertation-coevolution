@@ -24,6 +24,7 @@
 #define PLAYER_IDLE 1
 #define PLAYER_RUN 2
 #define COIN_IDLE 10
+#define COIN_COLLECTED 11
 
 //Font
 #define MENU_FONT_PATH "Resources/fonts/Menu_Font.ttf"

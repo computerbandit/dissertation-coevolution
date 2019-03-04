@@ -3,7 +3,7 @@
 GameObjectManager::GameObjectManager()
 {
 	//fill the layers with buckets
-	for (int i = 0; i <= int(BACKGROUND_LAYER); i ++) {
+	for (int i = 0; i <= int(TOP_LAYER); i ++) {
 		std::vector<IEntity*> layer = std::vector<IEntity*>();
 		this->_entities.emplace(static_cast<ObjectLayer>(i), layer);
 	}
@@ -28,7 +28,7 @@ void GameObjectManager::removeEntity(IEntity * e, ObjectLayer layer)
 
 void GameObjectManager::clearEntities()
 {
-	for (int i = 0; i <= int(BACKGROUND_LAYER); i++) {
+	for (int i = 0; i <= int(TOP_LAYER); i++) {
 		this->_entities.at(static_cast<ObjectLayer>(i)).clear();
 	}
 }
@@ -41,7 +41,7 @@ void GameObjectManager::clearEntitiesInLayer(ObjectLayer layer)
 
 void GameObjectManager::draw(float dt)
 {
-	for (int i = 0; i <= int(BACKGROUND_LAYER); i++) {
+	for (int i = 0; i <= int(TOP_LAYER); i++) {
 		for (IEntity* e : this->_entities.at(static_cast<ObjectLayer>(i))) {
 			if (e->isActive()) {
 				e->draw(dt);
@@ -52,7 +52,7 @@ void GameObjectManager::draw(float dt)
 
 void GameObjectManager::update(float dt)
 {
-	for (int i = 0; i <= int(BACKGROUND_LAYER); i++) {
+	for (int i = 0; i <= int(TOP_LAYER); i++) {
 		for (IEntity* e : this->_entities.at(static_cast<ObjectLayer>(i))) {
 			if (e->isActive()) {
 				e->update(dt);
