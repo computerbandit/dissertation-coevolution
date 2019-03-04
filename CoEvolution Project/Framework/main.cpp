@@ -5,6 +5,8 @@
 
 int main() {
 	srand(time(0));
-	Game(SCREEN_WIDTH, SCREEN_HEIGHT, "CoEvil Prototype");
+	Game game = Game(SCREEN_WIDTH, SCREEN_HEIGHT, "CoEvil Prototype");
+
+	game.run();
 	return EXIT_SUCCESS;
 }

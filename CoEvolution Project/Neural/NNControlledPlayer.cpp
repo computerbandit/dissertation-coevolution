@@ -28,7 +28,7 @@ void NNControlledPlayer::die()
 	}
 	else { //if the player has finished then the controller gets loads more fitness points
 		float fitnessScore = getProgress() + 500.0f;
-		_networkController->setFitnessScore(fitnessScore);
+		_networkController->setFitnessScore(_networkController->getFitnessScore() + fitnessScore);
 		//_networkController->setFitnessScore(1000.0f);
 		//_networkController->setFitnessScore(getProgress());
 		//_networkController->setFitnessScore(getProgress() + 1000.0f + timepoints);
@@ -65,14 +65,17 @@ std::vector<float> NNControlledPlayer::controllersViewOfLevel() const
 		else {
 			switch (tilesInArea.at(i)->getTileID())
 			{
-			case DEATH_TILE:
+			case BOTTOMOFLEVEL_TILE:
+				value = -10.0f;
+				break;
+			case SPIKE_TILE:
 				value = -100.0f;
 				break;
 			case CHECKPOINT_TILE:
-				value = 0.0f;
+				value = 10.0f;
 				break;
 			case FINISH_LINE_TILE:
-				value = 0.0f;
+				value = 10.0f;
 				break;
 			default:
 				value = 0.0f;

@@ -7,7 +7,6 @@
 class Player : virtual public IEntity {
 
 public:
-
 	Player(GameDataRef data, std::vector<Level>* levels, sf::Vector2f wh);
 	~Player();
 
@@ -37,11 +36,11 @@ public:
 	const sf::Vector2f& getPosition() const;
 	const sf::Vector2f getSpriteCenterPosition() const;
 	const float& getLevelTime() const;
+	const int& getScore() const;
 protected:
 	GameDataRef _data;
 
 	AnimationController* _animController;
-	sf::Sprite _sprite;
 	std::vector<Level>* _levels;
 	sf::Clock _timer;
 	int _currentLevel;
@@ -53,4 +52,5 @@ protected:
 	bool _falling = true, _jumping = false, _holdingJump = false, _jump = false, _grounded = false, _finished = false;
 	float _progress = 0.0f;
 	float _levelTime = 15.0f;
+	int _score = 0;
 };

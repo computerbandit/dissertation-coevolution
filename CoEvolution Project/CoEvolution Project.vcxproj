@@ -151,6 +151,7 @@
     <ClCompile Include="Framework\Tile.cpp" />
     <ClCompile Include="States\TrainingPauseState.cpp" />
     <ClCompile Include="States\TrainNetworkState.cpp" />
+    <ClCompile Include="States\TrainSelectionState.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity\Coin.h" />
@@ -160,6 +161,7 @@
     <ClInclude Include="Framework\DEFINITIONS.h" />
     <ClInclude Include="Framework\GameObjectManager.h" />
     <ClInclude Include="Framework\Game.h" />
+    <ClInclude Include="Framework\GUI\Button.h" />
     <ClInclude Include="Neural\NeuralNetworkGA.h" />
     <ClInclude Include="States\GameState.h" />
     <ClInclude Include="Framework\IEntity.h" />
@@ -177,6 +179,7 @@
     <ClInclude Include="Framework\Tile.h" />
     <ClInclude Include="States\TrainingPauseState.h" />
     <ClInclude Include="States\TrainNetworkState.h" />
+    <ClInclude Include="States\TrainSelectionState.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Resources\level\level1.level" />

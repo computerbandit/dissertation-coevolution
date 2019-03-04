@@ -1,8 +1,10 @@
 #include "Player.h"
+#include "Coin.h"
 #include "../Framework/Tile.h"
 #include "../States/MainMenuState.h"
 #include "../Framework/DEFINITIONS.h"
 #include <iostream>
+
 
 Player::Player(GameDataRef data, std::vector<Level>* levels, sf::Vector2f wh) : _data(data), _levels(levels), _currentLevel(0)
 {
@@ -16,7 +18,6 @@ Player::Player(GameDataRef data, std::vector<Level>* levels, sf::Vector2f wh) : 
 	this->_animController->nextAnimation(PLAYER_IDLE, true, false);
 	AssetManager::rescale(this->_sprite, wh);
 	this->_sprite.setOrigin(sf::Vector2f(0.0f, 0.0f));
-
 	this->init();
 }
 
@@ -114,10 +115,17 @@ void Player::update(float dt)
 		}
 	}
 
-
+ 
+	for (Coin* coin : this->_data->gameObjectManager.collisionCheck<Coin>(this->_sprite.getGlobalBounds(), COIN_LAYER)) {
+		coin->collect();
+		this->_score += 1;
+	}
 
 	//if the player collides with a death tile then die
-	if (this->_levels->at(this->_currentLevel).collisionWithTile(this->_sprite.getGlobalBounds(), DEATH_TILE)) {
+	if (this->_levels->at(this->_currentLevel).collisionWithTile(this->_sprite.getGlobalBounds(), BOTTOMOFLEVEL_TILE)) {
+		this->die();
+	}
+	if (this->_levels->at(this->_currentLevel).collisionWithTile(this->_sprite.getGlobalBounds(), SPIKE_TILE)) {
 		this->die();
 	}
 
@@ -283,6 +291,11 @@ const sf::Vector2f Player::getSpriteCenterPosition() const
 const float & Player::getLevelTime() const
 {
 	return this->_levelTime;
+}
+
+const int & Player::getScore() const
+{
+	return this->_score;
 }
 
 

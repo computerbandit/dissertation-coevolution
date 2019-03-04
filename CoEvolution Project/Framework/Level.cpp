@@ -125,10 +125,10 @@ void Level::createLevelFromHeightMap(HMap map)
 		}
 
 		if (map.at(x%this->_width) >= currentHeight) {
-			levelData.at(x) = "11";
+			levelData.at(x) = "00";
 		}
 		else {
-			levelData.at(x) = "00";
+			levelData.at(x) = "61";
 		}
 
 	}
@@ -139,34 +139,31 @@ void Level::createLevelFromHeightMap(HMap map)
 	//this could incoperate the some kind of difficulty rating
 
 	//add pitfalls to the levelsection with 20% chance to make a pit each column.
-	trapLevel(levelData, map, 0.80f);
+	trapLevel(levelData, map, 0.60f);
 	pitFallLevel(levelData, map, 0.50f);
 	
-	
-
 
 	for (int x = (this->_height - 1)*(this->_width); x < int(levelData.size()); x++) {
-		levelData.at(x) = "63";
+		levelData.at(x) = "60";
 	}
 
 	//add checkpoints and final flag
 	for (int y = 1; y < int(levelData.size()); y += this->_width) {
 		//loop down each layers until you find the first solid block
-		if (levelData.at(y) != "00") {
+		if (levelData.at(y) != "61") {
 			levelData.at(y - this->_width) = "32";
 			break;
 		}
 	}
 	for (int y = this->_width - 2; y < int(levelData.size()); y += this->_width) {
 		//loop down each layers until you find the first solid block
-		if (levelData.at(y) != "00") {
+		if (levelData.at(y) != "61") {
 			levelData.at(y - this->_width) = "33";
 			break;
 		}
+
 	}
-
 	writeLevelData(levelData);
-
 }
 
 void Level::stichLevels(Level & lvlA, Level & lvlB)
@@ -203,11 +200,11 @@ void Level::stichLevels(Level & lvlA, Level & lvlB)
 
 	std::vector<std::string> levelData = std::vector<std::string>(this->_height*this->_width);
 	for (std::string& td : levelData) {
-		td = "00";
+		td = "61";
 	}
 	int index = 0;
 	Tile& tile = tilemapA.at(0);
-	std::string tileData = "00";
+	std::string tileData = "61";
 	for (int x = 0; x < lvlA.getWidth()-1; x++) {
 		for (int y = 0; y < lvlA.getHeight(); y++) {
 			index = y * lvlA.getWidth() + x;
@@ -252,26 +249,25 @@ void Level::pitFallLevel(std::vector<std::string>& levelData, HMap& map, float p
 	bool clearedForPit = false;
 	for (int x = 2; x < this->_width - 2; x++) {
 		delta = lastHeight - map.at(x + 1);
-		clearedForPit = (delta >=0) ? true : false;
-		if (clearedForPit) {
-			if (pitfallMarker.at(x - 1) && pitfallMarker.at(x - 2) && !pitfallMarker.at(x - 3)) {
-				//if there was one last column then the is a much lower chance to make other
-				if (Noise::randomFloat(0.0f, 1.00f) >= pitRate + 0.10f) {
-					pitfallMarker.at(x) = true;
-				}
-			}
-			else if (pitfallMarker.at(x - 1) && !pitfallMarker.at(x - 2) && (delta >= -1)) {
-				//if there was one last column then the is a much lower chance to make other
-				if (Noise::randomFloat(0.0f, 1.00f) >= pitRate + 0.10f) {
-					pitfallMarker.at(x) = true;
-				}
-			}
-			else if (!pitfallMarker.at(x - 1) && (delta >= -1)) {
-				if (Noise::randomFloat(0.0f, 1.00f) >= pitRate) {
-					pitfallMarker.at(x) = true;
-				}
+
+		if (pitfallMarker.at(x - 1) && pitfallMarker.at(x - 2) && !pitfallMarker.at(x - 3) && (delta > 0)) {
+			//if there was one last column then the is a much lower chance to make other
+			if (Noise::randomFloat(0.0f, 1.00f) >= pitRate + 0.10f) {
+				pitfallMarker.at(x) = true;
 			}
 		}
+		else if (pitfallMarker.at(x - 1) && !pitfallMarker.at(x - 2) && (delta > -1)) {
+			//if there was one last column then the is a much lower chance to make other
+			if (Noise::randomFloat(0.0f, 1.00f) >= pitRate + 0.10f) {
+				pitfallMarker.at(x) = true;
+			}
+		}
+		else if (!pitfallMarker.at(x - 1) && (delta > -1)) {
+			if (Noise::randomFloat(0.0f, 1.00f) >= pitRate) {
+				pitfallMarker.at(x) = true;
+			}
+		}
+		
 		if (!pitfallMarker.at(x)) {
 			lastHeight = map.at(x);
 		}
@@ -281,25 +277,26 @@ void Level::pitFallLevel(std::vector<std::string>& levelData, HMap& map, float p
 	for (int x = 2; x < this->_width - 2; x++) {
 		if (pitfallMarker.at(x)) {
 			for (int y = 0; y < this->_height; y++) {
-				levelData.at(y * this->_width + x) = "00";
+				levelData.at(y * this->_width + x) = "61";
 			}
 			if (!pitfallMarker.at(x - 1)) {
 				for (int y = 0; y < this->_height; y++) {
-					if (levelData.at(y * this->_width + (x - 1)) == "63") {
-						levelData.at(y * this->_width + (x - 1)) = "11";
+					if (levelData.at(y * this->_width + (x - 1)) == "34") {
+						levelData.at(y * this->_width + (x - 1)) = "00";
 						map.at(x - 1) += 1;
 					}
 				}
 			}
-			if (!pitfallMarker.at(x + 1)){
+			if (!pitfallMarker.at(x + 1)) {
 				for (int y = 0; y < this->_height; y++) {
-					if (levelData.at(y * this->_width + (x + 1)) == "63") {
-						levelData.at(y * this->_width + (x + 1)) = "11";
+					if (levelData.at(y * this->_width + (x + 1)) == "34") {
+						levelData.at(y * this->_width + (x + 1)) = "00";
 						map.at(x + 1) += 1;
 					}
 				}
 			}
 		}
+		
 	}
 }
 
@@ -334,8 +331,8 @@ void Level::trapLevel(std::vector<std::string>& levelData, HMap& map, float trap
 		if (trapMarker.at(x)) {
 			for (int y = 0; y < this->_height; y++) {
 				//less than 32 but not 0
-				if (levelData.at(y * this->_width + x) == "11") {
-					levelData.at(y * this->_width + x) = "63";
+				if (levelData.at(y * this->_width + x) == "00") {
+					levelData.at(y * this->_width + x) = "34";
 					map.at(x) -= 1;
 					break;
 				}

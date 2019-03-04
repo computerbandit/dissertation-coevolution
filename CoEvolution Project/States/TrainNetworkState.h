@@ -14,6 +14,7 @@ public:
 	virtual void cleanup() override;
 
 	virtual void resume() override;
+	virtual void pause() override;
 
 	virtual void handleEvents() override;
 	virtual void update(float dt) override;

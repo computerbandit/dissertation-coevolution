@@ -29,9 +29,6 @@ const sf::FloatRect & Tile::getHitBox() const
 
 bool Tile::getIfSolid(int id)
 {
-	if (id == 0) {
-		return false;
-	}
 
 	if(id < 32) {
 		return true;

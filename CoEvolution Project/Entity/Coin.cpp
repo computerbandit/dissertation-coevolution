@@ -3,7 +3,7 @@
 Coin::Coin(GameDataRef data): _data(data)
 {
 	AssetManager::rescale(this->_sprite, ZOOM_FACTOR);
-	this->_position = sf::Vector2f(0.0f, 0.0f);
+	this->_position = sf::Vector2f(200.0f, 64.0f);
 	this->_animController = new AnimationController(this->_sprite);
 	std::vector<unsigned int> animIds = std::vector<unsigned int>();
 	animIds.push_back(COIN_IDLE);

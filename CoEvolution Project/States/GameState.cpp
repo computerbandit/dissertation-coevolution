@@ -13,8 +13,6 @@ GameState::GameState(GameDataRef data) : _data(data)
 
 void GameState::init()
 {
-	
-
 
 	//load the levels in to the level vector
 	//_levels.push_back(Level(_data, TRAINING_LEVEL_1, LEVEL_1_TIME));
@@ -33,8 +31,8 @@ void GameState::init()
 	//init entities
 	_coin = new Coin(_data);
 	_player = new Player(_data, &_levels, sf::Vector2f(TILE_SIZE / 2, TILE_SIZE / 2));
-	this->_data->gameObjectManager.addEntity(_player);
-	this->_data->gameObjectManager.addEntity(_coin);
+	this->_data->gameObjectManager.addEntity(_player, PLAYER_LAYER);
+	this->_data->gameObjectManager.addEntity(_coin, COIN_LAYER);
 
 	this->_data->camera = Camera(&(this->_data->window), this->_data->window.getSize(), sf::Vector2f(0, 0));
 	this->_data->camera.zoom(1.4f);
@@ -52,36 +50,43 @@ void GameState::handleEvents()
 {
 	sf::Event event;
 	while (this->_data->window.pollEvent(event)) {
-		if (sf::Event::Closed == event.type) {
-			this->_data->window.close();
-		}
-		if (sf::Event::Resized == event.type) {
-			this->_data->camera.resize(event);
-		}
-
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
-			this->_data->stateMachine.popState();
-		}
-
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-			_player->left();
-		}
-		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-			_player->right();
-		}
-		else {
-			_player->stop();
-		}
-
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
-			_player->jump();
-		}
-
-		if (event.type == sf::Event::KeyReleased)
+		switch (event.type)
 		{
-			if (event.key.code == sf::Keyboard::Space) {
-				_player->stopJumping();
+		case sf::Event::Closed:
+			this->_data->window.close();
+			break;
+		case sf::Event::Resized:
+			this->_data->camera.resize(event);
+			break;
+		case sf::Event::KeyPressed:
+			switch (event.key.code)
+			{
+			case sf::Keyboard::A:
+				_player->left();
+				break;
+			case sf::Keyboard::D:
+				_player->right();
+				break;
+			case sf::Keyboard::Space:
+				_player->jump();
+				break;
+			case sf::Keyboard::Escape:
+				this->_data->stateMachine.popState();
+				break;
 			}
+			break;
+			case sf::Event::KeyReleased:
+				switch (event.key.code)
+				{
+				case sf::Keyboard::A:
+				case sf::Keyboard::D:
+					_player->stop();
+					break;
+				case sf::Keyboard::Space:
+					_player->stopJumping();
+					break;
+				}
+			break;
 		}
 	}
 }

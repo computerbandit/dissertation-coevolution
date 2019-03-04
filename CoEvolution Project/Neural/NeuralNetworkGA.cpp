@@ -159,7 +159,7 @@ void NeuralNetworkGA::mutate(NeuralNetwork & network)
 		for (std::vector<float>& layer : m) {
 			for (float& w : layer) {
 				if (NeuralNetwork::randomFloat(0.0f, 1.0f) >= this->_mutationRate) {
-					w += NeuralNetwork::randomFloatNromalDist(0.0f, 0.4f);
+					w += NeuralNetwork::randomFloatNromalDist(0.0f, 0.35f);
 					if (w > 1.0f || w < -1.0f) {
 						w = std::max(-1.0f, std::min(w, 1.0f));
 					}
@@ -182,7 +182,7 @@ CrossoverProduct NeuralNetworkGA::crossover(NeuralNetwork & A,NeuralNetwork & B)
 	std::vector<float> newChromeosomeB = std::vector<float>(connections);
 
 	
-	if (NeuralNetwork::randomFloat(0.0f, 1.0f) >= 0.90f) {
+	if (NeuralNetwork::randomFloat(0.0f, 1.0f) >= 0.94f) {
 		//int numOfCrossoverPoints = NeuralNetwork::randomInt((chromeosomeA.size()-1)/4, (chromeosomeA.size() - 1) / 2);
 		//int numOfCrossoverPoints = NeuralNetwork::randomInt(10, (chromeosomeA.size() - 1) / 2);
 

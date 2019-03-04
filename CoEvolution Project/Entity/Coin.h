@@ -20,10 +20,7 @@ public:
 	void collect();
 
 private:
-
 	GameDataRef _data;
-
 	AnimationController* _animController;
-	sf::Sprite _sprite;
 };
 

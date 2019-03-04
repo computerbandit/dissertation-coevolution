@@ -4,20 +4,24 @@
 #include <iostream>
 #include "../Framework/DEFINITIONS.h"
 
-#define DEFUALT_TRAINING_POPULATION_SIZE 120
+#define DEFUALT_TRAINING_POPULATION_SIZE 100
 #define STARTING_TRAINING_MUTATION_RATE 0.80f
 #define TRAINING_MUTATION_RATE 0.90f
 #define DEFUALT_TRAINING_TIME_TO_LIVE 30.0f
 #define DEFUALT_TRAINING_SPEED_MULTIPLIER 1.0f
-#define PASS_PERCENT_NEEDED 0.35f
+#define PASS_PERCENT_NEEDED 0.10f
 
 #define DISPLAY_TRAINING true
+#define UP 2
+#define DOWN 2
+#define LEFT 2
+#define RIGHT 2
 
-#define INPUT_LAYER_SIZE (3+1+2) * (2+1+3)	
+#define INPUT_LAYER_SIZE (UP+1+DOWN) * (LEFT+1+RIGHT)	
 
 TrainNetworkState::TrainNetworkState(GameDataRef data) : _data(data), _ttl(DEFUALT_TRAINING_TIME_TO_LIVE)
 {
-	_ga = NeuralNetworkGA(NeuralNetwork::generatePopulation(DEFUALT_TRAINING_POPULATION_SIZE, { INPUT_LAYER_SIZE ,INPUT_LAYER_SIZE/4 , 2 }), STARTING_TRAINING_MUTATION_RATE);
+	_ga = NeuralNetworkGA(NeuralNetwork::generatePopulation(DEFUALT_TRAINING_POPULATION_SIZE, { INPUT_LAYER_SIZE, 2 }), STARTING_TRAINING_MUTATION_RATE);
 	this->_levels = std::vector<Level>();
 	this->_token = std::to_string(time(0));
 }
@@ -47,17 +51,17 @@ void TrainNetworkState::init()
 	_playerPopulation = std::vector<NNControlledPlayer>();
 	std::vector<NeuralNetwork>& gapop = _ga.getPopulation();
 	for (int i = 0; i < (int)_ga.getPopulation().size(); i++) {
-		_playerPopulation.push_back(NNControlledPlayer(_data, &_levels, sf::Vector2f(TILE_SIZE / 2, TILE_SIZE / 2), &gapop.at(i), 3, 2, 2, 3));
+		_playerPopulation.push_back(NNControlledPlayer(_data, &_levels, sf::Vector2f(TILE_SIZE / 2, TILE_SIZE / 2), &gapop.at(i), UP, DOWN, LEFT, RIGHT));
 	}
 	for (NNControlledPlayer& n : _playerPopulation) {
-		this->_data->gameObjectManager.addEntity(&n);
+		this->_data->gameObjectManager.addEntity(&n, PLAYER_LAYER);
 	}
 	_populationChunk = std::vector<NNControlledPlayer*>();
 	this->nextPopulationChunk();
 	this->selectLevelForChunk();
 
 	this->_data->camera = Camera(&(this->_data->window), this->_data->window.getSize(), sf::Vector2f(0, 0));
-	this->_data->camera.zoom(1.2f);
+	this->_data->camera.zoom(1.0f);
 	//the init ttl should be v small just so the networks can rapidly get to the point where they have some features to evolve.
 	_info.setString("Controller View Size: " + std::to_string(INPUT_LAYER_SIZE) + "\nPopulation Size:" + std::to_string(this->_playerPopulation.size()) + "\nGeneration [" + std::to_string(this->_ga.getGeneration()) + "] \nAverage Fitness: " + std::to_string(this->_ga.averageFitness()) + "\nBest Fitness: 0");
 
@@ -70,6 +74,7 @@ void TrainNetworkState::cleanup()
 	this->_data->gameObjectManager.clearEntities();
 	this->_playerPopulation.clear();
 	this->_levels.clear();
+	this->_data->releaseAccumulator = false;
 }
 
 void TrainNetworkState::resume()
@@ -82,28 +87,35 @@ void TrainNetworkState::resume()
 	}
 }
 
+void TrainNetworkState::pause()
+{
+	this->_data->releaseAccumulator = false;
+}
+
 void TrainNetworkState::handleEvents()
 {
 	sf::Event event;
 	while (this->_data->window.pollEvent(event)) {
-		if (sf::Event::Closed == event.type) {
-			this->cleanup();
+		switch (event.type)
+		{
+		case sf::Event::Closed:
 			this->_data->window.close();
-		}
-		if (sf::Event::Resized == event.type) {
+			break;
+		case sf::Event::Resized:
 			this->_data->camera.resize(event);
-			this->_data->camera.setCenter(sf::Vector2f(0, 0));
-		}
-
-		if (sf::Event::KeyPressed == event.type) {
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
+			break;
+		case sf::Event::KeyPressed:
+			switch (event.key.code)
+			{
+			case sf::Keyboard::S:
 				this->_ga.saveGAData(this->_token);
 				std::cout << "GA DATA Saved!" << std::endl;
-			}
-			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
-				this->_data->releaseAccumulator = false;
+				break;
+			case sf::Keyboard::Escape:
 				this->_data->stateMachine.pushState(StateRef(new TrainingPauseState(_data)), false);
+				break;
 			}
+		break;
 		}
 	}
 }
@@ -149,9 +161,7 @@ void TrainNetworkState::update(float dt)
 
 void TrainNetworkState::draw(float dt)
 {
-
 	NNControlledPlayer* bestController = getBestController();
-
 
 	if (bestController != nullptr) {
 		if (bestController->getNetworkController()->getFitnessScore() > 1.0f) {
@@ -170,8 +180,7 @@ void TrainNetworkState::draw(float dt)
 	}
 
 	//check the progess for the controllers and if any have not made progress in 1 second
-	checkProgress(1.0f);
-
+	checkProgress(0.2f);
 
 	if (this->_ttlClock.getElapsedTime().asSeconds() > (this->_ttl) || areAllDead()) {
 		this->_ttlClock.restart();
@@ -186,9 +195,6 @@ void TrainNetworkState::draw(float dt)
 		if (this->_lastChunk) {
 			//work out the times of the players then add the corrospoding fitness to that player
 			//sort the network based on the player time they got, low to high
-
-
-
 			this->_ga.evalutePopulation();
 
 			//find the best controller
@@ -201,23 +207,21 @@ void TrainNetworkState::draw(float dt)
 
 			if (((float)nnPassed / (int)_playerPopulation.size()) >= PASS_PERCENT_NEEDED) {
 				//we could add another level in when the level has reached satasfactory pass rate
-				int levelsToPass = 4;
+				int levelsToPass = 10;
 				static int levelsCompleted = 0;
 
 				if (++levelsCompleted < levelsToPass) {
-					Level nextlvl = Level(this->_levels.front(), Level(Noise::GenHeightMap(sf::Vector2i(10, 4), 3, 2, 1), _data, "levelgentest-1", 15.0f), "recursionlvl");
+					Level nextlvl = Level(this->_levels.front(), Level(Noise::GenHeightMap(sf::Vector2i(20, 4), 3, 2, 1), _data, "levelgentest-1", 15.0f), "recursionlvl");
 					this->_levels.pop_back();
 					this->_levels.push_back(nextlvl);
 				}
 				else {
 					this->_ga.solved();
 				}
-
-
 			}
 
-
 			if (!_ga.isSolved()) {
+				this->_ga.saveFittestNetwork(this->_token);
 				this->_ga.nextGeneration();
 				//this->_levels.clear();
 

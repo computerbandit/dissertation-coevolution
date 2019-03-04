@@ -21,7 +21,6 @@
 #define PLAYER_SHEET "Resources/res/Player_Sheet.png"
 
 //Animation States
-#define ERROR_TILE 0
 #define PLAYER_IDLE 1
 #define PLAYER_RUN 2
 #define COIN_IDLE 10
