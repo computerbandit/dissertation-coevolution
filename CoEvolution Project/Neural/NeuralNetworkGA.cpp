@@ -141,6 +141,7 @@ void NeuralNetworkGA::nextGeneration()
 
 		nextgen.push_back(child.A);
 		nextgen.push_back(child.B);
+		
 	}
 	_population = nextgen;
 	//std::cout << "DONE Generating" << std::endl;
@@ -159,7 +160,7 @@ void NeuralNetworkGA::mutate(NeuralNetwork & network)
 		for (std::vector<float>& layer : m) {
 			for (float& w : layer) {
 				if (NeuralNetwork::randomFloat(0.0f, 1.0f) >= this->_mutationRate) {
-					w += NeuralNetwork::randomFloatNromalDist(0.0f, 0.35f);
+					w += NeuralNetwork::randomFloatNromalDist(0.0f, 0.4f);
 					if (w > 1.0f || w < -1.0f) {
 						w = std::max(-1.0f, std::min(w, 1.0f));
 					}
@@ -182,7 +183,7 @@ CrossoverProduct NeuralNetworkGA::crossover(NeuralNetwork & A,NeuralNetwork & B)
 	std::vector<float> newChromeosomeB = std::vector<float>(connections);
 
 	
-	if (NeuralNetwork::randomFloat(0.0f, 1.0f) >= 0.94f) {
+	if (NeuralNetwork::randomFloat(0.0f, 1.0f) >= 0.90f) {
 		//int numOfCrossoverPoints = NeuralNetwork::randomInt((chromeosomeA.size()-1)/4, (chromeosomeA.size() - 1) / 2);
 		//int numOfCrossoverPoints = NeuralNetwork::randomInt(10, (chromeosomeA.size() - 1) / 2);
 
@@ -241,7 +242,7 @@ CrossoverProduct NeuralNetworkGA::crossover(NeuralNetwork & A,NeuralNetwork & B)
 
 
 
-	return CrossoverProduct(NeuralNetwork(A.getTopology(), newChromeosomeA), NeuralNetwork(B.getTopology(), newChromeosomeB));;
+	return CrossoverProduct(NeuralNetwork(A.getTopology(), newChromeosomeA, A.getExtraData()), NeuralNetwork(B.getTopology(), newChromeosomeB, B.getExtraData()));;
 }
 
 void NeuralNetworkGA::saveFittestNetwork(std::string token)

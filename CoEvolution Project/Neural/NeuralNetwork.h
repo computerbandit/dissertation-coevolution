@@ -14,6 +14,7 @@ class NeuralNetwork {
 private:
 	std::vector<Matrix> _layer;
 	std::vector<float> _output;
+	std::vector<std::string> _extraData;
 	float _fitnessScore = 0.0f, _fitnessRatio = 0.0f;
 	bool _selected = false;
 	std::vector<float> _chromeosome;
@@ -26,7 +27,7 @@ public:
 	NeuralNetwork() {}
 	NeuralNetwork(std::vector<int> topology); 
 	NeuralNetwork(std::string filePath);
-	NeuralNetwork(std::vector<int> topology, std::vector<float> chromeosome);
+	NeuralNetwork(std::vector<int> topology, std::vector<float> chromeosome, std::vector<std::string> extraData);
 	~NeuralNetwork() {}
 
 	std::string toString() const;
@@ -48,6 +49,9 @@ public:
 
 	const bool& isSelected() const;
 	void setSelected(bool selected);
+
+	const std::vector<std::string>& getExtraData() const;
+	void setExtraData(std::vector<std::string> extraData);
 
 	const std::vector<float>& getChromeosome() const;
 

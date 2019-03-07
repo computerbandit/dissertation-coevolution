@@ -5,7 +5,26 @@
 
 NNControlledPlayer::NNControlledPlayer(GameDataRef data, std::vector<Level>* levels, sf::Vector2f wh, NeuralNetwork* networkController, int up, int down, int left, int right) : Player::Player(data, levels, wh), _networkController(networkController), _up(up), _down(down), _left(left), _right(right)
 {
+	//we need to add the extra data to the network file.
+	std::vector<std::string> viewData = std::vector<std::string>();
+	viewData.push_back(std::to_string(up));
+	viewData.push_back(std::to_string(down));
+	viewData.push_back(std::to_string(left));
+	viewData.push_back(std::to_string(right));
 
+	this->_networkController->setExtraData(viewData);
+}
+
+NNControlledPlayer::NNControlledPlayer(GameDataRef data, std::vector<Level>* levels, sf::Vector2f wh, NeuralNetwork * networkController) : Player::Player(data, levels, wh), _networkController(networkController)
+{
+	//we need to add the extra data to the network file.
+	std::vector<std::string> viewData = std::vector<std::string>();
+	viewData = this->_networkController->getExtraData();
+
+	this->_up = std::stoi(viewData[0]);
+	this->_down = std::stoi(viewData[1]);
+	this->_left = std::stoi(viewData[2]);
+	this->_right = std::stoi(viewData[3]);
 }
 
 NeuralNetwork * NNControlledPlayer::getNetworkController()
@@ -60,7 +79,7 @@ std::vector<float> NNControlledPlayer::controllersViewOfLevel() const
 	//assign the value of the tile to a number for the controllers perception
 	for (int i = 0; i < (int)tilesInArea.size(); i++) {
 		if (tilesInArea.at(i)->isSolid()) {
-			value = 100.0f;
+			value = 10.0f;
 		}
 		else {
 			switch (tilesInArea.at(i)->getTileID())
@@ -69,13 +88,13 @@ std::vector<float> NNControlledPlayer::controllersViewOfLevel() const
 				value = -10.0f;
 				break;
 			case SPIKE_TILE:
-				value = -100.0f;
+				value = -10.0f;
 				break;
 			case CHECKPOINT_TILE:
-				value = 10.0f;
+				value = 0.0f;
 				break;
 			case FINISH_LINE_TILE:
-				value = 10.0f;
+				value = 0.0f;
 				break;
 			default:
 				value = 0.0f;

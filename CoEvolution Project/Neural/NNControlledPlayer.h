@@ -5,6 +5,7 @@
 class NNControlledPlayer : public Player {
 public:
 	NNControlledPlayer(GameDataRef data, std::vector<Level>* levels, sf::Vector2f wh, NeuralNetwork* networkController, int up, int down, int left, int right);
+	NNControlledPlayer(GameDataRef data, std::vector<Level>* levels, sf::Vector2f wh, NeuralNetwork* networkController);
 
 	NeuralNetwork* getNetworkController();
 	void setNNController(NeuralNetwork* network);

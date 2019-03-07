@@ -184,8 +184,6 @@
   <ItemGroup>
     <Text Include="Resources\level\level1.tilemap" />
     <Text Include="Resources\level\level2.tilemap" />
-    <Text Include="Resources\networks\test.txt" />
-    <Text Include="Resources\networks\test2.txt" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\res\Exit_Button.png" />

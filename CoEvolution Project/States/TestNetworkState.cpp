@@ -13,23 +13,23 @@ void TestNetworkState::init()
 {
 
 	//load the levels in the order to play them;
-	/*
+	
 	_levels.push_back(Level(_data, TRAINING_LEVEL_1, LEVEL_1_TIME));
 	_levels.push_back(Level(_data, TRAINING_LEVEL_2, LEVEL_2_TIME));
 	_levels.push_back(Level(_data, TRAINING_LEVEL_3, LEVEL_3_TIME));
 	_levels.push_back(Level(_data, TRAINING_LEVEL_4, LEVEL_4_TIME));
 	_levels.push_back(Level(_data, TRAINING_LEVEL_5, LEVEL_5_TIME));
-	_levels.push_back(Level(_data, TRAINING_LEVEL_6, LEVEL_6_TIME));
-	_levels.push_back(Level(_data, TRAINING_LEVEL_7, LEVEL_7_TIME));
-	*/
-	_levels.push_back(Level(Noise::GenHeightMap(sf::Vector2i(100, 4), 3, 2, 1), _data, "levelgentest-1", 15.0f));
+	//_levels.push_back(Level(_data, TRAINING_LEVEL_6, LEVEL_6_TIME));
+	//_levels.push_back(Level(_data, TRAINING_LEVEL_7, LEVEL_7_TIME));
+
+	//_levels.push_back(Level(Noise::GenHeightMap(sf::Vector2i(100, 4), 3, 2, 1), _data, "levelgentest-1", 15.0f));
 
 
 	std::string fileName;
 	std::cout << "\n Enter name of the network file: ";
 	std::cin >> fileName;
 	this->_data->window.requestFocus();
-	_player = new NNControlledPlayer(this->_data, &_levels, sf::Vector2f(TILE_SIZE / 2, TILE_SIZE / 2), new NeuralNetwork("Resources/networks/"+ fileName + ".txt"), 2, 2, 2, 2);
+	_player = new NNControlledPlayer(this->_data, &_levels, sf::Vector2f(TILE_SIZE / 2, TILE_SIZE / 2), new NeuralNetwork("Resources/networks/"+ fileName + ".txt"));
 
 	this->_data->gameObjectManager.addEntity(_player, PLAYER_LAYER);
 

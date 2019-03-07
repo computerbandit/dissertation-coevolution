@@ -35,9 +35,11 @@ private:
 	NeuralNetworkGA _ga;
 	std::vector<NNControlledPlayer> _playerPopulation;
 	std::vector<NNControlledPlayer*> _populationChunk;
-	int _chunkSize = 5;
+	int _chunkSize = 100;
 	int _chunkIndex = 0;
 	bool _lastChunk = false;
+	bool _displayTraining = false;
+	int ticks = 0;
 
 	sf::Clock _ttlClock;
 	sf::Clock _checkProgressClock;

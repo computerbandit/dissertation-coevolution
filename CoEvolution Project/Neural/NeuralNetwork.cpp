@@ -42,19 +42,26 @@ NeuralNetwork::NeuralNetwork(std::vector<int> topology) {
 NeuralNetwork::NeuralNetwork(std::string filePath) 
 {
 	_layer = std::vector<Matrix>();
-
+	_extraData = std::vector<std::string>();
 	std::ifstream file;
 	std::string line;
 	file.open(filePath);
 	int coloumn = 0;
+	bool dataline = false;
 	if (file.is_open()) {
 		while (!file.eof()) {
 			std::getline(file, line);
 			std::stringstream ss(line);
 			std::string token;
+			
 			while (std::getline(ss, token, ',')) {
 				if (token == "#") {
 					_layer.push_back(Matrix());
+				}
+				else if(token.compare(0, 5, "#Data") == 0) {
+					dataline = true;
+				}else if(dataline){
+					this->_extraData.push_back(token);
 				}
 				else {
 					if (coloumn == 0) {
@@ -69,7 +76,7 @@ NeuralNetwork::NeuralNetwork(std::string filePath)
 	}
 }
 
-NeuralNetwork::NeuralNetwork(std::vector<int> topology, std::vector<float> chromeosome): _chromeosome(chromeosome)
+NeuralNetwork::NeuralNetwork(std::vector<int> topology, std::vector<float> chromeosome, std::vector<std::string> extraData): _chromeosome(chromeosome), _extraData(extraData)
 {
 	_layer = NeuralNetwork::chromeosomeToMatrices(topology, _chromeosome);
 
@@ -78,17 +85,26 @@ NeuralNetwork::NeuralNetwork(std::vector<int> topology, std::vector<float> chrom
 std::string NeuralNetwork::toString() const
 {
 	std::string layersString = "";
+	
+
 	for (int k = 0; k < (int)_layer.size(); k++) {
 		layersString.append("#\n");
 		for (int j = 0; j < (int)_layer.at(k).size(); j++) {
 			for (int i = 0; i < (int)_layer.at(k).at(j).size(); i++) {
 				layersString.append(std::to_string(_layer.at(k).at(j).at(i)) + ((i == (int)_layer.at(k).at(j).size() - 1)? "" : ","));
 			}
-			if ((k != (int)_layer.size()-1) || (j != (int)_layer.at(k).size() - 1)) {
-				layersString.append("\n");
-			}
+			layersString.append("\n");
 		}
 	}
+
+	layersString.append("#Data\n");
+	for (int i = 0; i < int(_extraData.size()); i++) {
+		layersString.append(_extraData.at(i));
+		if (i < int(_extraData.size()) - 1) {
+			layersString.append(",");
+		}
+	}
+
 	return layersString;
 }
 
@@ -141,6 +157,7 @@ const std::vector<float>& NeuralNetwork::getOutput() const
 void NeuralNetwork::saveNetwork(std::string token) const
 {
 	std::string topologyString = "";
+
 	for (int i = 0; i < (int)getTopology().size(); i++) {
 		topologyString.append(std::to_string(getTopology().at(i)) + ((i == (int)getTopology().size() - 1) ? "" : "_"));
 	}
@@ -148,6 +165,10 @@ void NeuralNetwork::saveNetwork(std::string token) const
 	std::ofstream file;
 	file.open("Resources/networks/" + topologyString + "-" + token + ".txt");
 	file << this->toString();
+
+	//append the extra data to the end of the file
+
+
 	file.close();
 }
 
@@ -214,6 +235,16 @@ const bool & NeuralNetwork::isSelected() const
 void NeuralNetwork::setSelected(bool selected)
 {
 	_selected = !selected;
+}
+
+const std::vector<std::string>& NeuralNetwork::getExtraData() const
+{
+	return this->_extraData;
+}
+
+void NeuralNetwork::setExtraData(std::vector<std::string> extraData)
+{
+	this->_extraData = extraData;
 }
 
 
