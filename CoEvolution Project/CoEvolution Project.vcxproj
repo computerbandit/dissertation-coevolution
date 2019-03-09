@@ -151,7 +151,6 @@
     <ClCompile Include="Framework\Tile.cpp" />
     <ClCompile Include="States\TrainingPauseState.cpp" />
     <ClCompile Include="States\TrainNetworkState.cpp" />
-    <ClCompile Include="States\TrainSelectionState.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity\Coin.h" />
@@ -179,11 +178,10 @@
     <ClInclude Include="Framework\Tile.h" />
     <ClInclude Include="States\TrainingPauseState.h" />
     <ClInclude Include="States\TrainNetworkState.h" />
-    <ClInclude Include="States\TrainSelectionState.h" />
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Resources\level\level1.tilemap" />
-    <Text Include="Resources\level\level2.tilemap" />
+    <Text Include="Resources\level\validationlevels\lvl-0.tilemap" />
+    <Text Include="Resources\level\validationlevels\lvl-1.tilemap" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\res\Exit_Button.png" />
@@ -200,12 +198,12 @@
     <Font Include="Resources\fonts\Menu_Font.ttf" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\level\level3.tilemap" />
-    <None Include="Resources\level\level4.tilemap" />
-    <None Include="Resources\level\level5.tilemap" />
-    <None Include="Resources\level\level6.tilemap" />
-    <None Include="Resources\level\level7.tilemap" />
-    <None Include="Resources\level\level8.tilemap" />
+    <None Include="Resources\level\validationlevels\lvl-2.tilemap" />
+    <None Include="Resources\level\validationlevels\lvl-3.tilemap" />
+    <None Include="Resources\level\validationlevels\lvl-4.tilemap" />
+    <None Include="Resources\level\validationlevels\lvl-5.tilemap" />
+    <None Include="Resources\level\validationlevels\lvl-6.tilemap" />
+    <None Include="Resources\level\validationlevels\lvl-8.tilemap" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

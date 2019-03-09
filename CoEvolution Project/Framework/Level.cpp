@@ -44,7 +44,7 @@ void Level::loadLevelFromTextFile(std::string fileName = "")
 	this->_height = 0;
 	std::ifstream file;
 	std::string line;
-	std::string filePath = LEVEL_PATH + ((fileName == "") ? _fileName : fileName) + ".tilemap";
+	std::string filePath = ((fileName == "") ? _fileName : fileName) + ".tilemap";
 	file.open(filePath);
 	if (file.is_open()) {
 		while (!file.eof()) {
@@ -184,7 +184,7 @@ void Level::writeTileData(std::vector<std::string> tileData)
 	}
 
 	std::ofstream csv;
-	csv.open(LEVEL_PATH + _fileName + ".tilemap");
+	csv.open(_fileName + ".tilemap");
 	csv << formatedTileData;
 	csv.close();
 }
@@ -202,7 +202,7 @@ void Level::writeEntityData(std::vector<std::string> entityData)
 	}
 
 	std::ofstream csv;
-	csv.open(LEVEL_PATH + _fileName + ".entitymap");
+	csv.open(_fileName + ".entitymap");
 	csv << formatedEntityData;
 	csv.close();
 

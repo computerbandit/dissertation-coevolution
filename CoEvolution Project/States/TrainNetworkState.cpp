@@ -4,11 +4,11 @@
 #include <iostream>
 #include "../Framework/DEFINITIONS.h"
 
-#define DEFUALT_TRAINING_POPULATION_SIZE 100
+#define DEFUALT_TRAINING_POPULATION_SIZE 200
 #define STARTING_TRAINING_MUTATION_RATE 0.90f
-#define TRAINING_MUTATION_RATE 0.99f
+#define TRAINING_MUTATION_RATE 0.95f
 #define DEFUALT_TRAINING_TIME_TO_LIVE 1000.0f
-#define PASS_PERCENT_NEEDED 0.80f
+#define PASS_PERCENT_NEEDED 0.01f
 
 
 #define UP 2
@@ -20,20 +20,16 @@
 
 TrainNetworkState::TrainNetworkState(GameDataRef data) : _data(data), _ttl(DEFUALT_TRAINING_TIME_TO_LIVE)
 {
-	_ga = NeuralNetworkGA(NeuralNetwork::generatePopulation(DEFUALT_TRAINING_POPULATION_SIZE, { INPUT_LAYER_SIZE, 4, 2 }), STARTING_TRAINING_MUTATION_RATE);
+	_ga = NeuralNetworkGA(NeuralNetwork::generatePopulation(DEFUALT_TRAINING_POPULATION_SIZE, { INPUT_LAYER_SIZE, 6, 4,2 }), STARTING_TRAINING_MUTATION_RATE);
 	this->_levels = std::vector<Level>();
 	this->_token = std::to_string(time(0));
 }
 
 void TrainNetworkState::init()
 {
-	std::cout << "Generating Levels" << std::endl;
-	std::cout << "--please wait--" << std::endl;
-	std::vector<Level> levelgen = std::vector<Level>();
-	for (int i = 0; i < 500; i++) {
-		_levels.push_back(Level(Noise::GenHeightMap(sf::Vector2i(10, 5), 4, 2, 1), _data, "levelgentest-" + std::to_string(i), 15.0f));
-	}
-	std::cout << "DONE!" << std::endl;
+
+	_levels.push_back(Level(_data, TRAINING_LEVEL_PATH "lvl-0", 10.0f));
+
 	//load the levels in the order to play them;
 	//_levels.push_back(Level(_data, TRAINING_LEVEL_1, LEVEL_1_TIME));
 	//_levels.push_back(Level(_data, TRAINING_LEVEL_2, LEVEL_2_TIME));

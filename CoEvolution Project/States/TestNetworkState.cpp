@@ -14,14 +14,11 @@ void TestNetworkState::init()
 
 	//load the levels in the order to play them;
 	
-	_levels.push_back(Level(_data, TRAINING_LEVEL_1, LEVEL_1_TIME));
-	_levels.push_back(Level(_data, TRAINING_LEVEL_2, LEVEL_2_TIME));
-	_levels.push_back(Level(_data, TRAINING_LEVEL_3, LEVEL_3_TIME));
-	_levels.push_back(Level(_data, TRAINING_LEVEL_4, LEVEL_4_TIME));
-	_levels.push_back(Level(_data, TRAINING_LEVEL_5, LEVEL_5_TIME));
-	//_levels.push_back(Level(_data, TRAINING_LEVEL_6, LEVEL_6_TIME));
-	//_levels.push_back(Level(_data, TRAINING_LEVEL_7, LEVEL_7_TIME));
-
+	_levels.push_back(Level(_data, VALIDATION_LEVEL_1, LEVEL_1_TIME));
+	_levels.push_back(Level(_data, VALIDATION_LEVEL_2, LEVEL_1_TIME));
+	_levels.push_back(Level(_data, VALIDATION_LEVEL_3, LEVEL_1_TIME));
+	_levels.push_back(Level(_data, VALIDATION_LEVEL_4, LEVEL_1_TIME));
+	_levels.push_back(Level(_data, VALIDATION_LEVEL_5, LEVEL_1_TIME));
 	//_levels.push_back(Level(Noise::GenHeightMap(sf::Vector2i(100, 4), 3, 2, 1), _data, "levelgentest-1", 15.0f));
 
 
@@ -59,6 +56,16 @@ void TestNetworkState::handleEvents()
 
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
 				this->_data->stateMachine.popState();
+			}
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) {
+				if (_currentLevel + 1 < (int)this->_levels.size()) {
+					this->_currentLevel++;
+					this->_player->nextLevel();
+					this->_player->restart();
+				}
+				else {
+					this->_data->stateMachine.popState();
+				}
 			}
 
 		}

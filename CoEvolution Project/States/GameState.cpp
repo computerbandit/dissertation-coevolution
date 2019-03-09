@@ -23,8 +23,8 @@ void GameState::init()
 	//_levels.push_back(Level(_data, TRAINING_LEVEL_7, LEVEL_7_TIME));
 	
 
-	Level A =  Level(Noise::GenHeightMap(sf::Vector2i(10, 4), 3, 2, 1), _data, "levelgentest-1", 15.0f);
-	Level B = Level(Noise::GenHeightMap(sf::Vector2i(10, 4), 3, 2, 1), _data, "levelgentest-2", 15.0f);
+	Level A =  Level(Noise::GenHeightMap(sf::Vector2i(10, 4), 3, 2, 1), _data, GAME_LEVEL_PATH"lvl-1", 15.0f);
+	Level B = Level(Noise::GenHeightMap(sf::Vector2i(10, 4), 3, 2, 1), _data, GAME_LEVEL_PATH"lvl-2", 15.0f);
 	//_levels.push_back(Level(A, B, "stichleveltest"));
 	_levels.push_back(B);
 
@@ -99,7 +99,7 @@ void GameState::update(float dt)
 	this->_data->gameObjectManager.update(dt);
 
 	if (_player->isFinished()) {
-		Level nextlvl = Level(Noise::GenHeightMap(sf::Vector2i(100, 10), 9, 2, 1), _data, "levelgentest-1", 15.0f);
+		Level nextlvl = Level(Noise::GenHeightMap(sf::Vector2i(100, 10), 9, 2, 1), _data, GAME_LEVEL_PATH"lvl-1", 15.0f);
 		this->_levels.push_back(nextlvl);
 		if (_currentLevel + 1 < (int)this->_levels.size()) {
 

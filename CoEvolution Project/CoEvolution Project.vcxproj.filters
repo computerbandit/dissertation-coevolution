@@ -81,9 +81,6 @@
     <ClCompile Include="States\TrainingPauseState.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="States\TrainSelectionState.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Framework\StateMachine.h">
@@ -158,16 +155,13 @@
     <ClInclude Include="States\TrainingPauseState.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="States\TrainSelectionState.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Framework\GUI\Button.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Text Include="Resources\level\level1.tilemap" />
-    <Text Include="Resources\level\level2.tilemap" />
+    <Text Include="Resources\level\validationlevels\lvl-0.tilemap" />
+    <Text Include="Resources\level\validationlevels\lvl-1.tilemap" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Resources\res\Exit_Button.png">
@@ -202,11 +196,11 @@
     <Font Include="Resources\fonts\Menu_Font.ttf" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Resources\level\level3.tilemap" />
-    <None Include="Resources\level\level4.tilemap" />
-    <None Include="Resources\level\level5.tilemap" />
-    <None Include="Resources\level\level6.tilemap" />
-    <None Include="Resources\level\level7.tilemap" />
-    <None Include="Resources\level\level8.tilemap" />
+    <None Include="Resources\level\validationlevels\lvl-2.tilemap" />
+    <None Include="Resources\level\validationlevels\lvl-3.tilemap" />
+    <None Include="Resources\level\validationlevels\lvl-4.tilemap" />
+    <None Include="Resources\level\validationlevels\lvl-5.tilemap" />
+    <None Include="Resources\level\validationlevels\lvl-6.tilemap" />
+    <None Include="Resources\level\validationlevels\lvl-8.tilemap" />
   </ItemGroup>
 </Project>
