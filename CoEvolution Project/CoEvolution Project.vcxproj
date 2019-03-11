@@ -204,6 +204,7 @@
     <None Include="Resources\level\validationlevels\lvl-5.tilemap" />
     <None Include="Resources\level\validationlevels\lvl-6.tilemap" />
     <None Include="Resources\level\validationlevels\lvl-8.tilemap" />
+    <None Include="Resources\level\validationlevels\lvl-9.tilemap" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

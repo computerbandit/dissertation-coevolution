@@ -163,7 +163,7 @@ void NeuralNetwork::saveNetwork(std::string token) const
 	}
 
 	std::ofstream file;
-	file.open("Resources/networks/" + topologyString + "-" + token + ".txt");
+	file.open("Resources/networks/" + topologyString + "-" + token + ".net");
 	file << this->toString();
 
 	//append the extra data to the end of the file

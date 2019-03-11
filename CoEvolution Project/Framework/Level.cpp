@@ -90,7 +90,7 @@ void Level::loadEntitiesFromTextFile(std::string fileName)
 	}
 	std::ifstream file;
 	std::string line;
-	std::string filePath = LEVEL_PATH + ((fileName == "") ? _fileName : fileName) + ".entitymap";
+	std::string filePath = ((fileName == "") ? _fileName : fileName) + ".entitymap";
 	bool newLayer = false;
 	bool addEntity = false;
 	ObjectLayer layer = ObjectLayer::PLAYER_LAYER;

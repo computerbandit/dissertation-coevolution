@@ -12,7 +12,7 @@ GameState::GameState(GameDataRef data) : _data(data)
 
 void GameState::init()
 {
-
+	this->_levels = std::vector<Level>();
 	//load the levels in to the level vector
 	//_levels.push_back(Level(_data, TRAINING_LEVEL_1, LEVEL_1_TIME));
 	//_levels.push_back(Level(_data, TRAINING_LEVEL_2, LEVEL_2_TIME));

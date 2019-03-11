@@ -4,31 +4,31 @@
 #include <iostream>
 #include "../Framework/DEFINITIONS.h"
 
-#define DEFUALT_TRAINING_POPULATION_SIZE 200
+#define DEFUALT_TRAINING_POPULATION_SIZE 100
 #define STARTING_TRAINING_MUTATION_RATE 0.90f
-#define TRAINING_MUTATION_RATE 0.95f
+#define TRAINING_MUTATION_RATE 0.90f
 #define DEFUALT_TRAINING_TIME_TO_LIVE 1000.0f
 #define PASS_PERCENT_NEEDED 0.01f
 
 
 #define UP 2
-#define DOWN 2
-#define LEFT 2
-#define RIGHT 2
+#define DOWN 3
+#define LEFT 1
+#define RIGHT 4
 
 #define INPUT_LAYER_SIZE (UP+1+DOWN) * (LEFT+1+RIGHT)	
 
 TrainNetworkState::TrainNetworkState(GameDataRef data) : _data(data), _ttl(DEFUALT_TRAINING_TIME_TO_LIVE)
 {
-	_ga = NeuralNetworkGA(NeuralNetwork::generatePopulation(DEFUALT_TRAINING_POPULATION_SIZE, { INPUT_LAYER_SIZE, 6, 4,2 }), STARTING_TRAINING_MUTATION_RATE);
-	this->_levels = std::vector<Level>();
-	this->_token = std::to_string(time(0));
+	_ga = NeuralNetworkGA(NeuralNetwork::generatePopulation(DEFUALT_TRAINING_POPULATION_SIZE, { INPUT_LAYER_SIZE, 6, 4 ,2 }), STARTING_TRAINING_MUTATION_RATE);
+
 }
 
 void TrainNetworkState::init()
 {
-
-	_levels.push_back(Level(_data, TRAINING_LEVEL_PATH "lvl-0", 10.0f));
+	this->_levels = std::vector<Level>();
+	this->_token = std::to_string(time(0));
+	_levels.push_back(Level(_data, VALIDATION_LEVEL_PATH"lvl-9", 10.0f));
 
 	//load the levels in the order to play them;
 	//_levels.push_back(Level(_data, TRAINING_LEVEL_1, LEVEL_1_TIME));
