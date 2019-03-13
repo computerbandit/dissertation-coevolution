@@ -22,6 +22,8 @@ float NeuralNetwork::hardLimit(float sum, float theta)
 
 
 NeuralNetwork::NeuralNetwork(std::vector<int> topology) {
+
+	this->_networkId = newNetworkId();
 	_layer = std::vector<Matrix>();
 	for (int i = 1; i < (int)topology.size(); i++) {
 		Matrix m = Matrix();
@@ -41,6 +43,7 @@ NeuralNetwork::NeuralNetwork(std::vector<int> topology) {
 
 NeuralNetwork::NeuralNetwork(std::string filePath) 
 {
+	this->_networkId = newNetworkId();
 	_layer = std::vector<Matrix>();
 	_extraData = std::vector<std::string>();
 	std::ifstream file;
@@ -74,12 +77,15 @@ NeuralNetwork::NeuralNetwork(std::string filePath)
 			coloumn = 0;
 		}
 	}
+	else {
+		throw "Network File not found";
+	}
 }
 
 NeuralNetwork::NeuralNetwork(std::vector<int> topology, std::vector<float> chromeosome, std::vector<std::string> extraData): _chromeosome(chromeosome), _extraData(extraData)
 {
+	this->_networkId = newNetworkId();
 	_layer = NeuralNetwork::chromeosomeToMatrices(topology, _chromeosome);
-
 }
 
 std::string NeuralNetwork::toString() const
@@ -154,21 +160,20 @@ const std::vector<float>& NeuralNetwork::getOutput() const
 	return _output;
 }
 
-void NeuralNetwork::saveNetwork(std::string token) const
+void NeuralNetwork::saveNetwork(std::string token, std::string fileName) const
 {
-	std::string topologyString = "";
-
-	for (int i = 0; i < (int)getTopology().size(); i++) {
-		topologyString.append(std::to_string(getTopology().at(i)) + ((i == (int)getTopology().size() - 1) ? "" : "_"));
-	}
-
 	std::ofstream file;
-	file.open("Resources/networks/" + topologyString + "-" + token + ".net");
+	if (fileName == "") {
+		for (int i = 0; i < (int)getTopology().size(); i++) {
+			fileName.append(std::to_string(getTopology().at(i)) + ((i == (int)getTopology().size() - 1) ? "" : "_"));
+		}
+		file.open("Resources\\networks\\training-" + token + "\\" + fileName + "-" + std::to_string(_networkId) + ".net");
+	}
+	else {
+		file.open("Resources\\networks\\training-" + token + "\\" + fileName + ".net");
+	}
+	
 	file << this->toString();
-
-	//append the extra data to the end of the file
-
-
 	file.close();
 }
 
@@ -305,3 +310,5 @@ int NeuralNetwork::newNetworkId()
 {
 	return _networkCount++;
 }
+
+int NeuralNetwork::_networkCount = 0;

@@ -151,6 +151,7 @@
     <ClCompile Include="Framework\Tile.cpp" />
     <ClCompile Include="States\TrainingPauseState.cpp" />
     <ClCompile Include="States\TrainNetworkState.cpp" />
+    <ClCompile Include="States\ValidationState.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Entity\Coin.h" />
@@ -178,6 +179,7 @@
     <ClInclude Include="Framework\Tile.h" />
     <ClInclude Include="States\TrainingPauseState.h" />
     <ClInclude Include="States\TrainNetworkState.h" />
+    <ClInclude Include="States\ValidationState.h" />
   </ItemGroup>
   <ItemGroup>
     <Text Include="Resources\level\validationlevels\lvl-0.tilemap" />

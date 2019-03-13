@@ -14,7 +14,7 @@ void GameState::init()
 {
 	this->_levels = std::vector<Level>();
 	//load the levels in to the level vector
-	//_levels.push_back(Level(_data, TRAINING_LEVEL_1, LEVEL_1_TIME));
+	_levels.push_back(Level(_data, VALIDATION_LEVEL_1, LEVEL_1_TIME));
 	//_levels.push_back(Level(_data, TRAINING_LEVEL_2, LEVEL_2_TIME));
 	//_levels.push_back(Level(_data, TRAINING_LEVEL_3, LEVEL_3_TIME));
 	//_levels.push_back(Level(_data, TRAINING_LEVEL_4, LEVEL_4_TIME));
@@ -22,12 +22,12 @@ void GameState::init()
 	//_levels.push_back(Level(_data, TRAINING_LEVEL_6, LEVEL_6_TIME));
 	//_levels.push_back(Level(_data, TRAINING_LEVEL_7, LEVEL_7_TIME));
 	
-
+	/*
 	Level A =  Level(Noise::GenHeightMap(sf::Vector2i(10, 4), 3, 2, 1), _data, GAME_LEVEL_PATH"lvl-1", 15.0f);
 	Level B = Level(Noise::GenHeightMap(sf::Vector2i(10, 4), 3, 2, 1), _data, GAME_LEVEL_PATH"lvl-2", 15.0f);
 	//_levels.push_back(Level(A, B, "stichleveltest"));
 	_levels.push_back(B);
-
+	*/
 	//init entities
 	_player = new Player(_data, &_levels, sf::Vector2f(TILE_SIZE / 2, TILE_SIZE / 2));
 	this->_data->gameObjectManager.clearEntities();

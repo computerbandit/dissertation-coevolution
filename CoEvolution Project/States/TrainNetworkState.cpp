@@ -1,14 +1,16 @@
 #include "TrainNetworkState.h"
 #include "TrainingPauseState.h"
+#include "ValidationState.h"
 #include <string>
 #include <iostream>
+#include <Windows.h>
 #include "../Framework/DEFINITIONS.h"
 
 #define DEFUALT_TRAINING_POPULATION_SIZE 100
 #define STARTING_TRAINING_MUTATION_RATE 0.90f
 #define TRAINING_MUTATION_RATE 0.90f
 #define DEFUALT_TRAINING_TIME_TO_LIVE 1000.0f
-#define PASS_PERCENT_NEEDED 0.01f
+#define PASS_PERCENT_NEEDED (1.0f/DEFUALT_TRAINING_POPULATION_SIZE)
 
 
 #define UP 2
@@ -28,7 +30,11 @@ void TrainNetworkState::init()
 {
 	this->_levels = std::vector<Level>();
 	this->_token = std::to_string(time(0));
-	_levels.push_back(Level(_data, VALIDATION_LEVEL_PATH"lvl-9", 10.0f));
+	std::string newFolder =  "Resources\\networks\\training-" + _token;
+	CreateDirectory(newFolder.c_str(), NULL);
+
+
+	_levels.push_back(Level(_data, TRAINING_LEVEL_PATH"lvl-4", 10.0f));
 
 	//load the levels in the order to play them;
 	//_levels.push_back(Level(_data, TRAINING_LEVEL_1, LEVEL_1_TIME));
@@ -67,6 +73,7 @@ void TrainNetworkState::init()
 
 void TrainNetworkState::cleanup()
 {
+	NeuralNetwork::_networkCount = 0;
 	this->_data->camera.restore();
 	this->_data->gameObjectManager.clearEntities();
 	this->_playerPopulation.clear();
@@ -258,7 +265,7 @@ void TrainNetworkState::draw(float dt)
 			}
 
 			if (!_ga.isSolved()) {
-				this->_ga.saveFittestNetwork(this->_token);
+				//this->_ga.saveFittestNetwork(this->_token);
 				this->_ga.nextGeneration();
 				//this->_levels.clear();
 
@@ -270,10 +277,11 @@ void TrainNetworkState::draw(float dt)
 				}
 			}
 			else {
-				this->_ga.saveFittestNetwork(this->_token);
+				this->_ga.savePopulation(this->_token);
 				this->_ga.saveGAData(this->_token);
 				std::cout << "Player has beaten the game, well done!\n" << std::endl;
-				this->_data->stateMachine.popState();
+				//here we can the push the validation set onto the state machine
+				this->_data->stateMachine.pushState(StateRef(new ValidationState(this->_data, this->_token, DEFUALT_TRAINING_POPULATION_SIZE)), true);
 			}
 		}
 		this->_lastChunk = this->nextPopulationChunk();
