@@ -98,7 +98,7 @@ void MainMenuState::handleEvents()
 				std::cout << "Generating Levels" << std::endl;
 				std::cout << "--please wait--" << std::endl;
 				for (int i = 0; i < 10; i++) {
-					Level(Noise::GenHeightMap(sf::Vector2i(50, 10), 6, 3, 1), _data, (TRAINING_LEVEL_PATH "lvl-") + std::to_string(i), 15.0f);
+					Level(Noise::GenHeightMap(sf::Vector2i(25, 10), 6, 3, 1), _data, (TRAINING_LEVEL_PATH "lvl-") + std::to_string(i), 15.0f);
 				}
 				std::cout << "DONE!" << std::endl;
 			}

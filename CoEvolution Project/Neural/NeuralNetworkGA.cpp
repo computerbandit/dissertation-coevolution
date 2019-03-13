@@ -250,6 +250,13 @@ void NeuralNetworkGA::saveFittestNetwork(std::string token)
 	fittestNetwork().saveNetwork(token);
 }
 
+void NeuralNetworkGA::savePopulation(std::string token)
+{
+	for (int i = 0; i < _populationSize; i++) {
+		this->_population.at(i).saveNetwork(token, std::to_string(i));
+	}
+}
+
 float NeuralNetworkGA::averageFitness()
 {
 	float average = 0.0f;

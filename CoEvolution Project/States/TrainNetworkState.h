@@ -38,7 +38,7 @@ private:
 	int _chunkSize = 100;
 	int _chunkIndex = 0;
 	bool _lastChunk = false;
-	bool _displayTraining = false;
+	bool _displayTraining = true;
 	int ticks = 0;
 
 	sf::Clock _ttlClock;

@@ -2,7 +2,6 @@
 #include "../Framework/DEFINITIONS.h"
 #include <iostream>
 #include <string>
-#include <windows.h>
 
 TestNetworkState::TestNetworkState(GameDataRef data) :_data(data)
 {
@@ -13,39 +12,17 @@ TestNetworkState::TestNetworkState(GameDataRef data) :_data(data)
 
 void TestNetworkState::init()
 {
-	//load the levels in the order to play them;
-	_levels.push_back(Level(_data, VALIDATION_LEVEL_PATH"lvl-9", LEVEL_1_TIME));
+	this->_levels = std::vector<Level>();
+	_levels.push_back(Level(_data, VALIDATION_LEVEL_PATH"lvl-9", 10.0f));
 	//_levels.push_back(Level(Noise::GenHeightMap(sf::Vector2i(100, 4), 3, 2, 1), _data, "levelgentest-1", 15.0f));
+	
+	std::string fileName;
+	std::cout << "\n Enter name of the network file: ";
+	std::cin >> fileName;
+	this->_data->window.requestFocus();
+	_player = new NNControlledPlayer(this->_data, &_levels, sf::Vector2f(TILE_SIZE / 2, TILE_SIZE / 2), new NeuralNetwork("Resources\\networks\\" + fileName + ".net"));
 
-
-	char filename[MAX_PATH];
-
-	OPENFILENAME ofn;
-	ZeroMemory(&filename, sizeof(filename));
-	ZeroMemory(&ofn, sizeof(ofn));
-	ofn.lStructSize = sizeof(ofn);
-	ofn.hwndOwner = NULL;  // If you have a window to center over, put its HANDLE here
-	ofn.lpstrFilter = "Network\0*.net\0Text Files\0*.txt\0Any File\0*.*\0";
-	ofn.lpstrFile = filename;
-	ofn.nMaxFile = MAX_PATH;
-	ofn.lpstrTitle = "Select a Network!";
-	ofn.Flags = OFN_DONTADDTORECENT | OFN_FILEMUSTEXIST;
-
-	if (GetOpenFileNameA(&ofn))
-	{
-		_player = new NNControlledPlayer(this->_data, &_levels, sf::Vector2f(TILE_SIZE / 2, TILE_SIZE / 2), new NeuralNetwork(static_cast<std::string>(filename)));
-
-		this->_data->gameObjectManager.addEntity(_player, PLAYER_LAYER);
-	}
-	else
-	{
-		switch (CommDlgExtendedError())
-		{
-			default: 
-				std::cout << "You cancelled.\n";
-				this->_data->stateMachine.popState();
-		}
-	}
+	this->_data->gameObjectManager.addEntity(_player, PLAYER_LAYER);
 
 	this->_data->camera = Camera(&(this->_data->window), this->_data->window.getSize(), sf::Vector2f(0, 0));
 	this->_data->camera.zoom(1.2f);
@@ -55,8 +32,7 @@ void TestNetworkState::cleanup()
 {
 	this->_data->camera.restore();
 	this->_data->gameObjectManager.clearEntities();
-	this->_levels.clear();
-	delete this->_player;
+   	this->_levels.clear();
 }
 
 void TestNetworkState::handleEvents()

@@ -69,6 +69,9 @@ void Level::loadLevelFromTextFile(std::string fileName = "")
 			j = 0;
 		}
 	}
+	else {
+		std::cout << "ERROR: Tile map not loaded properly!" << std::endl;
+	}
 	this->_height = i;
 	for (int x = 0; x < this->_width; x++) {
 		for (int y = 0; y < this->_height; y++) {

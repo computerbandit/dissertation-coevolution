@@ -46,6 +46,7 @@ public:
 	void mutate(NeuralNetwork& network);
 	CrossoverProduct crossover(NeuralNetwork& A, NeuralNetwork& B);
 	void saveFittestNetwork(std::string token);
+	void savePopulation(std::string token);
 	float averageFitness();
 	const NeuralNetwork& fittestNetwork();
 

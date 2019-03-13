@@ -8,7 +8,7 @@ enum ActivationFunction {
 	SIGMOID, HARDLIM
 };
 
-static int _networkCount = 0;
+
 
 class NeuralNetwork {
 private:
@@ -17,6 +17,7 @@ private:
 	std::vector<std::string> _extraData;
 	float _fitnessScore = 0.0f, _fitnessRatio = 0.0f;
 	bool _selected = false;
+	int _networkId = 0;
 	std::vector<float> _chromeosome;
 
 	float sigmoid(float sum, float theta);
@@ -34,7 +35,7 @@ public:
 	std::vector<float> matrixOutput(const Matrix& m, std::vector<float> input, ActivationFunction function);
 	void run(std::vector<float> input);
 	const std::vector<float>& getOutput() const;
-	void saveNetwork(std::string token) const;
+	void saveNetwork(std::string token, std::string fileName = "") const;
 	std::vector<float> matricesToChromesome() const;
 	std::vector<int> getTopology() const;
 
@@ -61,4 +62,5 @@ public:
 	static int randomInt(int Min, int Max);
 	static float randomFloatNromalDist(float mean, float stddev);
 	static int newNetworkId();
+	static int _networkCount;
 };
