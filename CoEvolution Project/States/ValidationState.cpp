@@ -140,7 +140,7 @@ void ValidationState::nextNetwork()
 {
 	//clear the player layer then add the next player
 	this->_data->gameObjectManager.clearEntitiesInLayer(PLAYER_LAYER);
-	if (_currentNetwork < int(_population.size())) {
+	if (_currentNetwork < int(_population.size())-1) {
 		this->_data->gameObjectManager.addEntity(&_population.at(++_currentNetwork), PLAYER_LAYER);
 	}
 	else {

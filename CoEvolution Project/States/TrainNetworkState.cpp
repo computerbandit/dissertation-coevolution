@@ -6,7 +6,7 @@
 #include <Windows.h>
 #include "../Framework/DEFINITIONS.h"
 
-#define DEFUALT_TRAINING_POPULATION_SIZE 100
+#define DEFUALT_TRAINING_POPULATION_SIZE 10
 #define STARTING_TRAINING_MUTATION_RATE 0.90f
 #define TRAINING_MUTATION_RATE 0.90f
 #define DEFUALT_TRAINING_TIME_TO_LIVE 1000.0f
@@ -22,7 +22,7 @@
 
 TrainNetworkState::TrainNetworkState(GameDataRef data) : _data(data), _ttl(DEFUALT_TRAINING_TIME_TO_LIVE)
 {
-	_ga = NeuralNetworkGA(NeuralNetwork::generatePopulation(DEFUALT_TRAINING_POPULATION_SIZE, { INPUT_LAYER_SIZE, 6, 4 ,2 }), STARTING_TRAINING_MUTATION_RATE);
+	_ga = NeuralNetworkGA(NeuralNetwork::generatePopulation(DEFUALT_TRAINING_POPULATION_SIZE, { INPUT_LAYER_SIZE ,2 }), STARTING_TRAINING_MUTATION_RATE);
 
 }
 
