@@ -13,8 +13,19 @@ TestNetworkState::TestNetworkState(GameDataRef data) :_data(data)
 void TestNetworkState::init()
 {
 	this->_levels = std::vector<Level>();
-	_levels.push_back(Level(_data, VALIDATION_LEVEL_PATH"lvl-9", 10.0f));
+
 	//_levels.push_back(Level(Noise::GenHeightMap(sf::Vector2i(100, 4), 3, 2, 1), _data, "levelgentest-1", 15.0f));
+
+	_levels.push_back(Level(_data, VALIDATION_LEVEL_1, LEVEL_1_TIME));
+	_levels.push_back(Level(_data, VALIDATION_LEVEL_2, LEVEL_1_TIME));
+	_levels.push_back(Level(_data, VALIDATION_LEVEL_3, LEVEL_1_TIME));
+	_levels.push_back(Level(_data, VALIDATION_LEVEL_4, LEVEL_1_TIME));
+	_levels.push_back(Level(_data, VALIDATION_LEVEL_5, LEVEL_1_TIME));
+	_levels.push_back(Level(_data, VALIDATION_LEVEL_6, LEVEL_1_TIME));
+	_levels.push_back(Level(_data, VALIDATION_LEVEL_7, LEVEL_1_TIME));
+	_levels.push_back(Level(_data, VALIDATION_LEVEL_8, LEVEL_1_TIME));
+	_levels.push_back(Level(_data, VALIDATION_LEVEL_9, LEVEL_1_TIME));
+	_levels.push_back(Level(Noise::GenHeightMap(sf::Vector2i(100, 10), 8, 3, 1), _data, "levelgentest-1", 15.0f));
 	
 	std::string fileName;
 	std::cout << "\n Enter name of the network file: ";

@@ -14,15 +14,14 @@
 
 
 #define UP 2
-#define DOWN 3
+#define DOWN 2
 #define LEFT 1
-#define RIGHT 4
+#define RIGHT 2
 
 #define INPUT_LAYER_SIZE (UP+1+DOWN) * (LEFT+1+RIGHT)	
 
 TrainNetworkState::TrainNetworkState(GameDataRef data) : _data(data), _ttl(DEFUALT_TRAINING_TIME_TO_LIVE)
 {
-	_ga = NeuralNetworkGA(NeuralNetwork::generatePopulation(DEFUALT_TRAINING_POPULATION_SIZE, { INPUT_LAYER_SIZE ,2 }), STARTING_TRAINING_MUTATION_RATE);
 
 }
 
@@ -35,6 +34,8 @@ void TrainNetworkState::init()
 
 
 	_levels.push_back(Level(_data, TRAINING_LEVEL_PATH"lvl-4", 10.0f));
+	//_levels.push_back(Level(_data, TRAINING_LEVEL_PATH"lvl-1", 10.0f));
+	//_levels.push_back(Level(_data, TRAINING_LEVEL_PATH"lvl-2", 10.0f));
 
 	//load the levels in the order to play them;
 	//_levels.push_back(Level(_data, TRAINING_LEVEL_1, LEVEL_1_TIME));
@@ -50,6 +51,13 @@ void TrainNetworkState::init()
 	_info.setCharacterSize(20);
 	_info.setFillColor(sf::Color::Black);
 	_info.setPosition(sf::Vector2f(0, 0));
+
+	std::vector<std::string> levelNames = std::vector<std::string>();
+	for (Level l : _levels) {
+		levelNames.push_back(l.getFileName());
+	}
+
+	_ga = NeuralNetworkGA(NeuralNetwork::generatePopulation(DEFUALT_TRAINING_POPULATION_SIZE, { INPUT_LAYER_SIZE, 2 }), STARTING_TRAINING_MUTATION_RATE, levelNames);
 
 	_playerPopulation = std::vector<NNControlledPlayer>();
 	std::vector<NeuralNetwork>& gapop = _ga.getPopulation();
@@ -281,7 +289,7 @@ void TrainNetworkState::draw(float dt)
 				this->_ga.saveGAData(this->_token);
 				std::cout << "Player has beaten the game, well done!\n" << std::endl;
 				//here we can the push the validation set onto the state machine
-				this->_data->stateMachine.pushState(StateRef(new ValidationState(this->_data, this->_token, DEFUALT_TRAINING_POPULATION_SIZE)), true);
+				this->_data->stateMachine.pushState(StateRef(new ValidationState(this->_data, this->_token, DEFUALT_TRAINING_POPULATION_SIZE* (50.0f/100.0f))), true);
 			}
 		}
 		this->_lastChunk = this->nextPopulationChunk();

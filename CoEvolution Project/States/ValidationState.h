@@ -14,6 +14,7 @@ public:
 	virtual void handleEvents() override;
 	virtual void update(float dt) override;
 	virtual void draw(float dt) override;
+
 private:
 	GameDataRef _data;
 	std::vector<Level> _levels;
@@ -22,10 +23,14 @@ private:
 	int _populationSize = 0;
 	std::string _token = "";
 	std::vector<NNControlledPlayer> _population;
+	std::vector<std::vector<float>> _tornMatrix;
+
+	std::string _valiData = "";
 
 	sf::Clock _ttlClock;
 	sf::Clock _checkProgressClock;
 	float _ttl;
 
 	void nextNetwork();
+	void saveValiData(std::string token);
 };

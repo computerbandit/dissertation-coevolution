@@ -4,10 +4,17 @@
 #include <fstream>
 #include <string>
 
-NeuralNetworkGA::NeuralNetworkGA(std::vector<NeuralNetwork> population, float mRate): _population(population), _mutationRate(mRate)
+NeuralNetworkGA::NeuralNetworkGA(std::vector<NeuralNetwork> population, float mRate, std::vector<std::string> extraData): _population(population), _mutationRate(mRate)
 {
 	_populationSize = (int)_population.size();
+	this->_gaData.append("Training Levels:,");
+	for (std::string lname : extraData) {
+		this->_gaData.append(lname + ",");
+	}
+	this->_gaData.append("\n");
 	this->_gaData.append("Gen Num , Highest Fitness, Average Fitness, Population Size: " + std::to_string(_populationSize) + "\n");
+
+
 }
 
 void NeuralNetworkGA::run(std::vector<float> input)
@@ -76,7 +83,10 @@ void NeuralNetworkGA::evalutePopulation()
 
 	//TODO: After the population has been evaluated we need to export some of this data to th csv file, so we can look at the percentage error as the agents are lerning the levels
 
-	this->_gaData.append(std::to_string(this->getGeneration()) +" , " + std::to_string(this->fittestNetwork().getFitnessScore()) + " , " + std::to_string(this->averageFitness()) + " , " + std::to_string(this->numberOfNNAboveFitness(100.0f)) + "\n");
+	float cappedFitness = this->fittestNetwork().getFitnessScore();
+	cappedFitness = (cappedFitness >= 100.0f) ? 100.0f : cappedFitness;
+
+	this->_gaData.append(std::to_string(this->getGeneration()) +" , " + std::to_string(cappedFitness) + " , " + std::to_string(this->averageFitness()) + " , " + std::to_string(this->numberOfNNAboveFitness(100.0f)) + "\n");
 
 	//std::ofstream csvfile;
 	//csvfile.open("Resources/networkdata/" +  + ".csv");
@@ -257,6 +267,7 @@ void NeuralNetworkGA::savePopulation(std::string token)
 	}
 }
 
+
 float NeuralNetworkGA::averageFitness()
 {
 	float average = 0.0f;
@@ -286,13 +297,11 @@ int NeuralNetworkGA::numberOfNNAboveFitness(float fitnessmarker)
 
 void NeuralNetworkGA::saveGAData(std::string token)
 {
-	std::string topologyString = "";
-	for (int i = 0; i < (int)this->_population.back().getTopology().size(); i++) {
-		topologyString.append(std::to_string(this->_population.back().getTopology().at(i)) + ((i == (int)this->_population.back().getTopology().size() - 1) ? "" : "_"));
-	}
-
 	std::ofstream csv;
-	csv.open("Resources/networkdata/" + topologyString + "-" + token + ".csv");
+	if (csv.is_open()) {
+		csv.close();
+	}
+	csv.open("Resources/networks/training-" + token + "/trainingdata.csv");
 	csv << this->_gaData;
 	csv.close();
 }
