@@ -21,7 +21,7 @@ class NeuralNetworkGA{
 public:
 
 	NeuralNetworkGA() {}
-	NeuralNetworkGA(std::vector<NeuralNetwork> population, float mRate);
+	NeuralNetworkGA(std::vector<NeuralNetwork> population, float mRate, std::vector<std::string> extraData);
 	~NeuralNetworkGA() {}
 	
 	void run(std::vector<float> input);

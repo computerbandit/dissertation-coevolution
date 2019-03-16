@@ -9,14 +9,13 @@ ValidationState::ValidationState(GameDataRef data, std::string token, int popSiz
 	this->_ttl = 100.0f;
 	this->_currentLevel = 0;
 	this->_levels = std::vector<Level>();
-
-	
+	this->_tornMatrix = std::vector<std::vector<float>>();
+	this->_tornMatrix.push_back(std::vector<float>());
 }
 
 void ValidationState::init()
 {
 	this->_levels = std::vector<Level>();
-
 	_levels.push_back(Level(_data, VALIDATION_LEVEL_1, LEVEL_1_TIME));
 	_levels.push_back(Level(_data, VALIDATION_LEVEL_2, LEVEL_1_TIME));
 	_levels.push_back(Level(_data, VALIDATION_LEVEL_3, LEVEL_1_TIME));
@@ -26,6 +25,17 @@ void ValidationState::init()
 	_levels.push_back(Level(_data, VALIDATION_LEVEL_7, LEVEL_1_TIME));
 	_levels.push_back(Level(_data, VALIDATION_LEVEL_8, LEVEL_1_TIME));
 	_levels.push_back(Level(_data, VALIDATION_LEVEL_9, LEVEL_1_TIME));
+	/*
+	_levels.push_back(Level(_data, TRAINING_LEVEL_PATH"lvl-0", 10.0f));
+	_levels.push_back(Level(_data, TRAINING_LEVEL_PATH"lvl-1", 10.0f));
+	_levels.push_back(Level(_data, TRAINING_LEVEL_PATH"lvl-2", 10.0f));
+	_levels.push_back(Level(_data, TRAINING_LEVEL_PATH"lvl-3", 10.0f));
+	_levels.push_back(Level(_data, TRAINING_LEVEL_PATH"lvl-4", 10.0f));
+	_levels.push_back(Level(_data, TRAINING_LEVEL_PATH"lvl-6", 10.0f));
+	_levels.push_back(Level(_data, TRAINING_LEVEL_PATH"lvl-7", 10.0f));
+	_levels.push_back(Level(_data, TRAINING_LEVEL_PATH"lvl-8", 10.0f));
+	//_levels.push_back(Level(_data, TRAINING_LEVEL_PATH"lvl-9", 10.0f));
+	*/
 
 	std::ofstream file;
 	//load in the population
@@ -37,6 +47,8 @@ void ValidationState::init()
 
 	this->_data->camera = Camera(&(this->_data->window), this->_data->window.getSize(), sf::Vector2f(0, 0));
 	this->_data->camera.zoom(1.2f);
+
+	this->_data->releaseAccumulator = true;
 }
 
 void ValidationState::cleanup()
@@ -44,6 +56,8 @@ void ValidationState::cleanup()
 	this->_data->camera.restore();
 	this->_data->gameObjectManager.clearEntities();
 	this->_levels.clear();
+	this->_population.clear();
+	this->_data->releaseAccumulator = false;
 }
 
 void ValidationState::handleEvents()
@@ -62,6 +76,7 @@ void ValidationState::handleEvents()
 
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
 				this->_data->stateMachine.popState();
+				this->_data->releaseAccumulator = false;
 			}
 		}
 	}
@@ -97,7 +112,7 @@ void ValidationState::update(float dt)
 	}
 	this->_data->gameObjectManager.update(dt);
 
-	if (this->_checkProgressClock.getElapsedTime().asSeconds() > 0.5f) {
+	if (this->_checkProgressClock.getElapsedTime().asSeconds() > 0.2f) {
 		this->_checkProgressClock.restart();
 		if (player.isAlive() && !player.isFinished()) {
 			if (!player.isMakingProgress()) {
@@ -112,6 +127,12 @@ void ValidationState::update(float dt)
 		if (player.isAlive() && !player.isFinished()) {
 			player.die();
 		}
+
+		//push the fitness value to the torn matrix two dimentional array;
+		float cappedFitness = player.getNetworkController()->getFitnessScore();
+		cappedFitness = (cappedFitness >= 100.0f) ? 100.0f : cappedFitness;
+		this->_tornMatrix.at(this->_currentNetwork).push_back(cappedFitness);
+
 
 		if (_currentLevel < int(_levels.size())-1) {
 			this->_currentLevel++;
@@ -140,12 +161,57 @@ void ValidationState::nextNetwork()
 {
 	//clear the player layer then add the next player
 	this->_data->gameObjectManager.clearEntitiesInLayer(PLAYER_LAYER);
-	if (_currentNetwork < int(_population.size())) {
+	if (_currentNetwork < int(_population.size())-1) {
+		this->_tornMatrix.push_back(std::vector<float>());
 		this->_data->gameObjectManager.addEntity(&_population.at(++_currentNetwork), PLAYER_LAYER);
 	}
 	else {
 		//the cycle has finsihed
+		for (int i = 0; i < int(this->_tornMatrix.size()); i++) {
+			std::vector<float>& playerResults = this->_tornMatrix.at(i);
+			for (int j = 0; j < int(playerResults.size()); j++) {
+				this->_valiData.append(std::to_string(playerResults.at(j)));
+				if (j < int(playerResults.size()) - 1) {
+					this->_valiData.append(",");
+				}
+
+			}
+			if (i < int(this->_tornMatrix.size()) - 1) {
+				this->_valiData.append("\n");
+			}
+		}
+
+		this->saveValiData(this->_token);
 		this->_data->stateMachine.popState();
 	}
 	this->_currentLevel = 0;
+}
+
+void ValidationState::saveValiData(std::string token)
+{
+
+	sf::Image matrix;
+	matrix.create(int(this->_levels.size()), int(this->_population.size()), sf::Color(0,0,0));
+	float delta = 255.0f/100.0f;
+	for (int i = 0; i < int(this->_tornMatrix.size()); i++) {
+		std::vector<float>& playerResults = this->_tornMatrix.at(i);
+		for (int j = 0; j < int(playerResults.size()); j++) {
+			float mono = playerResults.at(j) * delta;
+			matrix.setPixel(j, i, sf::Color(mono, mono, mono, 255));
+		}
+	}
+	sf::Texture text;
+	text.create(int(this->_levels.size()), int(this->_population.size()));
+	text.update(matrix.getPixelsPtr());
+
+	text.copyToImage().saveToFile("Resources/networks/training-" + token + "/matrix.png");
+
+
+	std::ofstream csv;
+	if (csv.is_open()) {
+		csv.close();
+	}
+	csv.open("Resources/networks/training-" + token + "/validationdata.csv");
+	csv << this->_valiData;
+	csv.close();
 }
