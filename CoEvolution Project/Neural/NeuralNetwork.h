@@ -52,6 +52,7 @@ public:
 	void setSelected(bool selected);
 
 	const std::vector<std::string>& getExtraData() const;
+	void addExtraData(std::vector<std::string> extraData);
 	void setExtraData(std::vector<std::string> extraData);
 
 	const std::vector<float>& getChromeosome() const;

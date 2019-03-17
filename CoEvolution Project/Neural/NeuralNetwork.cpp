@@ -247,6 +247,13 @@ const std::vector<std::string>& NeuralNetwork::getExtraData() const
 	return this->_extraData;
 }
 
+void NeuralNetwork::addExtraData(std::vector<std::string> extraData)
+{
+	for (std::string s : extraData) {
+		this->_extraData.push_back(s);
+	}
+}
+
 void NeuralNetwork::setExtraData(std::vector<std::string> extraData)
 {
 	this->_extraData = extraData;

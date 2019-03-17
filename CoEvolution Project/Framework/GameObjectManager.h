@@ -34,7 +34,6 @@ inline std::vector<T*> GameObjectManager::collisionCheck(sf::FloatRect hitBox, O
 	T* eptr = nullptr;
 	for (IEntity* e : this->_entities.at(layer)) {
 		if ((eptr = dynamic_cast<T*>(e)) != NULL) {
-			//if that is a coin then check to see if it is colliding
 			if (hitBox.intersects(e->getSprite().getGlobalBounds())) {
 				entitesInArea.push_back(eptr);
 			}
