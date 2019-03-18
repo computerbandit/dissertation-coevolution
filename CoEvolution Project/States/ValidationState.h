@@ -31,7 +31,7 @@ private:
 	sf::Clock _checkProgressClock;
 	float _ttl;
 
-	void saveValiData(std::string token);
+	void saveValiData(std::string path, std::string token);
 
 
 	bool areAllDead();

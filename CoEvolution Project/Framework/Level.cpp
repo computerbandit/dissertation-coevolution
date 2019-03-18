@@ -14,6 +14,9 @@ Level::Level(GameDataRef data, std::string fileName, float time) : _data(data), 
 	this->_height = 0;
 	loadLevelFromTextFile(_fileName);
 	loadEntitiesFromTextFile(_fileName);
+
+	this->setChromeosome(levelToChromeosome());
+
 }
 
 Level::Level(HMap map, GameDataRef data, std::string fileName, float time) : _data(data), _fileName(fileName)
@@ -23,6 +26,7 @@ Level::Level(HMap map, GameDataRef data, std::string fileName, float time) : _da
 	this->createLevelFromHeightMap(map);
 	loadLevelFromTextFile(_fileName);
 	loadEntitiesFromTextFile(_fileName);
+	this->setChromeosome(levelToChromeosome());
 }
 
 Level::Level(Level lvlA, Level lvlB, std::string fileName): _fileName(fileName), _data(lvlA._data)
@@ -33,6 +37,7 @@ Level::Level(Level lvlA, Level lvlB, std::string fileName): _fileName(fileName),
 	stichLevels(lvlA, lvlB);
 	loadLevelFromTextFile(_fileName);
 	loadEntitiesFromTextFile(_fileName);
+	this->setChromeosome(levelToChromeosome());
 }
 
 void Level::loadLevelFromTextFile(std::string fileName = "")
@@ -585,8 +590,9 @@ std::vector<std::string> Level::levelToChromeosome()
 	std::vector<std::string> chromeosome = std::vector<std::string>();
 
 	for (int x = 0; x < this->_width; x++) {
+		chromeosome.push_back("CS");
 		for (int y = 0; y < this->_height; y++) {
-			Tile& tile = this->_tilemap.at(x*this->_height + y);
+			Tile& tile = this->_tilemap.at(y*this->_width + x);
 			std::string tileString = std::to_string(tile.getTileID());;
 			tileString = (tile.getTileID() < 10) ? "0" + tileString : tileString;
 			chromeosome.push_back(tileString);
@@ -594,6 +600,77 @@ std::vector<std::string> Level::levelToChromeosome()
 	}
 
 	return chromeosome;
+}
+
+void Level::chromeosomeToLevel(std::vector<std::string> chromeosome)
+{
+	Tilemap tilemap = Tilemap();
+	this->_width = 0;
+	this->_height = 0;
+	//get the height of the columns
+	bool columnStart = false;
+	for (std::string s : chromeosome) {
+		if(s == "CS" && columnStart){
+			break;
+		}
+		else if (s == "CS") {
+			columnStart = true;
+		}
+		else if (columnStart) {
+			this->_height++;
+		}
+	}
+
+	//push the tiles to the tilemap
+	for (int x = 1; x < this->_width * this->_height + this->_width; x+=this->_width){
+		for (int y = 0; y < this->_height; y++) {
+			int tileID = std::stoi( chromeosome.at(x + y));
+			sf::Sprite spriteTile;
+			spriteTile.setTexture(this->_data->assetManager.getTexturesheet(TILES).getTexture(tileID));
+			AssetManager::rescale(spriteTile, ZOOM_FACTOR);
+			//change the width and height scaling
+			sf::Vector2f pos(int(std::floor(x/this->_width))*TILE_SIZE, y*TILE_SIZE);
+			spriteTile.setPosition(pos);
+			tilemap.push_back(Tile(tileID, spriteTile, Tile::getIfSolid(tileID)));
+		}
+	}
+	this->_tilemap = tilemap;
+}
+
+void Level::writeTileData(std::string path, std::string token, std::string subfolder, std::string filename)
+{
+	std::vector<std::string> tileData = std::vector<std::string>(this->_width*this->_height);
+	for (int i = 0; i < int(_tilemap.size()); i++) {
+		Tile& tile = _tilemap.at(i);
+		std::string tileString = std::to_string(tile.getTileID());
+		tileData.at(i) = (tile.getTileID() < 10) ? "0" + tileString : tileString;
+	}
+
+	//parse the data to the level file
+	std::string formatedTileData = "";
+	int y = 0;
+	for (int x = 0; x < int(_tilemap.size()); x++) {
+		if (x%this->_width == (this->_width - 1)) {
+			formatedTileData.append(tileData.at((y*this->_width) + (x%this->_width)));
+
+		}
+		else if ((x != 0) && (x%this->_width) == 0) {
+			formatedTileData.append("\n");
+			y++;
+			formatedTileData.append(tileData.at((y*this->_width) + (x%this->_width)) + ",");
+		}
+		else {
+			formatedTileData.append(tileData.at((y*this->_width) + (x%this->_width)) + ",");
+		}
+	}
+
+	if (subfolder != "") {
+		subfolder = "/" + subfolder;
+	}
+	std::ofstream file;
+	file.open("Resources/" + path + token + subfolder + "/" + filename + ".net");
+	file << formatedTileData;
+	file.close();
 }
 
 //Noise functions

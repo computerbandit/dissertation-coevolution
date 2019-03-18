@@ -11,8 +11,9 @@ typedef std::vector<Tile> Tilemap;
 typedef std::map<ObjectLayer, std::vector<IEntity*>> Entitymap;
 typedef std::vector<int> HMap;
 
-class Level : virtual public IFitness<std::string>{
+class Level : public IFitness{
 public:
+	Level() {}
 	Level(GameDataRef data, std::string fileName, float time);
 	Level(HMap map, GameDataRef data, std::string fileName, float time);
 	Level(Level lvlA, Level lvlB, std::string fileName);
@@ -28,7 +29,11 @@ public:
 	bool lastCheckpoint(int num);
 	const sf::Vector2f& getFinishFlagPosition() const;
 
+	//convert the current tilemap the a chromeosome
 	std::vector<std::string> levelToChromeosome();
+	//convert a chromeosome to a tilemap for the level
+	void chromeosomeToLevel(std::vector<std::string> chromeosome);
+	void writeTileData(std::string path, std::string token, std::string subfolder, std::string filename);
 
 	inline std::string& getFileName() { return _fileName; }
 	inline Tilemap& getTileMap() { return _tilemap; }

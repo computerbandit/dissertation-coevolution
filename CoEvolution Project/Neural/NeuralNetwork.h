@@ -9,7 +9,7 @@ enum ActivationFunction {
 	SIGMOID, HARDLIM
 };
 
-class NeuralNetwork : virtual public IFitness<float> {
+class NeuralNetwork : public IFitness {
 private:
 	std::vector<Matrix> _layer;
 	std::vector<float> _output;
@@ -24,15 +24,15 @@ public:
 	NeuralNetwork() {}
 	NeuralNetwork(std::vector<int> topology); 
 	NeuralNetwork(std::string filePath);
-	NeuralNetwork(std::vector<int> topology, std::vector<float> chromeosome, std::vector<std::string> extraData);
+	NeuralNetwork(std::vector<int> topology, std::vector<std::string> chromeosome, std::vector<std::string> extraData);
 	~NeuralNetwork() {}
 
 	std::string toString() const;
 	std::vector<float> matrixOutput(const Matrix& m, std::vector<float> input, ActivationFunction function);
 	void run(std::vector<float> input);
 	const std::vector<float>& getOutput() const;
-	void saveNetwork(std::string token, std::string fileName = "") const;
-	std::vector<float> matricesToChromesome() const;
+	void saveNetwork(std::string path, std::string token, std::string subfolder, std::string filename = "") const;
+	std::vector<std::string> matricesToChromesome() const;
 	std::vector<int> getTopology() const;
 
 	std::vector<Matrix>& getLayers();
@@ -42,7 +42,7 @@ public:
 	void addExtraData(std::vector<std::string> extraData);
 	void setExtraData(std::vector<std::string> extraData);
 
-	static std::vector<Matrix> chromeosomeToMatrices(std::vector<int> topology, std::vector<float> chromeosome);
+	static std::vector<Matrix> chromeosomeToMatrices(std::vector<int> topology, std::vector<std::string> chromeosome);
 	static std::vector<NeuralNetwork> generatePopulation(int populationSize, std::vector<int> topology);
 	static float randomFloat(float Min, float Max);
 	static int randomInt(int Min, int Max);

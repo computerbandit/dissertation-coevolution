@@ -21,13 +21,13 @@ public:
 	void draw(float dt);
 	void update(float dt);
 
-	template <typename T> std::vector<T*> collisionCheck(sf::FloatRect hitBox, ObjectLayer layer);
+	template <class T> std::vector<T*> collisionCheck(sf::FloatRect hitBox, ObjectLayer layer);
 
 private:
 	std::map<ObjectLayer, std::vector<IEntity*>> _entities;
 };
 
-template<typename T>
+template<class T>
 inline std::vector<T*> GameObjectManager::collisionCheck(sf::FloatRect hitBox, ObjectLayer layer)
 {
 	std::vector<T*> entitesInArea = std::vector<T*>();

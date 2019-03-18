@@ -21,28 +21,26 @@ public:
 	virtual void draw(float dt) override;
 
 private:
-	bool nextPopulationChunk();
+
 	NNControlledPlayer* getBestController();
 	void checkProgress(float interval);
 	bool areAllDead();
-	void selectLevelForChunk();
-
 
 	GameDataRef _data;
 	int _currentLevel = 0;
+	int _maxGenerations = 0;
+	std::vector<std::vector<float>> _tornMatrix;
+	
 
 	GeneticAlgo<NeuralNetwork> _networkGA;
 	std::vector<NNControlledPlayer> _playerPopulation;
-	std::vector<NNControlledPlayer*> _populationChunk;
 
 	GeneticAlgo<Level> _levelGA;
 	std::vector<Level> _levelPopulation;
 
-	int _chunkSize = 100;
-	int _chunkIndex = 0;
-	bool _lastChunk = false;
 	bool _displayTraining = true;
 	int ticks = 0;
+
 
 	sf::Clock _ttlClock;
 	sf::Clock _checkProgressClock;

@@ -82,7 +82,7 @@ NeuralNetwork::NeuralNetwork(std::string filePath)
 	}
 }
 
-NeuralNetwork::NeuralNetwork(std::vector<int> topology, std::vector<float> chromeosome, std::vector<std::string> extraData): _extraData(extraData)
+NeuralNetwork::NeuralNetwork(std::vector<int> topology, std::vector<std::string> chromeosome, std::vector<std::string> extraData): _extraData(extraData)
 {
 	this->setChromeosome(chromeosome);
 
@@ -166,32 +166,29 @@ const std::vector<float>& NeuralNetwork::getOutput() const
 }
 
 
-void NeuralNetwork::saveNetwork(std::string token, std::string fileName) const
+void NeuralNetwork::saveNetwork(std::string path, std::string token, std::string subfolder, std::string filename) const
 {
+	if (subfolder != "") {
+		subfolder = "/" + subfolder;
+	}
 	std::ofstream file;
-	if (fileName == "") {
-		for (int i = 0; i < (int)getTopology().size(); i++) {
-			fileName.append(std::to_string(getTopology().at(i)) + ((i == (int)getTopology().size() - 1) ? "" : "_"));
-		}
-		file.open("Resources\\networks\\training-" + token + "\\" + fileName + "-" + std::to_string(_networkId) + ".net");
-	}
-	else {
-		file.open("Resources\\networks\\training-" + token + "\\" + fileName + ".net");
-	}
+
+	file.open("Resources/"+ path + token + subfolder + "/" + filename + ".net");
+	
 	
 	file << this->toString();
 	file.close();
 }
 
 
-std::vector<float> NeuralNetwork::matricesToChromesome() const
+std::vector<std::string> NeuralNetwork::matricesToChromesome() const
 {
-	std::vector<float> chromeosome = std::vector<float>();
+	std::vector<std::string> chromeosome = std::vector<std::string>();
 	
 	for (Matrix m : this->_layer) {
 		for (std::vector<float> row : m) {
 			for (float weight : row) {
-				chromeosome.push_back(weight);
+				chromeosome.push_back(std::to_string(weight));
 			}
 		}
 	}
@@ -244,7 +241,7 @@ void NeuralNetwork::setExtraData(std::vector<std::string> extraData)
 
 
 
-std::vector<Matrix> NeuralNetwork::chromeosomeToMatrices(std::vector<int> topology, std::vector<float> chromeosome)
+std::vector<Matrix> NeuralNetwork::chromeosomeToMatrices(std::vector<int> topology, std::vector<std::string> chromeosome)
 {
 	std::vector<Matrix> layers = std::vector<Matrix>();
 	int chromeosomeNum = 0;
@@ -253,7 +250,7 @@ std::vector<Matrix> NeuralNetwork::chromeosomeToMatrices(std::vector<int> topolo
 		for (int j = 0; j < topology.at(i - 1); j++) {
 			std::vector<float> row = std::vector<float>();
 			for (int k = 0; k < topology.at(i); k++) {
-				row.push_back(chromeosome.at(chromeosomeNum++));
+				row.push_back(std::stof(chromeosome.at(chromeosomeNum++)));
 			}
 			m.push_back(row);
 		}

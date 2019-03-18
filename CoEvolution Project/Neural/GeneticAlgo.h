@@ -8,11 +8,14 @@
 #include "NeuralNetwork.h"
 #include "../Framework/Level.h"
 
+template <class T>
 struct CrossoverProduct
 {
-	NeuralNetwork A, B;
-	CrossoverProduct(NeuralNetwork a, NeuralNetwork b) :A(a), B(b) {};
+	T A, B;
+	CrossoverProduct(T a, T b) :A(a), B(b) {};
 };
+
+
 
 template <class T>
 class GeneticAlgo{
@@ -48,19 +51,22 @@ public:
 	
 	//Crossover and muation for levels
 
+	void mutate(Level& level);
+	CrossoverProduct<T> crossover(Level& A, Level& B);
+
 
 	//crossover and mutation for Networks
 	void run(std::vector<float> input);
 	void mutate(NeuralNetwork& network);
-	CrossoverProduct crossover(NeuralNetwork& A, NeuralNetwork& B);
+	CrossoverProduct<T> crossover(NeuralNetwork& A, NeuralNetwork& B);
 
-	void saveFittestInPopulation(std::string token);
-	void savePopulation(std::string token);
+	void saveFittestInPopulation(std::string path, std::string token, std::string subfolder, std::string fileName = "");
+	void savePopulation(std::string path, std::string token, std::string subfolder);
 	float averageFitness();
-	const T& fittestInPopulation();
+	T& fittestInPopulation();
 
 	int numberOfPopAboveFitness(float fitnessmarker);
-	void saveGAData(std::string token);
+	void writeGAData(std::string path, std::string token, std::string subfolder);
 };
 
 
@@ -131,12 +137,12 @@ T & GeneticAlgo<T>::selectParent()
 {
 	float random = NeuralNetwork::randomFloat(0.0f, 1.0f);
 	float theta = 0.0f;
-	for (T& a : _population) {
+	for (IFitness& a : _population) {
 		theta += a.getFitnessRatio();
 		if (random <= theta && !a.isSelected()) {
 			a.setSelected(true);
 			this->setPopulationFitnessRatios(this->sumPopulationScores());
-			return a;
+			return (T&)a;
 		}
 		else if (a.getFitnessRatio() == 0.0f) {
 			return _population.front();
@@ -158,7 +164,7 @@ void GeneticAlgo<T>::evalutePopulation()
 
 	//TODO: After the population has been evaluated we need to export some of this data to th csv file, so we can look at the percentage error as the agents are lerning the levels
 
-	float cappedFitness = this->fittestInPopulation().getFitness();
+	float cappedFitness = ((IFitness)this->fittestInPopulation()).getFitness();
 	cappedFitness = (cappedFitness >= 100.0f) ? 100.0f : cappedFitness;
 
 	this->_gaData.append(std::to_string(this->getGeneration()) + " , " + std::to_string(cappedFitness) + " , " + std::to_string(this->averageFitness()) + " , " + std::to_string(this->numberOfPopAboveFitness(100.0f)) + "\n");
@@ -174,7 +180,7 @@ template <class T>
 float GeneticAlgo<T>::sumPopulationScores()
 {
 	float sum = 0.0f;
-	for (T& a : _population) {
+	for (IFitness & a : _population) {
 		if (!a.isSelected()) {
 			sum += a.getFitness();
 		}
@@ -185,7 +191,7 @@ float GeneticAlgo<T>::sumPopulationScores()
 template <class T>
 void GeneticAlgo<T>::setPopulationFitnessRatios(float sum)
 {
-	for (T& a : _population) {
+	for (IFitness& a : _population) {
 		if (!a.isSelected()) {
 			if (sum != 0.0f) {
 				a.setFitnessRatio(a.getFitness() / sum);
@@ -201,7 +207,7 @@ template <class T>
 void GeneticAlgo<T>::sortPopulation()
 {
 	//sort based on the fitnessRatio
-	std::sort(_population.begin(), _population.end(), [](const T& lhs, const T& rhs)
+	std::sort(_population.begin(), _population.end(), [](const IFitness& lhs, const IFitness& rhs)
 	{
 		return lhs.getFitnessRatio() > rhs.getFitnessRatio();
 	});
@@ -216,11 +222,12 @@ void GeneticAlgo<T>::nextGeneration()
 	//std::cout << "Generating next generation ... ";
 	for (int i = 0; i < (_populationSize / 2); i++) {
 		//crossover
-		CrossoverProduct child = crossover(selectParent(), selectParent());
+		CrossoverProduct<T> child = crossover(selectParent(), selectParent());
 
 		//make sure the the networks that were selected can be selected in the next loop
 
-		for (T& n : _population) {
+
+		for (IFitness& n : _population) {
 			n.setSelected(false);
 		}
 
@@ -235,6 +242,24 @@ void GeneticAlgo<T>::nextGeneration()
 	_population = nextgen;
 	//std::cout << "DONE Generating" << std::endl;
 	_generation++;
+}
+
+template <class T>
+void GeneticAlgo<T>::mutate(Level & level)
+{
+	std::cout << "Mutate level" << std::endl;
+
+
+
+
+
+}
+
+template<class T>
+CrossoverProduct<T> GeneticAlgo<T>::crossover(Level & A, Level & B)
+{
+	std::cout << "Crossover level" << std::endl;
+	return CrossoverProduct<T>(A, B);
 }
 
 //Change the networks connection weights in a way to add diversity to the population and new unique solutions.
@@ -263,15 +288,15 @@ void GeneticAlgo<T>::mutate(NeuralNetwork & network)
 }
 
 template <class T>
-CrossoverProduct GeneticAlgo<T>::crossover(NeuralNetwork & A, NeuralNetwork & B)
+CrossoverProduct<T> GeneticAlgo<T>::crossover(NeuralNetwork & A, NeuralNetwork & B)
 {
-	std::vector<float> chromeosomeA = A.matricesToChromesome();
-	std::vector<float> chromeosomeB = B.matricesToChromesome();
+	std::vector<std::string> chromeosomeA = A.matricesToChromesome();
+	std::vector<std::string> chromeosomeB = B.matricesToChromesome();
 
 	int connections = (int)chromeosomeA.size();
 
-	std::vector<float> newChromeosomeA = std::vector<float>(connections);
-	std::vector<float> newChromeosomeB = std::vector<float>(connections);
+	std::vector<std::string> newChromeosomeA = std::vector<std::string>(connections);
+	std::vector<std::string> newChromeosomeB = std::vector<std::string>(connections);
 
 
 	if (NeuralNetwork::randomFloat(0.0f, 1.0f) >= 0.90f) {
@@ -298,9 +323,9 @@ CrossoverProduct GeneticAlgo<T>::crossover(NeuralNetwork & A, NeuralNetwork & B)
 
 		if (NeuralNetwork::randomFloat(0.0f, 1.0f) >= 0.90f) {
 			for (int i = 0; i < (int)chromeosomeA.size(); i++) {
-				float sum = (chromeosomeB[i] + chromeosomeA[i]) / 2.0f;
-				newChromeosomeA[i] = sum;
-				newChromeosomeB[i] = sum;
+				float sum = (std::stof(chromeosomeB[i]) + std::stof(chromeosomeA[i])) / 2.0f;
+				newChromeosomeA[i] = std::to_string(sum);
+				newChromeosomeB[i] = std::to_string(sum);
 			}
 		}
 		else {
@@ -331,27 +356,37 @@ CrossoverProduct GeneticAlgo<T>::crossover(NeuralNetwork & A, NeuralNetwork & B)
 		}
 	}
 
-
-
-	return CrossoverProduct(NeuralNetwork(A.getTopology(), newChromeosomeA, A.getExtraData()), NeuralNetwork(B.getTopology(), newChromeosomeB, B.getExtraData()));;
+	return CrossoverProduct<T>(NeuralNetwork(A.getTopology(), newChromeosomeA, A.getExtraData()), NeuralNetwork(B.getTopology(), newChromeosomeB, B.getExtraData()));;
 }
 
 template <class T>
-void GeneticAlgo<T>::saveFittestInPopulation(std::string token)
+void GeneticAlgo<T>::saveFittestInPopulation(std::string path, std::string token, std::string subfolder, std::string fileName)
 {
-	if (dynamic_cast<NeuralNetwork>(T) != nullptr) {
-		fittestInPopulation().saveNetwork(token);
-	}/*
-	else if (dynamic_cast<Level>(T) != nullptr) {
-
-	}*/
+	if (typeid(T) == typeid(NeuralNetwork)) {
+		NeuralNetwork* network = (NeuralNetwork*)(&fittestInPopulation());
+		network->saveNetwork(path, token, subfolder, fileName);
+	}
+	else if (typeid(T) == typeid(Level)) {
+		Level* level = (Level*)(&fittestInPopulation());
+		level->writeTileData(path, token, subfolder, fileName);
+	}
 }
 
 template <class T>
-void GeneticAlgo<T>::savePopulation(std::string token)
+void GeneticAlgo<T>::savePopulation(std::string path, std::string token, std::string subfolder)
 {
-	for (int i = 0; i < _populationSize; i++) {
-		this->_population.at(i).saveNetwork(token, std::to_string(i));
+
+	if (typeid(T) == typeid(NeuralNetwork)) {
+		for (int i = 0; i < _populationSize; i++) {
+			NeuralNetwork* network = (NeuralNetwork*)(&this->_population.at(i));
+			network->saveNetwork(path, token, subfolder, std::to_string(i));
+		}
+	}
+	else if (typeid(T) == typeid(Level)) {
+		for (int i = 0; i < _populationSize; i++) {
+			Level* level = (Level*)(&this->_population.at(i));
+			level->writeTileData(path, token, subfolder, std::to_string(i));
+		}
 	}
 }
 
@@ -359,16 +394,16 @@ template <class T>
 float GeneticAlgo<T>::averageFitness()
 {
 	float average = 0.0f;
-	for (NeuralNetwork network : _population)
+	for (IFitness& a : _population)
 	{
-		average += network.getFitness();
+		average += a.getFitness();
 	}
 	average /= _populationSize;
 	return average;
 }
 
 template <class T>
-const T & GeneticAlgo<T>::fittestInPopulation()
+T& GeneticAlgo<T>::fittestInPopulation()
 {
 	return _population.front();
 }
@@ -377,7 +412,7 @@ template <class T>
 int GeneticAlgo<T>::numberOfPopAboveFitness(float fitnessmarker)
 {
 	int count = 0;
-	for (NeuralNetwork& n : this->_population) {
+	for (IFitness& n : this->_population) {
 		if (n.getFitness() >= fitnessmarker) {
 			count++;
 		}
@@ -386,13 +421,17 @@ int GeneticAlgo<T>::numberOfPopAboveFitness(float fitnessmarker)
 }
 
 template <class T>
-void GeneticAlgo<T>::saveGAData(std::string token)
+void GeneticAlgo<T>::writeGAData(std::string path, std::string token, std::string subfolder)
 {
+	if (subfolder != "") {
+		subfolder = "/" + subfolder;
+	}
+
 	std::ofstream csv;
 	if (csv.is_open()) {
 		csv.close();
 	}
-	csv.open("Resources/networks/training-" + token + "/trainingdata.csv");
+	csv.open("Resources/" + path + token + subfolder + "/trainingdata.csv");
 	csv << this->_gaData;
 	csv.close();
 }

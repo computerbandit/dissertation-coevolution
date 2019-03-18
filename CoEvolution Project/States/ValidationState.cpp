@@ -10,7 +10,6 @@ ValidationState::ValidationState(GameDataRef data, std::string token, int popSiz
 	this->_currentLevel = 0;
 	this->_levels = std::vector<Level>();
 	this->_tornMatrix = std::vector<std::vector<float>>();
-
 }
 
 void ValidationState::init()
@@ -153,7 +152,7 @@ void ValidationState::update(float dt)
 			}
 		}
 		else {
-			saveValiData(_token);
+			saveValiData("networks/training-",  _token);
 			this->_data->stateMachine.popState();
 		}
 	}
@@ -170,7 +169,7 @@ void ValidationState::draw(float dt)
 	this->_data->window.display();
 }
 
-void ValidationState::saveValiData(std::string token)
+void ValidationState::saveValiData(std::string path, std::string token)
 {
 
 	for (int i = 0; i < int(this->_tornMatrix.size()); i++) {
@@ -201,14 +200,14 @@ void ValidationState::saveValiData(std::string token)
 	text.create(int(this->_levels.size()), int(this->_population.size()));
 	text.update(matrix.getPixelsPtr());
 
-	text.copyToImage().saveToFile("Resources/networks/training-" + token + "/matrix.png");
+	text.copyToImage().saveToFile("Resources/" + path  + token + "/matrix.png");
 
 
 	std::ofstream csv;
 	if (csv.is_open()) {
 		csv.close();
 	}
-	csv.open("Resources/networks/training-" + token + "/validationdata.csv");
+	csv.open("Resources/" + path + token + "/validationdata.csv");
 	csv << this->_valiData;
 	csv.close();
 }

@@ -29,7 +29,7 @@ void TrainNetworkState::init()
 {
 	this->_levels = std::vector<Level>();
 	this->_token = std::to_string(time(0));
-	std::string newFolder =  "Resources\\networks\\training-" + _token;
+	std::string newFolder =  "Resources/networks/training-" + _token;
 	CreateDirectory(newFolder.c_str(), NULL);
 
 
@@ -120,7 +120,7 @@ void TrainNetworkState::handleEvents()
 			switch (event.key.code)
 			{
 			case sf::Keyboard::S:
-				this->_ga.saveGAData(this->_token);
+				this->_ga.writeGAData("networks/training-", this->_token, "");
 				std::cout << "GA DATA Saved!" << std::endl;
 				break;
 			case sf::Keyboard::D:
@@ -285,8 +285,8 @@ void TrainNetworkState::draw(float dt)
 				}
 			}
 			else {
-				this->_ga.savePopulation(this->_token);
-				this->_ga.saveGAData(this->_token);
+				this->_ga.savePopulation("networks/training-", this->_token, "");
+				this->_ga.writeGAData("networks/training-", this->_token, "");
 				std::cout << "Player has beaten the game, well done!\n" << std::endl;
 				//here we can the push the validation set onto the state machine
 				this->_data->stateMachine.pushState(StateRef(new ValidationState(this->_data, this->_token, DEFUALT_TRAINING_POPULATION_SIZE* (10.0f/100.0f))), true);
