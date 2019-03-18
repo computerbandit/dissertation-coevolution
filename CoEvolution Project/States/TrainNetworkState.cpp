@@ -57,7 +57,7 @@ void TrainNetworkState::init()
 		levelNames.push_back(l.getFileName());
 	}
 
-	_ga = NeuralNetworkGA(NeuralNetwork::generatePopulation(DEFUALT_TRAINING_POPULATION_SIZE, { INPUT_LAYER_SIZE , 2 }), STARTING_TRAINING_MUTATION_RATE, levelNames);
+	_ga = GeneticAlgo<NeuralNetwork>(NeuralNetwork::generatePopulation(DEFUALT_TRAINING_POPULATION_SIZE, { INPUT_LAYER_SIZE , 2 }), STARTING_TRAINING_MUTATION_RATE, levelNames);
 
 	_playerPopulation = std::vector<NNControlledPlayer>();
 	std::vector<NeuralNetwork>& gapop = _ga.getPopulation();
@@ -199,7 +199,7 @@ void TrainNetworkState::draw(float dt)
 	NNControlledPlayer* bestController = getBestController();
 
 	if (bestController != nullptr) {
-		if (bestController->getNetworkController()->getFitnessScore() > 1.0f) {
+		if (bestController->getNetworkController()->getFitness() > 1.0f) {
 			_ttl = DEFUALT_TRAINING_TIME_TO_LIVE;
 			this->_ga.setMutationRate(TRAINING_MUTATION_RATE);
 		}
@@ -234,10 +234,10 @@ void TrainNetworkState::draw(float dt)
 
 			//find the best controller
 
-			int nnPassed = this->_ga.numberOfNNAboveFitness(100.0f);
+			int nnPassed = this->_ga.numberOfPopAboveFitness(100.0f);
 			NNControlledPlayer& bestController = this->_playerPopulation.front();
 
-			_info.setString("Controller View Size: " + std::to_string(INPUT_LAYER_SIZE) + "\nPopulation Size:" + std::to_string(this->_playerPopulation.size()) + "\nGeneration [" + std::to_string(this->_ga.getGeneration()) + "] \nAverage Fitness: " + std::to_string(this->_ga.averageFitness()) + "\nBest Fitness: " + std::to_string(bestController.getNetworkController()->getFitnessScore()) + "\nPPC: " + std::to_string(nnPassed) + " of " + std::to_string((int)(PASS_PERCENT_NEEDED*DEFUALT_TRAINING_POPULATION_SIZE)));
+			_info.setString("Controller View Size: " + std::to_string(INPUT_LAYER_SIZE) + "\nPopulation Size:" + std::to_string(this->_playerPopulation.size()) + "\nGeneration [" + std::to_string(this->_ga.getGeneration()) + "] \nAverage Fitness: " + std::to_string(this->_ga.averageFitness()) + "\nBest Fitness: " + std::to_string(bestController.getNetworkController()->getFitness()) + "\nPPC: " + std::to_string(nnPassed) + " of " + std::to_string((int)(PASS_PERCENT_NEEDED*DEFUALT_TRAINING_POPULATION_SIZE)));
 
 
 			if (((float)nnPassed / (int)_playerPopulation.size()) >= PASS_PERCENT_NEEDED) {

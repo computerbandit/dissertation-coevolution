@@ -3,7 +3,7 @@
 #include "../Framework/Game.h"
 #include "../Framework/Level.h"
 #include "../Neural/NNControlledPlayer.h"
-#include "../Neural/NeuralNetworkGA.h"
+#include "../Neural/GeneticAlgo.h"
 #include <SFML/Graphics.hpp>
 
 class TrainNetworkState : public State {
@@ -32,7 +32,7 @@ private:
 	std::vector<Level> _levels;
 	int _currentLevel = 0;
 
-	NeuralNetworkGA _ga;
+	GeneticAlgo<NeuralNetwork> _ga;
 	std::vector<NNControlledPlayer> _playerPopulation;
 	std::vector<NNControlledPlayer*> _populationChunk;
 	int _chunkSize = 100;

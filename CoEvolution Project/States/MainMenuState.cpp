@@ -1,6 +1,7 @@
 #include "MainMenuState.h"
 #include "TrainNetworkState.h"
 #include "TestNetworkState.h"
+#include "ValidationState.h"
 #include "GameState.h"
 #include "../Framework/DEFINITIONS.h"
 #include "../Framework/Level.h"
@@ -35,6 +36,7 @@ void MainMenuState::init()
 	_strings.push_back("Play");
 	_strings.push_back("Train");
 	_strings.push_back("Test");
+	_strings.push_back("Validate");
 	_strings.push_back("Generate");
 	_strings.push_back("Exit");
 
@@ -47,7 +49,7 @@ void MainMenuState::init()
 		//set position of the button and text;
 
 
-		int textwidth = text.getGlobalBounds().width;
+		int textwidth = int(text.getGlobalBounds().width);
 		buttonSprite.setPosition(pos);
 
 		text.setPosition(sf::Vector2f((buttonSprite.getGlobalBounds().width/2) - (textwidth/2) + (buttonSprite.getGlobalBounds().left), (buttonSprite.getGlobalBounds().top + buttonSprite.getGlobalBounds().height/2) - (text.getCharacterSize())));
@@ -92,6 +94,15 @@ void MainMenuState::handleEvents()
 			else if (this->_data->inputManager.isSpriteClicked(_buttons["Train"]._sprite, sf::Mouse::Button::Left, this->_data->window))
 			{
 				this->_data->stateMachine.pushState(StateRef(new TrainNetworkState(_data)),false);
+			}
+			else if (this->_data->inputManager.isSpriteClicked(_buttons["Validate"]._sprite, sf::Mouse::Button::Left, this->_data->window))
+			{
+				std::cout << "Enter the file token name: ";
+
+				std::string token = "";
+				std::cin >> token;
+
+				this->_data->stateMachine.pushState(StateRef(new ValidationState(_data, token, 10)), false);
 			}
 			else if (this->_data->inputManager.isSpriteClicked(_buttons["Generate"]._sprite, sf::Mouse::Button::Left, this->_data->window))
 			{

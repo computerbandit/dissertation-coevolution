@@ -1,10 +1,72 @@
-#include "NeuralNetworkGA.h"
+#pragma once
+#include <vector>
+#include <map>
 #include <algorithm>
 #include <iostream>
 #include <fstream>
 #include <string>
+#include "NeuralNetwork.h"
+#include "../Framework/Level.h"
 
-NeuralNetworkGA::NeuralNetworkGA(std::vector<NeuralNetwork> population, float mRate, std::vector<std::string> extraData): _population(population), _mutationRate(mRate)
+struct CrossoverProduct
+{
+	NeuralNetwork A, B;
+	CrossoverProduct(NeuralNetwork a, NeuralNetwork b) :A(a), B(b) {};
+};
+
+template <class T>
+class GeneticAlgo{
+
+	std::vector<T> _population;
+	int _populationSize = 0, _generation = 0;
+	float _mutationRate = 0.999f;
+	bool _solution = false;
+	std::string _gaData = "";
+
+public:
+
+	GeneticAlgo() {}
+	GeneticAlgo(std::vector<T> population, float mRate, std::vector<std::string> extraData);
+	~GeneticAlgo() {}
+	
+	std::vector<T>& getPopulation();
+	const int& getGeneration()const;
+
+	void solved();
+	const bool& isSolved() const;
+
+	void setMutationRate(float mRate);
+	const float& getMutationRate() const;
+
+	T& selectParent();
+	void evalutePopulation();
+	float sumPopulationScores();
+	void setPopulationFitnessRatios(float sum);
+	void sortPopulation();
+	void nextGeneration();
+	
+	
+	//Crossover and muation for levels
+
+
+	//crossover and mutation for Networks
+	void run(std::vector<float> input);
+	void mutate(NeuralNetwork& network);
+	CrossoverProduct crossover(NeuralNetwork& A, NeuralNetwork& B);
+
+	void saveFittestInPopulation(std::string token);
+	void savePopulation(std::string token);
+	float averageFitness();
+	const T& fittestInPopulation();
+
+	int numberOfPopAboveFitness(float fitnessmarker);
+	void saveGAData(std::string token);
+};
+
+
+
+template <class T>
+GeneticAlgo<T>::GeneticAlgo(std::vector<T> population, float mRate, std::vector<std::string> extraData) : _population(population), _mutationRate(mRate)
 {
 	_populationSize = (int)_population.size();
 	this->_gaData.append("Training Levels:,");
@@ -17,76 +79,89 @@ NeuralNetworkGA::NeuralNetworkGA(std::vector<NeuralNetwork> population, float mR
 
 }
 
-void NeuralNetworkGA::run(std::vector<float> input)
+template <class T>
+void GeneticAlgo<T>::run(std::vector<float> input)
 {
-	for (NeuralNetwork& network : _population) {
-		network.run(input);
+	if (dynamic_cast<NeuralNetwork>(T) != NULL) {
+		for (T& network : _population) {
+			network.run(input);
+		}
 	}
 }
 
-std::vector<NeuralNetwork>& NeuralNetworkGA::getPopulation()
+template <class T>
+std::vector<T>& GeneticAlgo<T>::getPopulation()
 {
 	return _population;
 }
 
-const int & NeuralNetworkGA::getGeneration() const
+template <class T>
+const int & GeneticAlgo<T>::getGeneration() const
 {
 	return _generation;
 }
 
-void NeuralNetworkGA::solved()
+template <class T>
+void GeneticAlgo<T>::solved()
 {
 	this->_solution = true;
 }
 
-const bool & NeuralNetworkGA::isSolved() const
+template <class T>
+const bool & GeneticAlgo<T>::isSolved() const
 {
 	return _solution;
 }
 
-void NeuralNetworkGA::setMutationRate(float mRate)
+template <class T>
+void GeneticAlgo<T>::setMutationRate(float mRate)
 {
 	this->_mutationRate = mRate;
 }
 
-const float & NeuralNetworkGA::getMutationRate() const
+template <class T>
+const float & GeneticAlgo<T>::getMutationRate() const
 {
 	return this->_mutationRate;
 }
 
+template <class T>
 //given the current population pick a parent based on the fitnessRatio.
-NeuralNetwork & NeuralNetworkGA::selectParent()
+T & GeneticAlgo<T>::selectParent()
 {
 	float random = NeuralNetwork::randomFloat(0.0f, 1.0f);
 	float theta = 0.0f;
-	for (NeuralNetwork& network : _population) {
-		theta += network.getFitnessRatio();
-		if (random <= theta && !network.isSelected()) {
-			network.setSelected(true);
+	for (T& a : _population) {
+		theta += a.getFitnessRatio();
+		if (random <= theta && !a.isSelected()) {
+			a.setSelected(true);
 			this->setPopulationFitnessRatios(this->sumPopulationScores());
-			return network;
-		}else if(network.getFitnessRatio() == 0.0f){
+			return a;
+		}
+		else if (a.getFitnessRatio() == 0.0f) {
 			return _population.front();
 		}
 	}
 	return _population.front();
 }
+
 //given the new fitness of the networks work out the fitnessRatio for each network
-void NeuralNetworkGA::evalutePopulation()
+template <class T>
+void GeneticAlgo<T>::evalutePopulation()
 {
 	//std::cout << "Evaluating Generation [" << _generation << "] ... ";
 
 	//set the fitness ratio for the selection process
 	this->setPopulationFitnessRatios(this->sumPopulationScores());
 	this->sortPopulation();
-	
+
 
 	//TODO: After the population has been evaluated we need to export some of this data to th csv file, so we can look at the percentage error as the agents are lerning the levels
 
-	float cappedFitness = this->fittestNetwork().getFitnessScore();
+	float cappedFitness = this->fittestInPopulation().getFitness();
 	cappedFitness = (cappedFitness >= 100.0f) ? 100.0f : cappedFitness;
 
-	this->_gaData.append(std::to_string(this->getGeneration()) +" , " + std::to_string(cappedFitness) + " , " + std::to_string(this->averageFitness()) + " , " + std::to_string(this->numberOfNNAboveFitness(100.0f)) + "\n");
+	this->_gaData.append(std::to_string(this->getGeneration()) + " , " + std::to_string(cappedFitness) + " , " + std::to_string(this->averageFitness()) + " , " + std::to_string(this->numberOfPopAboveFitness(100.0f)) + "\n");
 
 	//std::ofstream csvfile;
 	//csvfile.open("Resources/networkdata/" +  + ".csv");
@@ -95,53 +170,57 @@ void NeuralNetworkGA::evalutePopulation()
 	//to make sure that the error of each of the generations 
 }
 
-float NeuralNetworkGA::sumPopulationScores()
+template <class T>
+float GeneticAlgo<T>::sumPopulationScores()
 {
 	float sum = 0.0f;
-	for (NeuralNetwork& n : _population) {
-		if (!n.isSelected()) {
-			sum += n.getFitnessScore();
+	for (T& a : _population) {
+		if (!a.isSelected()) {
+			sum += a.getFitness();
 		}
 	}
 	return sum;
 }
 
-void NeuralNetworkGA::setPopulationFitnessRatios(float sum)
+template <class T>
+void GeneticAlgo<T>::setPopulationFitnessRatios(float sum)
 {
-	for (NeuralNetwork& n : _population) {
-		if (!n.isSelected()) {
+	for (T& a : _population) {
+		if (!a.isSelected()) {
 			if (sum != 0.0f) {
-				n.setFitnessRatio(n.getFitnessScore() / sum);
+				a.setFitnessRatio(a.getFitness() / sum);
 			}
 			else {
-				n.setFitnessRatio(0.0f);
+				a.setFitnessRatio(0.0f);
 			}
 		}
 	}
 }
 
-void NeuralNetworkGA::sortPopulation()
+template <class T>
+void GeneticAlgo<T>::sortPopulation()
 {
 	//sort based on the fitnessRatio
-	std::sort(_population.begin(), _population.end(), [](const NeuralNetwork& lhs, const NeuralNetwork& rhs)
+	std::sort(_population.begin(), _population.end(), [](const T& lhs, const T& rhs)
 	{
 		return lhs.getFitnessRatio() > rhs.getFitnessRatio();
 	});
 }
 
 //Generate the new population
-void NeuralNetworkGA::nextGeneration()
+template <class T>
+void GeneticAlgo<T>::nextGeneration()
 {
-	std::vector<NeuralNetwork> nextgen = std::vector<NeuralNetwork>();
+	std::vector<T> nextgen = std::vector<T>();
 
 	//std::cout << "Generating next generation ... ";
-	for (int i = 0; i < (_populationSize/2); i++) {
+	for (int i = 0; i < (_populationSize / 2); i++) {
 		//crossover
 		CrossoverProduct child = crossover(selectParent(), selectParent());
 
 		//make sure the the networks that were selected can be selected in the next loop
 
-		for (NeuralNetwork& n : _population) {
+		for (T& n : _population) {
 			n.setSelected(false);
 		}
 
@@ -151,7 +230,7 @@ void NeuralNetworkGA::nextGeneration()
 
 		nextgen.push_back(child.A);
 		nextgen.push_back(child.B);
-		
+
 	}
 	_population = nextgen;
 	//std::cout << "DONE Generating" << std::endl;
@@ -159,7 +238,8 @@ void NeuralNetworkGA::nextGeneration()
 }
 
 //Change the networks connection weights in a way to add diversity to the population and new unique solutions.
-void NeuralNetworkGA::mutate(NeuralNetwork & network)
+template <class T>
+void GeneticAlgo<T>::mutate(NeuralNetwork & network)
 {
 	//given the matrices that make up the network, change the values connecting each layer slightly.
 	//convert the matrices into a chromeosome and the alter the values that way.
@@ -182,7 +262,8 @@ void NeuralNetworkGA::mutate(NeuralNetwork & network)
 	network.setLayers(layers);
 }
 
-CrossoverProduct NeuralNetworkGA::crossover(NeuralNetwork & A,NeuralNetwork & B)
+template <class T>
+CrossoverProduct GeneticAlgo<T>::crossover(NeuralNetwork & A, NeuralNetwork & B)
 {
 	std::vector<float> chromeosomeA = A.matricesToChromesome();
 	std::vector<float> chromeosomeB = B.matricesToChromesome();
@@ -192,7 +273,7 @@ CrossoverProduct NeuralNetworkGA::crossover(NeuralNetwork & A,NeuralNetwork & B)
 	std::vector<float> newChromeosomeA = std::vector<float>(connections);
 	std::vector<float> newChromeosomeB = std::vector<float>(connections);
 
-	
+
 	if (NeuralNetwork::randomFloat(0.0f, 1.0f) >= 0.90f) {
 		//int numOfCrossoverPoints = NeuralNetwork::randomInt((chromeosomeA.size()-1)/4, (chromeosomeA.size() - 1) / 2);
 		//int numOfCrossoverPoints = NeuralNetwork::randomInt(10, (chromeosomeA.size() - 1) / 2);
@@ -255,47 +336,57 @@ CrossoverProduct NeuralNetworkGA::crossover(NeuralNetwork & A,NeuralNetwork & B)
 	return CrossoverProduct(NeuralNetwork(A.getTopology(), newChromeosomeA, A.getExtraData()), NeuralNetwork(B.getTopology(), newChromeosomeB, B.getExtraData()));;
 }
 
-void NeuralNetworkGA::saveFittestNetwork(std::string token)
+template <class T>
+void GeneticAlgo<T>::saveFittestInPopulation(std::string token)
 {
-	fittestNetwork().saveNetwork(token);
+	if (dynamic_cast<NeuralNetwork>(T) != nullptr) {
+		fittestInPopulation().saveNetwork(token);
+	}/*
+	else if (dynamic_cast<Level>(T) != nullptr) {
+
+	}*/
 }
 
-void NeuralNetworkGA::savePopulation(std::string token)
+template <class T>
+void GeneticAlgo<T>::savePopulation(std::string token)
 {
 	for (int i = 0; i < _populationSize; i++) {
 		this->_population.at(i).saveNetwork(token, std::to_string(i));
 	}
 }
 
-
-float NeuralNetworkGA::averageFitness()
+template <class T>
+float GeneticAlgo<T>::averageFitness()
 {
 	float average = 0.0f;
 	for (NeuralNetwork network : _population)
 	{
-		average += network.getFitnessScore();
+		average += network.getFitness();
 	}
 	average /= _populationSize;
 	return average;
 }
 
-const NeuralNetwork & NeuralNetworkGA::fittestNetwork()
+template <class T>
+const T & GeneticAlgo<T>::fittestInPopulation()
 {
 	return _population.front();
 }
 
-int NeuralNetworkGA::numberOfNNAboveFitness(float fitnessmarker)
+template <class T>
+int GeneticAlgo<T>::numberOfPopAboveFitness(float fitnessmarker)
 {
 	int count = 0;
 	for (NeuralNetwork& n : this->_population) {
-		if (n.getFitnessScore() >= fitnessmarker) {
+		if (n.getFitness() >= fitnessmarker) {
 			count++;
 		}
 	}
 	return count;
 }
 
-void NeuralNetworkGA::saveGAData(std::string token)
+template <class T>
+void GeneticAlgo<T>::saveGAData(std::string token)
 {
 	std::ofstream csv;
 	if (csv.is_open()) {

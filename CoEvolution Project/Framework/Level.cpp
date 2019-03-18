@@ -580,6 +580,22 @@ const sf::Vector2f & Level::getFinishFlagPosition() const
 	return this->_checkpoint.back();
 }
 
+std::vector<std::string> Level::levelToChromeosome()
+{
+	std::vector<std::string> chromeosome = std::vector<std::string>();
+
+	for (int x = 0; x < this->_width; x++) {
+		for (int y = 0; y < this->_height; y++) {
+			Tile& tile = this->_tilemap.at(x*this->_height + y);
+			std::string tileString = std::to_string(tile.getTileID());;
+			tileString = (tile.getTileID() < 10) ? "0" + tileString : tileString;
+			chromeosome.push_back(tileString);
+		}
+	}
+
+	return chromeosome;
+}
+
 //Noise functions
 HMap Noise::GenHeightMap(sf::Vector2i wh, int max, int min, int iota)
 {

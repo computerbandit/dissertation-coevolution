@@ -1,4 +1,5 @@
 #pragma once
+#include "IFitness.h"
 #include <random>
 #include <vector>
 
@@ -8,17 +9,12 @@ enum ActivationFunction {
 	SIGMOID, HARDLIM
 };
 
-
-
-class NeuralNetwork {
+class NeuralNetwork : virtual public IFitness<float> {
 private:
 	std::vector<Matrix> _layer;
 	std::vector<float> _output;
 	std::vector<std::string> _extraData;
-	float _fitnessScore = 0.0f, _fitnessRatio = 0.0f;
-	bool _selected = false;
 	int _networkId = 0;
-	std::vector<float> _chromeosome;
 
 	float sigmoid(float sum, float theta);
 	float hardLimit(float sum, float theta);
@@ -39,23 +35,12 @@ public:
 	std::vector<float> matricesToChromesome() const;
 	std::vector<int> getTopology() const;
 
-	const float& getFitnessScore() const;
-	void setFitnessScore(float fitnessScore);
-
-	const float& getFitnessRatio() const;
-	void setFitnessRatio(float fitnessRatio);
-
 	std::vector<Matrix>& getLayers();
 	void setLayers(std::vector<Matrix> newLayers);
-
-	const bool& isSelected() const;
-	void setSelected(bool selected);
 
 	const std::vector<std::string>& getExtraData() const;
 	void addExtraData(std::vector<std::string> extraData);
 	void setExtraData(std::vector<std::string> extraData);
-
-	const std::vector<float>& getChromeosome() const;
 
 	static std::vector<Matrix> chromeosomeToMatrices(std::vector<int> topology, std::vector<float> chromeosome);
 	static std::vector<NeuralNetwork> generatePopulation(int populationSize, std::vector<int> topology);

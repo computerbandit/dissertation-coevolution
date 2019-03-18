@@ -1,7 +1,9 @@
 #pragma once
 #include <vector>
+#include <string>
 #include <map>
 #include "SFML/Graphics.hpp"
+#include "../Neural/IFitness.h"
 #include "Game.h"
 #include "Tile.h"
 
@@ -9,7 +11,7 @@ typedef std::vector<Tile> Tilemap;
 typedef std::map<ObjectLayer, std::vector<IEntity*>> Entitymap;
 typedef std::vector<int> HMap;
 
-class Level {
+class Level : virtual public IFitness<std::string>{
 public:
 	Level(GameDataRef data, std::string fileName, float time);
 	Level(HMap map, GameDataRef data, std::string fileName, float time);
@@ -25,6 +27,8 @@ public:
 	const sf::Vector2f& getCheckpoint(int num) const;
 	bool lastCheckpoint(int num);
 	const sf::Vector2f& getFinishFlagPosition() const;
+
+	std::vector<std::string> levelToChromeosome();
 
 	inline std::string& getFileName() { return _fileName; }
 	inline Tilemap& getTileMap() { return _tilemap; }
