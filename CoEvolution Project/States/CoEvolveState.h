@@ -21,7 +21,6 @@ public:
 	virtual void draw(float dt) override;
 
 private:
-
 	NNControlledPlayer* getBestController();
 	void checkProgress(float interval);
 	bool areAllDead();

@@ -274,15 +274,15 @@ std::vector<NeuralNetwork> NeuralNetwork::generatePopulation(int populationSize,
 }
 
 
-float NeuralNetwork::randomFloat(float Min, float Max)
+float NeuralNetwork::randomFloat(float min, float max)
 {
-	return ((float(rand()) / float(RAND_MAX)) * (Max - Min)) + Min;
+	return ((float(rand()) / float(RAND_MAX)) * (max - min)) + min;
 }
 
 
-int NeuralNetwork::randomInt(int Min, int Max)
+int NeuralNetwork::randomInt(int min, int max)
 {
-	return Min + (rand() % static_cast<int>(Max - Min + 1));
+	return min + (rand() % static_cast<int>(max - min + 1));
 }
 
 

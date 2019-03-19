@@ -300,5 +300,10 @@ const int & Player::getScore() const
 	return this->_score;
 }
 
+void Player::setLevelPtr(std::vector<Level>* levels)
+{
+	this->_levels = levels;
+}
+
 
 

@@ -205,12 +205,12 @@ void TrainNetworkState::draw(float dt)
 		}
 		if (this->_displayTraining) {
 			bestController->setColor(sf::Color::Red);
-			this->_data->camera.update(bestController->getSpriteCenterPosition());
+			this->_data->camera.update(bestController->getSpriteCenterPosition(), sf::Vector2f(10,10));
 		}
 	}
 	else {
 		if (this->_displayTraining) {
-			this->_data->camera.update(this->_levels.at(this->_currentLevel).getCheckpoint(0));
+			this->_data->camera.update(this->_levels.at(this->_currentLevel).getCheckpoint(0), sf::Vector2f(10,10));
 		}
 	}
 

@@ -72,7 +72,8 @@ public:
 	//given a width and height and perameters gen a hight map with the constrains
 	static HMap GenHeightMap(sf::Vector2i wh, int max, int min, int iota);
 	static void ouputHeightMap(HMap& map);
-	static float randomFloat(float Min, float Max);
+	static float randomFloat(float min, float max);
+	static int randomInt(int min, int max);
 private:
 	
 };

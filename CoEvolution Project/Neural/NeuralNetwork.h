@@ -44,8 +44,8 @@ public:
 
 	static std::vector<Matrix> chromeosomeToMatrices(std::vector<int> topology, std::vector<std::string> chromeosome);
 	static std::vector<NeuralNetwork> generatePopulation(int populationSize, std::vector<int> topology);
-	static float randomFloat(float Min, float Max);
-	static int randomInt(int Min, int Max);
+	static float randomFloat(float min, float max);
+	static int randomInt(int min, int amx);
 	static float randomFloatNromalDist(float mean, float stddev);
 	static int newNetworkId();
 	static int _networkCount;

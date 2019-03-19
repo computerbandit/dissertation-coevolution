@@ -5,12 +5,12 @@
 #include <Windows.h>
 #include "../Framework/DEFINITIONS.h"
 
-#define DEFUALT_TRAINING_POPULATION_SIZE 120
+#define DEFUALT_TRAINING_POPULATION_SIZE 100
 #define STARTING_TRAINING_MUTATION_RATE 0.90f
 #define TRAINING_MUTATION_RATE 0.90f
 #define DEFUALT_TRAINING_TIME_TO_LIVE 1000.0f
 #define PASS_PERCENT_NEEDED (1.0f/DEFUALT_TRAINING_POPULATION_SIZE)
-#define MAX_GENERATIONS 10
+#define MAX_GENERATIONS 100
 
 #define UP 3
 #define DOWN 3
@@ -38,15 +38,24 @@ void CoEvolveState::init()
 	CreateDirectory(newFolder.c_str(), NULL);
 
 	
+	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_6, LEVEL_1_TIME));
+	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_6, LEVEL_1_TIME));
+	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_6, LEVEL_1_TIME));
+	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_6, LEVEL_1_TIME));
+	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_6, LEVEL_1_TIME));
+	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_6, LEVEL_1_TIME));
+	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_6, LEVEL_1_TIME));
+	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_6, LEVEL_1_TIME));
+	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_6, LEVEL_1_TIME));
+	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_6, LEVEL_1_TIME));
+	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_6, LEVEL_1_TIME));
+	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_6, LEVEL_1_TIME));
+	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_6, LEVEL_1_TIME));
+	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_6, LEVEL_1_TIME));
+	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_6, LEVEL_1_TIME));
+	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_6, LEVEL_1_TIME));
 
-	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_1, LEVEL_1_TIME));
-	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_1, LEVEL_1_TIME));
-	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_1, LEVEL_1_TIME));
-	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_1, LEVEL_1_TIME));
-	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_1, LEVEL_1_TIME));
-	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_1, LEVEL_1_TIME));
-
-	_levelGA = GeneticAlgo<Level>(_levelPopulation, STARTING_TRAINING_MUTATION_RATE, std::vector<std::string>());
+	_levelGA = GeneticAlgo<Level>(_levelPopulation, 0.9f, std::vector<std::string>());
 
 	_info.setFont(this->_data->assetManager.getFont("Menu Font"));
 	_info.setCharacterSize(20);
@@ -206,12 +215,12 @@ void CoEvolveState::draw(float dt)
 		}
 		if (this->_displayTraining) {
 			bestController->setColor(sf::Color::Red);
-			this->_data->camera.update(bestController->getSpriteCenterPosition());
+			this->_data->camera.update(bestController->getSpriteCenterPosition(), sf::Vector2f(10,10));
 		}
 	}
 	else {
 		if (this->_displayTraining) {
-			this->_data->camera.update(this->_levelPopulation.at(this->_currentLevel).getCheckpoint(0));
+			this->_data->camera.update(this->_levelPopulation.at(this->_currentLevel).getCheckpoint(0), sf::Vector2f(10,10));
 		}
 	}
 
@@ -282,6 +291,9 @@ void CoEvolveState::draw(float dt)
 
 			this->_levelGA.evalutePopulation();
 			this->_levelGA.nextGeneration();
+			this->_levelPopulation = this->_levelGA.getPopulation();
+			this->_levelGA.savePopulation("coevo/training-", _token, "levels");
+
 			this->_networkGA.evalutePopulation();
 			this->_networkGA.nextGeneration();
 
@@ -290,15 +302,12 @@ void CoEvolveState::draw(float dt)
 			std::vector<NeuralNetwork>& gapop = this->_networkGA.getPopulation();
 			for (int i = 0; i < (int)gapop.size(); i++) {
 				NNControlledPlayer& nnplayer = this->_playerPopulation.at(i);
-				nnplayer.restart();
 				nnplayer.setNNController(&gapop.at(i));
-				_tornMatrix.push_back(std::vector<float>());
-
-			}
-
-			for (NNControlledPlayer& nnplayer : this->_playerPopulation) {
 				nnplayer.selectLevel(0);
 				nnplayer.restart();
+				//nnplayer.setLevelPtr(&_levelPopulation);
+				_tornMatrix.push_back(std::vector<float>());
+
 			}
 
 			if (_levelGA.getGeneration() >= _maxGenerations) {

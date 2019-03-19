@@ -123,7 +123,7 @@ void GameState::update(float dt)
 
 void GameState::draw(float dt)
 {
-	this->_data->camera.update(_player->getSpriteCenterPosition());
+	this->_data->camera.update(_player->getSpriteCenterPosition(), sf::Vector2f(10,10));
 	this->_data->window.clear(sf::Color(99, 155, 255, 255));
 	this->_levels.at(this->_currentLevel).draw();
 	this->_data->gameObjectManager.draw(dt);

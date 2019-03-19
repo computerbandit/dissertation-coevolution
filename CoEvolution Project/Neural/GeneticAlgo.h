@@ -247,18 +247,83 @@ void GeneticAlgo<T>::nextGeneration()
 template <class T>
 void GeneticAlgo<T>::mutate(Level & level)
 {
-	std::cout << "Mutate level" << std::endl;
+	//what ways can we mutate the level
+	//TODO: so we need to split up the chromeosome into a sd array of the columns
+	//this needs to be a list of the inner columns so that the integrity of the level is maintained
+
+	std::vector<std::string> chromeosome = level.levelToChromeosome();
+
+	std::vector<std::vector<std::string>> columns = std::vector<std::vector<std::string>>();
+
+	//checking the height
+	int h = 0;
+	bool cscheack = false;
+	for (std::string s : chromeosome) {
+		if (s == "CS" && cscheack) {
+			break;
+		}
+		else if(s == "CS") {
+			cscheack = true;
+		}
+		else {
+			h++;
+		}
+	}
+
+	int w = 0;
+	for (std::string s : chromeosome){
+		if (s == "CS") w++; 
+	}
 
 
+	for (int x = 0; x < w; x++) {
+		columns.push_back(std::vector<std::string>());
+		for (int y = 1; y <= h; y++) {
+			columns.back().push_back(chromeosome.at(x*(h + 1) + y));
+		}
+	}
+
+	//shift up and down, swap columns, invert level, add new mutated level into the mix etc.
+	//lets mutate this level here#
+
+	if (Noise::randomFloat(0.0f, 1.0f) >= this->_mutationRate) {
+		float random = Noise::randomFloat(0.0f, 1.0f);
+		if (random < 0.5) {
+			//swap a column with another
+			int randA = Noise::randomInt(3, w - 3);
+			int randB = Noise::randomInt(3, w - 3);
+			std::vector<std::string> temp = columns.at(randA);
+			columns.at(randA) = columns.at(randB);
+			columns.at(randB) = temp;
+		}
+		else {
+			//convert a colum to a pit
+			int randA = Noise::randomInt(3, w - 3);
+			std::vector<std::string>& column = columns.at(randA);
+			for (int i = 0; i < int(column.size()-1); i++) {
+				column.at(i) = "61";
+			}
+		}
+	}
 
 
+	chromeosome.clear();
+	//convert the columns back to a chromeosome
+	for (std::vector<std::string> column : columns) {
+		chromeosome.push_back("CS");
+		for (std::string s : column) {
+			chromeosome.push_back(s);
+		}
+	}
 
+	//convert back to chromeosome then back to the level;
+
+	level.chromeosomeToLevel(chromeosome);
 }
 
 template<class T>
 CrossoverProduct<T> GeneticAlgo<T>::crossover(Level & A, Level & B)
 {
-	std::cout << "Crossover level" << std::endl;
 	return CrossoverProduct<T>(A, B);
 }
 

@@ -598,12 +598,13 @@ std::vector<std::string> Level::levelToChromeosome()
 			chromeosome.push_back(tileString);
 		}
 	}
-
+	
 	return chromeosome;
 }
 
 void Level::chromeosomeToLevel(std::vector<std::string> chromeosome)
 {
+	this->setChromeosome(chromeosome);
 	Tilemap tilemap = Tilemap();
 	this->_width = 0;
 	this->_height = 0;
@@ -621,19 +622,32 @@ void Level::chromeosomeToLevel(std::vector<std::string> chromeosome)
 		}
 	}
 
-	//push the tiles to the tilemap
-	for (int x = 1; x < this->_width * this->_height + this->_width; x+=this->_width){
-		for (int y = 0; y < this->_height; y++) {
-			int tileID = std::stoi( chromeosome.at(x + y));
+	for (std::string s : chromeosome) {
+		if (s == "CS") this->_width++;
+	}
+
+	std::vector<std::vector<std::string>> columns = std::vector<std::vector<std::string>>();
+	for (int x = 0; x < this->_width; x++) {
+		columns.push_back(std::vector<std::string>());
+		for (int y = 1; y <= this->_height; y++) {
+			columns.back().push_back(chromeosome.at(x*(this->_height + 1) + y));
+		}
+	}
+
+	for (int i = 0; i < this->_height; i++) {
+		for (int j = 0; j < int(columns.size()); j++) {
+			int tileID = std::stoi(columns.at(j).at(i));
 			sf::Sprite spriteTile;
 			spriteTile.setTexture(this->_data->assetManager.getTexturesheet(TILES).getTexture(tileID));
 			AssetManager::rescale(spriteTile, ZOOM_FACTOR);
 			//change the width and height scaling
-			sf::Vector2f pos(int(std::floor(x/this->_width))*TILE_SIZE, y*TILE_SIZE);
+			sf::Vector2f pos(j*TILE_SIZE, i*TILE_SIZE);
 			spriteTile.setPosition(pos);
 			tilemap.push_back(Tile(tileID, spriteTile, Tile::getIfSolid(tileID)));
 		}
 	}
+
+	this->_tilemap.clear();
 	this->_tilemap = tilemap;
 }
 
@@ -668,7 +682,7 @@ void Level::writeTileData(std::string path, std::string token, std::string subfo
 		subfolder = "/" + subfolder;
 	}
 	std::ofstream file;
-	file.open("Resources/" + path + token + subfolder + "/" + filename + ".net");
+	file.open("Resources/" + path + token + subfolder + "/" + filename + ".tilemap");
 	file << formatedTileData;
 	file.close();
 }
@@ -733,4 +747,9 @@ void Noise::ouputHeightMap(HMap& map)
 float Noise::randomFloat(float Min, float Max)
 {
 	return ((float(rand()) / float(RAND_MAX)) * (Max - Min)) + Min;
+}
+
+int Noise::randomInt(int min, int max)
+{
+	return min + (rand() % static_cast<int>(max - min + 1));
 }

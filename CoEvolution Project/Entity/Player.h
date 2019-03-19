@@ -37,6 +37,8 @@ public:
 	const sf::Vector2f getSpriteCenterPosition() const;
 	const float& getLevelTime() const;
 	const int& getScore() const;
+
+	void setLevelPtr(std::vector<Level>* levels);
 protected:
 	GameDataRef _data;
 
