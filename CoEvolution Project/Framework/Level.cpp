@@ -37,7 +37,7 @@ Level::Level(Level lvlA, Level lvlB, std::string fileName): _fileName(fileName),
 	stichLevels(lvlA, lvlB);
 	loadLevelFromTextFile(_fileName);
 	loadEntitiesFromTextFile(_fileName);
-	this->setChromeosome(levelToChromeosome());
+	//this->setChromeosome(levelToChromeosome());
 }
 
 void Level::loadLevelFromTextFile(std::string fileName = "")
@@ -354,7 +354,7 @@ void Level::stichLevels(Level & lvlA, Level & lvlB)
 			}
 		}
 	}
-	writeTileData(tileData);
+	//writeTileData(tileData);
 }
 
 void Level::pitFallLevel(std::vector<std::string>& tileData, HMap& map, float pitRate)
@@ -585,33 +585,16 @@ const sf::Vector2f & Level::getFinishFlagPosition() const
 	return this->_checkpoint.back();
 }
 
-std::vector<std::string> Level::levelToChromeosome()
+std::vector<std::vector<std::string>> Level::chromeosomeToColumns()
 {
-	std::vector<std::string> chromeosome = std::vector<std::string>();
+	std::vector<std::vector<std::string>> columns = std::vector<std::vector<std::string>>();
 
-	for (int x = 0; x < this->_width; x++) {
-		chromeosome.push_back("CS");
-		for (int y = 0; y < this->_height; y++) {
-			Tile& tile = this->_tilemap.at(y*this->_width + x);
-			std::string tileString = std::to_string(tile.getTileID());;
-			tileString = (tile.getTileID() < 10) ? "0" + tileString : tileString;
-			chromeosome.push_back(tileString);
-		}
-	}
-	
-	return chromeosome;
-}
-
-void Level::chromeosomeToLevel(std::vector<std::string> chromeosome)
-{
-	this->setChromeosome(chromeosome);
-	Tilemap tilemap = Tilemap();
 	this->_width = 0;
 	this->_height = 0;
 	//get the height of the columns
 	bool columnStart = false;
-	for (std::string s : chromeosome) {
-		if(s == "CS" && columnStart){
+	for (std::string s : this->_chromeosome) {
+		if (s == "CS" && columnStart) {
 			break;
 		}
 		else if (s == "CS") {
@@ -622,18 +605,53 @@ void Level::chromeosomeToLevel(std::vector<std::string> chromeosome)
 		}
 	}
 
-	for (std::string s : chromeosome) {
+	for (std::string s : this->_chromeosome) {
 		if (s == "CS") this->_width++;
 	}
 
-	std::vector<std::vector<std::string>> columns = std::vector<std::vector<std::string>>();
+
 	for (int x = 0; x < this->_width; x++) {
 		columns.push_back(std::vector<std::string>());
 		for (int y = 1; y <= this->_height; y++) {
-			columns.back().push_back(chromeosome.at(x*(this->_height + 1) + y));
+			columns.back().push_back(this->_chromeosome.at(x*(this->_height + 1) + y));
 		}
 	}
 
+	return columns;
+}
+
+std::vector<std::string> Level::columnsToChromeosome(std::vector<std::vector<std::string>> columns)
+{
+	this->_chromeosome.clear();
+	//convert the columns back to a chromeosome
+	for (std::vector<std::string> column : columns) {
+		this->_chromeosome.push_back("CS");
+		for (std::string s : column) {
+			this->_chromeosome.push_back(s);
+		}
+	}
+	return this->_chromeosome;
+}
+
+std::vector<std::string> Level::levelToChromeosome()
+{
+	this->_chromeosome.clear();
+	for (int x = 0; x < this->_width; x++) {
+		this->_chromeosome.push_back("CS");
+		for (int y = 0; y < this->_height; y++) {
+			Tile& tile = this->_tilemap.at(y*this->_width + x);
+			std::string tileString = std::to_string(tile.getTileID());;
+			tileString = (tile.getTileID() < 10) ? "0" + tileString : tileString;
+			this->_chromeosome.push_back(tileString);
+		}
+	}
+	return this->_chromeosome;
+}
+
+
+void Level::columnsToLevel(std::vector<std::vector<std::string>> columns)
+{
+	this->_tilemap.clear();
 	for (int i = 0; i < this->_height; i++) {
 		for (int j = 0; j < int(columns.size()); j++) {
 			int tileID = std::stoi(columns.at(j).at(i));
@@ -643,12 +661,18 @@ void Level::chromeosomeToLevel(std::vector<std::string> chromeosome)
 			//change the width and height scaling
 			sf::Vector2f pos(j*TILE_SIZE, i*TILE_SIZE);
 			spriteTile.setPosition(pos);
-			tilemap.push_back(Tile(tileID, spriteTile, Tile::getIfSolid(tileID)));
+			this->_tilemap.push_back(Tile(tileID, spriteTile, Tile::getIfSolid(tileID)));
 		}
 	}
-
-	this->_tilemap.clear();
-	this->_tilemap = tilemap;
+	_checkpoint.clear();
+	for (int x = 0; x < this->_width; x++) {
+		for (int y = 0; y < this->_height; y++) {
+			Tile& tile = _tilemap.at((y*this->_width) + x);
+			if (tile.getTileID() == CHECKPOINT_TILE || tile.getTileID() == FINISH_LINE_TILE) {
+				_checkpoint.push_back(sf::Vector2f(tile.getHitBox().left, tile.getHitBox().top));
+			}
+		}
+	}
 }
 
 void Level::writeTileData(std::string path, std::string token, std::string subfolder, std::string filename)

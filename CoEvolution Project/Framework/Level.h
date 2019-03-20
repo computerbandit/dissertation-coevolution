@@ -28,11 +28,15 @@ public:
 	const sf::Vector2f& getCheckpoint(int num) const;
 	bool lastCheckpoint(int num);
 	const sf::Vector2f& getFinishFlagPosition() const;
+	
+	std::vector<std::vector<std::string>> chromeosomeToColumns();
+	std::vector<std::string> columnsToChromeosome(std::vector<std::vector<std::string>> columns);
 
 	//convert the current tilemap the a chromeosome
 	std::vector<std::string> levelToChromeosome();
 	//convert a chromeosome to a tilemap for the level
-	void chromeosomeToLevel(std::vector<std::string> chromeosome);
+	void columnsToLevel(std::vector<std::vector<std::string>> columns);
+
 	void writeTileData(std::string path, std::string token, std::string subfolder, std::string filename);
 
 	inline std::string& getFileName() { return _fileName; }

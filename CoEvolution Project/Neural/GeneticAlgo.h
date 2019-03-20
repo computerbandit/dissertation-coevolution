@@ -226,10 +226,10 @@ void GeneticAlgo<T>::nextGeneration()
 
 		//make sure the the networks that were selected can be selected in the next loop
 
-
 		for (IFitness& n : _population) {
 			n.setSelected(false);
 		}
+		
 
 		//mutate products
 		mutate(child.A);
@@ -240,6 +240,7 @@ void GeneticAlgo<T>::nextGeneration()
 
 	}
 	_population = nextgen;
+	_populationSize = int(_population.size());
 	//std::cout << "DONE Generating" << std::endl;
 	_generation++;
 }
@@ -251,44 +252,15 @@ void GeneticAlgo<T>::mutate(Level & level)
 	//TODO: so we need to split up the chromeosome into a sd array of the columns
 	//this needs to be a list of the inner columns so that the integrity of the level is maintained
 
-	std::vector<std::string> chromeosome = level.levelToChromeosome();
-
-	std::vector<std::vector<std::string>> columns = std::vector<std::vector<std::string>>();
-
-	//checking the height
-	int h = 0;
-	bool cscheack = false;
-	for (std::string s : chromeosome) {
-		if (s == "CS" && cscheack) {
-			break;
-		}
-		else if(s == "CS") {
-			cscheack = true;
-		}
-		else {
-			h++;
-		}
-	}
-
-	int w = 0;
-	for (std::string s : chromeosome){
-		if (s == "CS") w++; 
-	}
-
-
-	for (int x = 0; x < w; x++) {
-		columns.push_back(std::vector<std::string>());
-		for (int y = 1; y <= h; y++) {
-			columns.back().push_back(chromeosome.at(x*(h + 1) + y));
-		}
-	}
+	std::vector<std::vector<std::string>> columns = level.chromeosomeToColumns();
+	int w = level.getWidth();
 
 	//shift up and down, swap columns, invert level, add new mutated level into the mix etc.
 	//lets mutate this level here#
 
-	if (Noise::randomFloat(0.0f, 1.0f) >= this->_mutationRate) {
+	if (Noise::randomFloat(0.0f, 1.0f) >= 0.70) {
 		float random = Noise::randomFloat(0.0f, 1.0f);
-		if (random < 0.5) {
+		if (random < 0.25) {
 			//swap a column with another
 			int randA = Noise::randomInt(3, w - 3);
 			int randB = Noise::randomInt(3, w - 3);
@@ -296,35 +268,44 @@ void GeneticAlgo<T>::mutate(Level & level)
 			columns.at(randA) = columns.at(randB);
 			columns.at(randB) = temp;
 		}
-		else {
+		else if (random < 0.50) {
 			//convert a colum to a pit
+			//make sure that it doesn't remove the checkpoint, or it can who cares I'm not your dad. can't tell you what to do.
 			int randA = Noise::randomInt(3, w - 3);
 			std::vector<std::string>& column = columns.at(randA);
-			for (int i = 0; i < int(column.size()-1); i++) {
+			for (int i = 0; i < int(column.size() - 1); i++) {
 				column.at(i) = "61";
 			}
 		}
-	}
-
-
-	chromeosome.clear();
-	//convert the columns back to a chromeosome
-	for (std::vector<std::string> column : columns) {
-		chromeosome.push_back("CS");
-		for (std::string s : column) {
-			chromeosome.push_back(s);
+		else {
 		}
+
 	}
-
+	
 	//convert back to chromeosome then back to the level;
-
-	level.chromeosomeToLevel(chromeosome);
+	level.columnsToLevel(columns);
 }
 
 template<class T>
 CrossoverProduct<T> GeneticAlgo<T>::crossover(Level & A, Level & B)
 {
-	return CrossoverProduct<T>(A, B);
+	std::vector<std::string> chromeosomeA, chromeosomeB;
+	chromeosomeA = A.levelToChromeosome();
+	chromeosomeA = B.levelToChromeosome();
+	Level newA = A;
+	Level newB = B;
+
+	//stich the levels together small change to merge two level together to make it longer
+
+	if (Noise::randomFloat(0.0f, 1.0f) >= 0.99) {
+		newA = Level(A, B, "");
+		newB = Level(B, A, "");
+	}
+	else {
+
+	}
+
+	return CrossoverProduct<T>(newA, newB);
 }
 
 //Change the networks connection weights in a way to add diversity to the population and new unique solutions.
@@ -442,13 +423,13 @@ void GeneticAlgo<T>::savePopulation(std::string path, std::string token, std::st
 {
 
 	if (typeid(T) == typeid(NeuralNetwork)) {
-		for (int i = 0; i < _populationSize; i++) {
+		for (int i = 0; i < int(this->_population.size()); i++) {
 			NeuralNetwork* network = (NeuralNetwork*)(&this->_population.at(i));
 			network->saveNetwork(path, token, subfolder, std::to_string(i));
 		}
 	}
 	else if (typeid(T) == typeid(Level)) {
-		for (int i = 0; i < _populationSize; i++) {
+		for (int i = 0; i < int(this->_population.size()); i++) {
 			Level* level = (Level*)(&this->_population.at(i));
 			level->writeTileData(path, token, subfolder, std::to_string(i));
 		}

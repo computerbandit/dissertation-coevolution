@@ -37,23 +37,35 @@ void CoEvolveState::init()
 	newFolder = "Resources/coevo/training-" + _token + "/levels";
 	CreateDirectory(newFolder.c_str(), NULL);
 
-	
-	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_6, LEVEL_1_TIME));
-	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_6, LEVEL_1_TIME));
-	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_6, LEVEL_1_TIME));
-	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_6, LEVEL_1_TIME));
-	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_6, LEVEL_1_TIME));
-	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_6, LEVEL_1_TIME));
-	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_6, LEVEL_1_TIME));
-	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_6, LEVEL_1_TIME));
-	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_6, LEVEL_1_TIME));
-	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_6, LEVEL_1_TIME));
-	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_6, LEVEL_1_TIME));
-	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_6, LEVEL_1_TIME));
-	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_6, LEVEL_1_TIME));
-	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_6, LEVEL_1_TIME));
-	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_6, LEVEL_1_TIME));
-	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_6, LEVEL_1_TIME));
+
+
+	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_1, LEVEL_1_TIME));
+	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_1, LEVEL_1_TIME));
+	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_1, LEVEL_1_TIME));
+	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_1, LEVEL_1_TIME));
+	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_1, LEVEL_1_TIME));
+	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_2, LEVEL_1_TIME));
+	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_2, LEVEL_1_TIME));
+	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_2, LEVEL_1_TIME));
+	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_2, LEVEL_1_TIME));
+	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_2, LEVEL_1_TIME));
+	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_2, LEVEL_1_TIME));
+	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_3, LEVEL_1_TIME));
+	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_3, LEVEL_1_TIME));
+	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_3, LEVEL_1_TIME));
+	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_3, LEVEL_1_TIME));
+	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_3, LEVEL_1_TIME));
+	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_3, LEVEL_1_TIME));
+	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_3, LEVEL_1_TIME));
+	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_4, LEVEL_1_TIME));
+	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_4, LEVEL_1_TIME));
+	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_4, LEVEL_1_TIME));
+	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_4, LEVEL_1_TIME));
+	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_4, LEVEL_1_TIME));
+	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_4, LEVEL_1_TIME));
+	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_4, LEVEL_1_TIME));
+	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_4, LEVEL_1_TIME));
+
 
 	_levelGA = GeneticAlgo<Level>(_levelPopulation, 0.9f, std::vector<std::string>());
 
@@ -67,7 +79,7 @@ void CoEvolveState::init()
 		levelNames.push_back(l.getFileName());
 	}
 
-	_networkGA = GeneticAlgo<NeuralNetwork>(NeuralNetwork::generatePopulation(DEFUALT_TRAINING_POPULATION_SIZE, { INPUT_LAYER_SIZE , 2 }), STARTING_TRAINING_MUTATION_RATE, std::vector<std::string>());
+	_networkGA = GeneticAlgo<NeuralNetwork>(NeuralNetwork::generatePopulation(DEFUALT_TRAINING_POPULATION_SIZE, { INPUT_LAYER_SIZE, 2 }), STARTING_TRAINING_MUTATION_RATE, std::vector<std::string>());
 
 	_playerPopulation = std::vector<NNControlledPlayer>();
 	std::vector<NeuralNetwork>& gapop = _networkGA.getPopulation();
@@ -254,6 +266,7 @@ void CoEvolveState::draw(float dt)
 			this->_currentLevel = 0;
 
 			//this means that one cycle has happend so eval the populations and then pass the new generation
+			this->saveCoEvoData("coevo/training-", _token, "");
 
 			std::vector<int> playersPassedLevel = std::vector<int>(int(this->_levelPopulation.size()));
 			for (int& i : playersPassedLevel) {
@@ -285,7 +298,9 @@ void CoEvolveState::draw(float dt)
 			for (int i = 0; i < int(this->_levelPopulation.size()); i++)
 			{
 				float fitness = float(playersPassedLevel.at(i)) / int(this->_playerPopulation.size());
-
+				if (fitness == 0.0f) {
+					fitness = 1.0f;
+				}
 				galevels.at(i).setFitness(100.0f - (fitness * 100.0f));
 			}
 
@@ -384,4 +399,24 @@ bool CoEvolveState::areAllDead()
 		}
 	}
 	return allDead;
+}
+
+void CoEvolveState::saveCoEvoData(std::string path, std::string token, std::string subfolder)
+{
+
+	sf::Image matrix;
+	matrix.create(int(this->_levelPopulation.size()), int(this->_playerPopulation.size()), sf::Color(0, 0, 0));
+	float delta = 255.0f / 100.0f;
+	for (int i = 0; i < int(this->_tornMatrix.size()); i++) {
+		std::vector<float>& playerResults = this->_tornMatrix.at(i);
+		for (int j = 0; j < int(playerResults.size()); j++) {
+			float mono = playerResults.at(j) * delta;
+			matrix.setPixel(j, i, sf::Color(mono, mono, mono, 255));
+		}
+	}
+	sf::Texture text;
+	text.create(int(this->_levelPopulation.size()), int(this->_playerPopulation.size()));
+	text.update(matrix.getPixelsPtr());
+
+	text.copyToImage().saveToFile("Resources/" + path + token + "/" + subfolder + "/matrix-" + std::to_string(this->_levelGA.getGeneration()) + ".png");
 }

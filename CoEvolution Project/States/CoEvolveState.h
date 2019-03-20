@@ -24,6 +24,7 @@ private:
 	NNControlledPlayer* getBestController();
 	void checkProgress(float interval);
 	bool areAllDead();
+	void saveCoEvoData(std::string path, std::string token, std::string subfolder);
 
 	GameDataRef _data;
 	int _currentLevel = 0;
