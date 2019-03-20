@@ -141,14 +141,11 @@ T & GeneticAlgo<T>::selectParent()
 		theta += a.getFitnessRatio();
 		if (random <= theta && !a.isSelected()) {
 			a.setSelected(true);
-			this->setPopulationFitnessRatios(this->sumPopulationScores());
+			//this->setPopulationFitnessRatios(this->sumPopulationScores());
 			return (T&)a;
 		}
-		else if (a.getFitnessRatio() == 0.0f) {
-			return _population.front();
-		}
 	}
-	return _population.front();
+	return (T&)_population.front();
 }
 
 //given the new fitness of the networks work out the fitnessRatio for each network
@@ -181,9 +178,7 @@ float GeneticAlgo<T>::sumPopulationScores()
 {
 	float sum = 0.0f;
 	for (IFitness & a : _population) {
-		if (!a.isSelected()) {
-			sum += a.getFitness();
-		}
+		sum += a.getFitness();
 	}
 	return sum;
 }
@@ -192,13 +187,11 @@ template <class T>
 void GeneticAlgo<T>::setPopulationFitnessRatios(float sum)
 {
 	for (IFitness& a : _population) {
-		if (!a.isSelected()) {
-			if (sum != 0.0f) {
-				a.setFitnessRatio(a.getFitness() / sum);
-			}
-			else {
-				a.setFitnessRatio(0.0f);
-			}
+		if (sum != 0.0f) {
+			a.setFitnessRatio(a.getFitness() / sum);
+		}
+		else {
+			a.setFitnessRatio(0.0f);
 		}
 	}
 }
@@ -220,7 +213,7 @@ void GeneticAlgo<T>::nextGeneration()
 	std::vector<T> nextgen = std::vector<T>();
 
 	//std::cout << "Generating next generation ... ";
-	for (int i = 0; i < (_populationSize / 2); i++) {
+	for (int i = 0; i < int(std::floor(_populationSize / 2)); i++) {
 		//crossover
 		CrossoverProduct<T> child = crossover(selectParent(), selectParent());
 
@@ -258,7 +251,7 @@ void GeneticAlgo<T>::mutate(Level & level)
 	//shift up and down, swap columns, invert level, add new mutated level into the mix etc.
 	//lets mutate this level here#
 
-	if (Noise::randomFloat(0.0f, 1.0f) >= 0.70) {
+	if (Noise::randomFloat(0.0f, 1.0f) >= 0.50) {
 		float random = Noise::randomFloat(0.0f, 1.0f);
 		if (random < 0.25) {
 			//swap a column with another
@@ -268,7 +261,7 @@ void GeneticAlgo<T>::mutate(Level & level)
 			columns.at(randA) = columns.at(randB);
 			columns.at(randB) = temp;
 		}
-		else if (random < 0.50) {
+		else if (random < 0.90) {
 			//convert a colum to a pit
 			//make sure that it doesn't remove the checkpoint, or it can who cares I'm not your dad. can't tell you what to do.
 			int randA = Noise::randomInt(3, w - 3);
@@ -289,15 +282,18 @@ void GeneticAlgo<T>::mutate(Level & level)
 template<class T>
 CrossoverProduct<T> GeneticAlgo<T>::crossover(Level & A, Level & B)
 {
-	std::vector<std::string> chromeosomeA, chromeosomeB;
-	chromeosomeA = A.levelToChromeosome();
-	chromeosomeA = B.levelToChromeosome();
 	Level newA = A;
 	Level newB = B;
+	newA.setChromeosome(A.levelToChromeosome());
+	newB.setChromeosome(B.levelToChromeosome());
+
+	if (newB.getChromeosome().size() == 0) {
+		std::cout << "not again";
+	}
 
 	//stich the levels together small change to merge two level together to make it longer
 
-	if (Noise::randomFloat(0.0f, 1.0f) >= 0.99) {
+	if (Noise::randomFloat(0.0f, 1.0f) >= 0.85) {
 		newA = Level(A, B, "");
 		newB = Level(B, A, "");
 	}

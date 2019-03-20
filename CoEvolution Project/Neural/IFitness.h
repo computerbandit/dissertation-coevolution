@@ -15,7 +15,7 @@ public:
 	inline void setFitnessRatio(float fitnessRatio) { _fitnessRatio = fitnessRatio; }
 
 	inline const bool & isSelected() const { return _selected; }
-	inline void setSelected(bool selected) { _selected = !selected; }
+	inline void setSelected(bool selected) { _selected = selected; }
 
 protected:
 	float _fitness = 0.0f, _fitnessRatio = 0.0f;

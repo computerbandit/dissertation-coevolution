@@ -14,7 +14,6 @@ Level::Level(GameDataRef data, std::string fileName, float time) : _data(data), 
 	this->_height = 0;
 	loadLevelFromTextFile(_fileName);
 	loadEntitiesFromTextFile(_fileName);
-
 	this->setChromeosome(levelToChromeosome());
 
 }
@@ -37,7 +36,7 @@ Level::Level(Level lvlA, Level lvlB, std::string fileName): _fileName(fileName),
 	stichLevels(lvlA, lvlB);
 	loadLevelFromTextFile(_fileName);
 	loadEntitiesFromTextFile(_fileName);
-	//this->setChromeosome(levelToChromeosome());
+	this->setChromeosome(levelToChromeosome());
 }
 
 void Level::loadLevelFromTextFile(std::string fileName = "")
@@ -617,6 +616,11 @@ std::vector<std::vector<std::string>> Level::chromeosomeToColumns()
 		}
 	}
 
+	if (columns.size() == 0) {
+		//test
+		std::cout << "This should never happen, I am disapointed in you my son" << std::endl;
+	}
+
 	return columns;
 }
 
@@ -651,6 +655,9 @@ std::vector<std::string> Level::levelToChromeosome()
 
 void Level::columnsToLevel(std::vector<std::vector<std::string>> columns)
 {
+	if (columns.size() == 0) {
+
+	}
 	this->_tilemap.clear();
 	for (int i = 0; i < this->_height; i++) {
 		for (int j = 0; j < int(columns.size()); j++) {

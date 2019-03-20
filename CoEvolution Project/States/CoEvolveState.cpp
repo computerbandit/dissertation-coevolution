@@ -5,7 +5,7 @@
 #include <Windows.h>
 #include "../Framework/DEFINITIONS.h"
 
-#define DEFUALT_TRAINING_POPULATION_SIZE 100
+#define DEFUALT_TRAINING_POPULATION_SIZE 25
 #define STARTING_TRAINING_MUTATION_RATE 0.90f
 #define TRAINING_MUTATION_RATE 0.90f
 #define DEFUALT_TRAINING_TIME_TO_LIVE 1000.0f
@@ -57,7 +57,6 @@ void CoEvolveState::init()
 	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_3, LEVEL_1_TIME));
 	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_3, LEVEL_1_TIME));
 	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_3, LEVEL_1_TIME));
-	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_4, LEVEL_1_TIME));
 	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_4, LEVEL_1_TIME));
 	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_4, LEVEL_1_TIME));
 	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_4, LEVEL_1_TIME));
@@ -298,9 +297,6 @@ void CoEvolveState::draw(float dt)
 			for (int i = 0; i < int(this->_levelPopulation.size()); i++)
 			{
 				float fitness = float(playersPassedLevel.at(i)) / int(this->_playerPopulation.size());
-				if (fitness == 0.0f) {
-					fitness = 1.0f;
-				}
 				galevels.at(i).setFitness(100.0f - (fitness * 100.0f));
 			}
 
