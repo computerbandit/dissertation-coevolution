@@ -145,7 +145,7 @@ T & GeneticAlgo<T>::selectParent()
 			return (T&)a;
 		}
 	}
-	return (T&)_population.front();
+	return _population.at(Noise::randomInt(0,int(_population.size()-1)));
 }
 
 //given the new fitness of the networks work out the fitnessRatio for each network
@@ -245,13 +245,36 @@ void GeneticAlgo<T>::mutate(Level & level)
 	//TODO: so we need to split up the chromeosome into a sd array of the columns
 	//this needs to be a list of the inner columns so that the integrity of the level is maintained
 
-	std::vector<std::vector<std::string>> columns = level.chromeosomeToColumns();
+	std::vector<std::vector<std::vector<std::string>>> sections = level.chromeosomeToSections();
 	int w = level.getWidth();
 
 	//shift up and down, swap columns, invert level, add new mutated level into the mix etc.
 	//lets mutate this level here#
 
-	if (Noise::randomFloat(0.0f, 1.0f) >= 0.50) {
+	if (Noise::randomFloat(0.0f, 1.0f) >= this->_mutationRate) {
+
+		int randSection = Noise::randomInt(1, int(sections.size() - 1));
+
+		//shuffle the sections
+
+		//swap sections position
+
+		//delete section
+
+		//add section
+
+		int randW = Noise::randomInt(5, 20);
+		Level newSection = Level(Noise::GenHeightMap(sf::Vector2i(randW, randH), randH-1, 2, 1), level._data, "Resources/temp/level", 10.0f);
+		
+		std::vector<Level> subLevelSections = level.splitLevel();
+
+		Level temp = subLevelSections.at(0);
+
+			
+		for(int i = 0; i < sections )
+
+
+		/*
 		float random = Noise::randomFloat(0.0f, 1.0f);
 		if (random < 0.25) {
 			//swap a column with another
@@ -262,21 +285,45 @@ void GeneticAlgo<T>::mutate(Level & level)
 			columns.at(randB) = temp;
 		}
 		else if (random < 0.90) {
+			//toggle column to pit visa versa
 			//convert a colum to a pit
 			//make sure that it doesn't remove the checkpoint, or it can who cares I'm not your dad. can't tell you what to do.
 			int randA = Noise::randomInt(3, w - 3);
 			std::vector<std::string>& column = columns.at(randA);
+			int reachedTop = false;
+
+			bool isPit = (column.at(int(column.size() - 1)) == "61");
+			int prevHeight = 0;
+			if (isPit) {
+				for (int i = 0; i < int(columns.at(randA-1).size() - 1); i++) {
+					if (columns.at(randA - 1).at(i) == "61") {
+						prevHeight++;
+					}
+					else {
+						break;
+					}
+
+				}
+			}
 			for (int i = 0; i < int(column.size() - 1); i++) {
-				column.at(i) = "61";
+
+				if (!isPit) {
+					column.at(i) = "61";
+				}
+				else if(i >= prevHeight) {
+					column.at(i) = "00";
+				}
 			}
 		}
-		else {
+		else if (random < 0.90) {
+			
 		}
+		*/
 
 	}
 	
 	//convert back to chromeosome then back to the level;
-	level.columnsToLevel(columns);
+	level.sectionsToLevel(sections);
 }
 
 template<class T>
@@ -287,15 +334,12 @@ CrossoverProduct<T> GeneticAlgo<T>::crossover(Level & A, Level & B)
 	newA.setChromeosome(A.levelToChromeosome());
 	newB.setChromeosome(B.levelToChromeosome());
 
-	if (newB.getChromeosome().size() == 0) {
-		std::cout << "not again";
-	}
 
 	//stich the levels together small change to merge two level together to make it longer
 
-	if (Noise::randomFloat(0.0f, 1.0f) >= 0.85) {
-		newA = Level(A, B, "");
-		newB = Level(B, A, "");
+	if (Noise::randomFloat(0.0f, 1.0f) >= 0.98) {
+		newA = Level(A, B, "Resources/temp/level");
+		newB = Level(B, A, "Resources/temp/level");
 	}
 	else {
 

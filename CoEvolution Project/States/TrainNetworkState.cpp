@@ -7,7 +7,7 @@
 #include "../Framework/DEFINITIONS.h"
 
 #define DEFUALT_TRAINING_POPULATION_SIZE 120
-#define STARTING_TRAINING_MUTATION_RATE 0.90f
+#define STARTING_TRAINING_MUTATION_RATE 0.99f
 #define TRAINING_MUTATION_RATE 0.90f
 #define DEFUALT_TRAINING_TIME_TO_LIVE 1000.0f
 #define PASS_PERCENT_NEEDED (1.0f/DEFUALT_TRAINING_POPULATION_SIZE)
@@ -57,7 +57,7 @@ void TrainNetworkState::init()
 		levelNames.push_back(l.getFileName());
 	}
 
-	_ga = GeneticAlgo<NeuralNetwork>(NeuralNetwork::generatePopulation(DEFUALT_TRAINING_POPULATION_SIZE, { INPUT_LAYER_SIZE , 2 }), STARTING_TRAINING_MUTATION_RATE, levelNames);
+	_ga = GeneticAlgo<NeuralNetwork>(NeuralNetwork::generatePopulation(DEFUALT_TRAINING_POPULATION_SIZE, { INPUT_LAYER_SIZE, 6 , 2 }), STARTING_TRAINING_MUTATION_RATE, levelNames);
 
 	_playerPopulation = std::vector<NNControlledPlayer>();
 	std::vector<NeuralNetwork>& gapop = _ga.getPopulation();

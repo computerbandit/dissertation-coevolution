@@ -5,7 +5,7 @@
 #include <Windows.h>
 #include "../Framework/DEFINITIONS.h"
 
-#define DEFUALT_TRAINING_POPULATION_SIZE 25
+#define DEFUALT_TRAINING_POPULATION_SIZE 100
 #define STARTING_TRAINING_MUTATION_RATE 0.90f
 #define TRAINING_MUTATION_RATE 0.90f
 #define DEFUALT_TRAINING_TIME_TO_LIVE 1000.0f
@@ -40,30 +40,15 @@ void CoEvolveState::init()
 
 
 	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_1, LEVEL_1_TIME));
-	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_1, LEVEL_1_TIME));
-	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_1, LEVEL_1_TIME));
-	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_1, LEVEL_1_TIME));
-	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_1, LEVEL_1_TIME));
-	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_2, LEVEL_1_TIME));
-	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_2, LEVEL_1_TIME));
-	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_2, LEVEL_1_TIME));
-	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_2, LEVEL_1_TIME));
-	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_2, LEVEL_1_TIME));
-	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_2, LEVEL_1_TIME));
-	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_3, LEVEL_1_TIME));
-	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_3, LEVEL_1_TIME));
-	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_3, LEVEL_1_TIME));
-	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_3, LEVEL_1_TIME));
-	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_3, LEVEL_1_TIME));
-	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_3, LEVEL_1_TIME));
-	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_3, LEVEL_1_TIME));
-	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_4, LEVEL_1_TIME));
-	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_4, LEVEL_1_TIME));
-	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_4, LEVEL_1_TIME));
-	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_4, LEVEL_1_TIME));
-	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_4, LEVEL_1_TIME));
-	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_4, LEVEL_1_TIME));
-	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_4, LEVEL_1_TIME));
+	_levelPopulation.push_back(Level(_data, TRAINING_LEVEL_PATH"lvl-0", LEVEL_1_TIME));
+	_levelPopulation.push_back(Level(_data, TRAINING_LEVEL_PATH"lvl-1", LEVEL_1_TIME));
+	_levelPopulation.push_back(Level(_data, TRAINING_LEVEL_PATH"lvl-2", LEVEL_1_TIME));
+	_levelPopulation.push_back(Level(_data, TRAINING_LEVEL_PATH"lvl-3", LEVEL_1_TIME));
+	_levelPopulation.push_back(Level(_data, TRAINING_LEVEL_PATH"lvl-4", LEVEL_1_TIME));
+	_levelPopulation.push_back(Level(_data, TRAINING_LEVEL_PATH"lvl-5", LEVEL_1_TIME));
+	_levelPopulation.push_back(Level(_data, TRAINING_LEVEL_PATH"lvl-6", LEVEL_1_TIME));
+	_levelPopulation.push_back(Level(_data, TRAINING_LEVEL_PATH"lvl-7", LEVEL_1_TIME));
+
 
 
 	_levelGA = GeneticAlgo<Level>(_levelPopulation, 0.9f, std::vector<std::string>());
@@ -226,7 +211,7 @@ void CoEvolveState::draw(float dt)
 		}
 		if (this->_displayTraining) {
 			bestController->setColor(sf::Color::Red);
-			this->_data->camera.update(bestController->getSpriteCenterPosition(), sf::Vector2f(10,10));
+			this->_data->camera.update(bestController->getSpriteCenterPosition(), sf::Vector2f(1.5f,1.5f));
 		}
 	}
 	else {
@@ -253,11 +238,9 @@ void CoEvolveState::draw(float dt)
 			this->_tornMatrix.at(currentNetwork++).push_back(cappedFitness);
 		}
 
-
-		if (_currentLevel < int(_levelPopulation.size()) - 1) {
-			this->_currentLevel++;
+		if (++_currentLevel < int(_levelPopulation.size())) {
 			for (NNControlledPlayer& nnplayer : this->_playerPopulation) {
-				nnplayer.nextLevel();
+				nnplayer.selectLevel(_currentLevel);
 				nnplayer.restart();
 			}
 		}
@@ -297,16 +280,25 @@ void CoEvolveState::draw(float dt)
 			for (int i = 0; i < int(this->_levelPopulation.size()); i++)
 			{
 				float fitness = float(playersPassedLevel.at(i)) / int(this->_playerPopulation.size());
+				if (fitness == 0.0f) {
+					fitness = 1.0f;
+				}
 				galevels.at(i).setFitness(100.0f - (fitness * 100.0f));
 			}
 
 			this->_levelGA.evalutePopulation();
 			this->_levelGA.nextGeneration();
 			this->_levelPopulation = this->_levelGA.getPopulation();
-			this->_levelGA.savePopulation("coevo/training-", _token, "levels");
+			//this->_levelGA.savePopulation("coevo/training-", _token, "levels");
 
 			this->_networkGA.evalutePopulation();
 			this->_networkGA.nextGeneration();
+
+			this->_networkGA.savePopulation("coevo/training-", this->_token, "networks");
+			this->_networkGA.writeGAData("coevo/training-", this->_token, "networks");
+			this->_levelGA.savePopulation("coevo/training-", this->_token, "levels");
+			this->_levelGA.writeGAData("coevo/training-", this->_token, "levels");
+
 
 			this->_tornMatrix = std::vector<std::vector<float>>(int(this->_playerPopulation.size()));
 

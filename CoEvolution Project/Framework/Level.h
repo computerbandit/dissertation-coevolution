@@ -15,6 +15,7 @@ class Level : public IFitness{
 public:
 	Level() {}
 	Level(GameDataRef data, std::string fileName, float time);
+	Level(GameDataRef data, Tilemap tilemap, float width, float height, std::string fileName, float time);
 	Level(HMap map, GameDataRef data, std::string fileName, float time);
 	Level(Level lvlA, Level lvlB, std::string fileName);
 	~Level() {}
@@ -29,13 +30,15 @@ public:
 	bool lastCheckpoint(int num);
 	const sf::Vector2f& getFinishFlagPosition() const;
 	
-	std::vector<std::vector<std::string>> chromeosomeToColumns();
-	std::vector<std::string> columnsToChromeosome(std::vector<std::vector<std::string>> columns);
+	std::vector<Level> splitLevel();
+
+	std::vector<std::vector<std::vector<std::string>>> chromeosomeToSections();
+	std::vector<std::string> sectionsToChromeosome(std::vector<std::vector<std::vector<std::string>>> sections);
 
 	//convert the current tilemap the a chromeosome
 	std::vector<std::string> levelToChromeosome();
 	//convert a chromeosome to a tilemap for the level
-	void columnsToLevel(std::vector<std::vector<std::string>> columns);
+	void sectionsToLevel(std::vector<std::vector<std::vector<std::string>>> sections);
 
 	void writeTileData(std::string path, std::string token, std::string subfolder, std::string filename);
 

@@ -18,6 +18,20 @@ Level::Level(GameDataRef data, std::string fileName, float time) : _data(data), 
 
 }
 
+Level::Level(GameDataRef data, Tilemap tilemap, float width, float height, std::string fileName, float time): _data(data), _fileName(fileName), _tilemap(tilemap), _width(width), _height(height)
+{
+	//set the checkpoints
+	for (int x = 0; x < this->_width; x++) {
+		for (int y = 0; y < this->_height; y++) {
+			Tile& tile = _tilemap.at((y*this->_width) + x);
+			if (tile.getTileID() == CHECKPOINT_TILE || tile.getTileID() == FINISH_LINE_TILE) {
+				_checkpoint.push_back(sf::Vector2f(tile.getHitBox().left, tile.getHitBox().top));
+			}
+		}
+	}
+	this->setChromeosome(levelToChromeosome());
+}
+
 Level::Level(HMap map, GameDataRef data, std::string fileName, float time) : _data(data), _fileName(fileName)
 {
 	this->_width = 0;
@@ -353,7 +367,7 @@ void Level::stichLevels(Level & lvlA, Level & lvlB)
 			}
 		}
 	}
-	//writeTileData(tileData);
+	writeTileData(tileData);
 }
 
 void Level::pitFallLevel(std::vector<std::string>& tileData, HMap& map, float pitRate)
@@ -583,16 +597,77 @@ const sf::Vector2f & Level::getFinishFlagPosition() const
 {
 	return this->_checkpoint.back();
 }
-
-std::vector<std::vector<std::string>> Level::chromeosomeToColumns()
+//given this level return an array of the sub levels that make it up;
+std::vector<Level> Level::splitLevel()
 {
-	std::vector<std::vector<std::string>> columns = std::vector<std::vector<std::string>>();
+	std::vector<std::vector<std::vector<std::string>>> sections = this->chromeosomeToSections();
+	std::vector<Level> splitLevels = std::vector<Level>();
+	std::vector<Tilemap> tilemaps = std::vector<Tilemap>();
+	std::vector<int> sectionWidths = std::vector<int>();
+
+	for (int i = 1; i < int(sections.size() - 1); i++) {
+		
+		//need to get the width of the the sections
+		int w = 0;
+		for (std::vector<std::vector<std::string>> columns : sections) {
+			w = int(columns.size()) + 2;
+			sectionWidths.push_back(w);
+			tilemaps.push_back(Tilemap(this->_height * w));
+		}
+		
+	}
+
+	for (int i = 0; i < this->_height; i++) {
+		int sectionNum = 0;
+		for (int s = 1; s < int(sections.size() - 1); s++) {
+			std::vector<std::vector<std::string>>& columns = sections.at(s);
+			for (int j = 0; j < int(columns.size()); j++) {
+				//need the buffer vecotor
+				int tileID = std::stoi(columns.at(j).at(i));
+				sf::Sprite spriteTile;
+				spriteTile.setTexture(this->_data->assetManager.getTexturesheet(TILES).getTexture(tileID));
+				AssetManager::rescale(spriteTile, ZOOM_FACTOR);
+				//change the width and height scaling
+				sf::Vector2f pos(j*TILE_SIZE, i*TILE_SIZE);
+				spriteTile.setPosition(pos);
+				tilemaps.at(sectionNum).at(i*sectionWidths.at(sectionNum) + (j+1)) =  Tile(tileID, spriteTile, Tile::getIfSolid(tileID));
+			}
+			sectionNum++;
+		}
+	}
+
+	int tileID = 60;
+	sf::Sprite spriteTile;
+	spriteTile.setTexture(this->_data->assetManager.getTexturesheet(TILES).getTexture(tileID));
+	AssetManager::rescale(spriteTile, ZOOM_FACTOR);
+
+	for (int i = 0; i < int(tilemaps.size()); i++) {
+		for (int y = 0; y < this->_height; y++) {
+			//change the width and height scaling
+			sf::Vector2f pos(0*TILE_SIZE, y*TILE_SIZE);
+			spriteTile.setPosition(pos);
+			tilemaps.at(i).at(y*sectionWidths.at(i) + 0) = Tile(tileID, spriteTile, Tile::getIfSolid(tileID));
+
+			sf::Vector2f pos((sectionWidths.at(i)-1)*TILE_SIZE, y*TILE_SIZE);
+			spriteTile.setPosition(pos);
+			tilemaps.at(i).at(y*sectionWidths.at(i) + (sectionWidths.at(i) - 1)) = Tile(tileID, spriteTile, Tile::getIfSolid(tileID));
+		}
+
+		splitLevels.push_back(Level(_data, tilemaps.at(i), sectionWidths.at(i), this->_height, "Resources/temp/level", 10.0f));
+	}
+	return splitLevels;
+}
+
+std::vector <std::vector<std::vector<std::string>>> Level::chromeosomeToSections()
+{
+	std::vector <std::vector<std::vector<std::string>>> sections = std::vector <std::vector<std::vector<std::string>>>();
 
 	this->_width = 0;
 	this->_height = 0;
 	//get the height of the columns
+	bool sectionStart = false;
 	bool columnStart = false;
-	for (std::string s : this->_chromeosome) {
+	for (std::string& s : this->_chromeosome) {
 		if (s == "CS" && columnStart) {
 			break;
 		}
@@ -604,43 +679,62 @@ std::vector<std::vector<std::string>> Level::chromeosomeToColumns()
 		}
 	}
 
-	for (std::string s : this->_chromeosome) {
-		if (s == "CS") this->_width++;
-	}
-
-
-	for (int x = 0; x < this->_width; x++) {
-		columns.push_back(std::vector<std::string>());
-		for (int y = 1; y <= this->_height; y++) {
-			columns.back().push_back(this->_chromeosome.at(x*(this->_height + 1) + y));
+	int numOfSections = 0;
+	for (int i = this->_height + 1; i < int(this->_chromeosome.size() - (this->_height + 1)); i++) {
+		std::string& s = this->_chromeosome.at(i);
+		if (s == "SS") {
+			numOfSections++;
+			sections.push_back(std::vector<std::vector<std::string>>());
+			continue;
+		}
+		else if (s == "CS") {
+			this->_width++;
+			sections.back().push_back(std::vector<std::string>());
+			continue;
+		}
+		else {
+			sections.back().back().push_back(s);
 		}
 	}
-
-	if (columns.size() == 0) {
-		//test
-		std::cout << "This should never happen, I am disapointed in you my son" << std::endl;
-	}
-
-	return columns;
+	return sections;
 }
 
-std::vector<std::string> Level::columnsToChromeosome(std::vector<std::vector<std::string>> columns)
+std::vector<std::string> Level::sectionsToChromeosome(std::vector<std::vector<std::vector<std::string>>> sections)
 {
 	this->_chromeosome.clear();
+	this->_chromeosome.push_back("SS");
 	//convert the columns back to a chromeosome
-	for (std::vector<std::string> column : columns) {
-		this->_chromeosome.push_back("CS");
-		for (std::string s : column) {
-			this->_chromeosome.push_back(s);
+	for (std::vector<std::vector<std::string>>& columns : sections) {
+		for (std::vector<std::string>& column : columns) {
+			for (std::string s : column) {
+				if (s == "32" || s == "33") {
+					this->_chromeosome.push_back("SS");
+					break;
+				}
+			}
+
+			this->_chromeosome.push_back("CS");
+			for (std::string& s : column) {
+				this->_chromeosome.push_back(s);
+			}
 		}
 	}
+
 	return this->_chromeosome;
 }
 
 std::vector<std::string> Level::levelToChromeosome()
 {
 	this->_chromeosome.clear();
+	this->_chromeosome.push_back("SS");
 	for (int x = 0; x < this->_width; x++) {
+		for (int y = 0; y < this->_height; y++) {
+			Tile& tile = this->_tilemap.at(y*this->_width + x);
+			if (tile.getTileID() == 32 || tile.getTileID() == 33) {
+				this->_chromeosome.push_back("SS");
+				break;
+			}
+		}
 		this->_chromeosome.push_back("CS");
 		for (int y = 0; y < this->_height; y++) {
 			Tile& tile = this->_tilemap.at(y*this->_width + x);
@@ -653,22 +747,24 @@ std::vector<std::string> Level::levelToChromeosome()
 }
 
 
-void Level::columnsToLevel(std::vector<std::vector<std::string>> columns)
+void Level::sectionsToLevel(std::vector<std::vector<std::vector<std::string>>> sections)
 {
-	if (columns.size() == 0) {
-
-	}
 	this->_tilemap.clear();
 	for (int i = 0; i < this->_height; i++) {
-		for (int j = 0; j < int(columns.size()); j++) {
-			int tileID = std::stoi(columns.at(j).at(i));
-			sf::Sprite spriteTile;
-			spriteTile.setTexture(this->_data->assetManager.getTexturesheet(TILES).getTexture(tileID));
-			AssetManager::rescale(spriteTile, ZOOM_FACTOR);
-			//change the width and height scaling
-			sf::Vector2f pos(j*TILE_SIZE, i*TILE_SIZE);
-			spriteTile.setPosition(pos);
-			this->_tilemap.push_back(Tile(tileID, spriteTile, Tile::getIfSolid(tileID)));
+		int pw = 0;
+		for (std::vector<std::vector<std::string>> columns : sections) {
+			for (int j = 0; j < int(columns.size()); j++) {
+				int tileID = std::stoi(columns.at(j).at(i));
+				sf::Sprite spriteTile;
+				spriteTile.setTexture(this->_data->assetManager.getTexturesheet(TILES).getTexture(tileID));
+				AssetManager::rescale(spriteTile, ZOOM_FACTOR);
+				//change the width and height scaling
+				sf::Vector2f pos((pw)*TILE_SIZE, i*TILE_SIZE);
+				spriteTile.setPosition(pos);
+				this->_tilemap.push_back(Tile(tileID, spriteTile, Tile::getIfSolid(tileID)));
+				pw++;
+			}
+			
 		}
 	}
 	_checkpoint.clear();

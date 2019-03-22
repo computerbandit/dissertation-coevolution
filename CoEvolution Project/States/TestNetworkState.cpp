@@ -31,7 +31,7 @@ void TestNetworkState::init()
 	std::cout << "\n Enter name of the network file: ";
 	std::cin >> fileName;
 	this->_data->window.requestFocus();
-	_player = new NNControlledPlayer(this->_data, &_levels, sf::Vector2f(TILE_SIZE / 2, TILE_SIZE / 2), new NeuralNetwork("Resources\\networks\\" + fileName + ".net"));
+	_player = new NNControlledPlayer(this->_data, &_levels, sf::Vector2f(TILE_SIZE / 2, TILE_SIZE / 2), new NeuralNetwork("Resources/" + fileName + ".net"));
 
 	this->_data->gameObjectManager.addEntity(_player, PLAYER_LAYER);
 
