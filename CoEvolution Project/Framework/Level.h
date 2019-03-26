@@ -29,6 +29,7 @@ public:
 	const sf::Vector2f& getCheckpoint(int num) const;
 	bool lastCheckpoint(int num);
 	const sf::Vector2f& getFinishFlagPosition() const;
+	void displayTilemap();
 	
 	std::vector<Level> splitLevel();
 
@@ -47,7 +48,7 @@ public:
 	inline int& getWidth() { return _width; }
 	inline int& getHeight() { return _height; }
 	inline std::vector<sf::Vector2f>& getCheckpoint() { return _checkpoint; }
-
+	inline GameDataRef getGameData() { return _data; }
 private:
 
 	void loadLevelFromTextFile(std::string fileName);

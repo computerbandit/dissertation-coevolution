@@ -40,6 +40,8 @@ void CoEvolveState::init()
 
 
 	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_1, LEVEL_1_TIME));
+	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_3, LEVEL_1_TIME));
+	/*
 	_levelPopulation.push_back(Level(_data, TRAINING_LEVEL_PATH"lvl-0", LEVEL_1_TIME));
 	_levelPopulation.push_back(Level(_data, TRAINING_LEVEL_PATH"lvl-1", LEVEL_1_TIME));
 	_levelPopulation.push_back(Level(_data, TRAINING_LEVEL_PATH"lvl-2", LEVEL_1_TIME));
@@ -48,7 +50,7 @@ void CoEvolveState::init()
 	_levelPopulation.push_back(Level(_data, TRAINING_LEVEL_PATH"lvl-5", LEVEL_1_TIME));
 	_levelPopulation.push_back(Level(_data, TRAINING_LEVEL_PATH"lvl-6", LEVEL_1_TIME));
 	_levelPopulation.push_back(Level(_data, TRAINING_LEVEL_PATH"lvl-7", LEVEL_1_TIME));
-
+	*/
 
 
 	_levelGA = GeneticAlgo<Level>(_levelPopulation, 0.9f, std::vector<std::string>());

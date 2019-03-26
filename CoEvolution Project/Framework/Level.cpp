@@ -307,7 +307,7 @@ void Level::stichLevels(Level & lvlA, Level & lvlB)
 	Tilemap& tilemapB = lvlB.getTileMap();
 
 	int yposA = 0;
-	for (int y = lvlA.getWidth() - 2; y < lvlA.getHeight()*lvlA.getWidth(); y += lvlA.getWidth()) {
+	for (int y = lvlA.getWidth() - 2; y < int(tilemapA.size()); y += lvlA.getWidth()) {
 		Tile& tile = tilemapA.at(y);
 		if (tile.getTileID() == FINISH_LINE_TILE) {
 			yposA = (y + 2) / lvlA.getWidth();
@@ -336,12 +336,11 @@ void Level::stichLevels(Level & lvlA, Level & lvlB)
 		td = "61";
 	}
 	int index = 0;
-	Tile& tile = tilemapA.at(0);
-	std::string tileString= "61";
+	std::string tileString = "";
 	for (int x = 0; x < lvlA.getWidth()-1; x++) {
 		for (int y = 0; y < lvlA.getHeight(); y++) {
 			index = y * lvlA.getWidth() + x;
-			tile = tilemapA.at(index);
+			Tile& tile = tilemapA.at(index);
 			tileString = std::to_string(tile.getTileID());
 			tileString = (tile.getTileID() < 10) ? "0" + tileString : tileString;
 			if (partAShift) {
@@ -352,11 +351,10 @@ void Level::stichLevels(Level & lvlA, Level & lvlB)
 			}
 		}
 	}
-
 	for (int x = 1; x < lvlB.getWidth(); x++) {
 		for (int y = 0; y < lvlB.getHeight(); y++) {
 			index = y * lvlB.getWidth() + x;
-			tile = tilemapB.at(index);
+			Tile& tile = tilemapB.at(index);
 			tileString = std::to_string(tile.getTileID());
 			tileString = (tile.getTileID() < 10) ? "0" + tileString : tileString;
 			if (partAShift) {
@@ -368,6 +366,22 @@ void Level::stichLevels(Level & lvlA, Level & lvlB)
 		}
 	}
 	writeTileData(tileData);
+}
+//for a given level display the tile map in the console, used for debuging
+void Level::displayTilemap()
+{
+	int x = 0;
+	for (Tile& tile : this->_tilemap) {
+		std::string	tileString = std::to_string(tile.getTileID());
+		tileString = (tile.getTileID() < 10) ? "0" + tileString : tileString;
+		std::cout << tileString + " ";
+		if ( (x+1) % this->_width == 0 && x!=0) {
+			std::cout << "\n";
+		}
+		x++;
+	}
+
+
 }
 
 void Level::pitFallLevel(std::vector<std::string>& tileData, HMap& map, float pitRate)
@@ -604,17 +618,13 @@ std::vector<Level> Level::splitLevel()
 	std::vector<Level> splitLevels = std::vector<Level>();
 	std::vector<Tilemap> tilemaps = std::vector<Tilemap>();
 	std::vector<int> sectionWidths = std::vector<int>();
-
+	int w = 0;
 	for (int i = 1; i < int(sections.size() - 1); i++) {
-		
 		//need to get the width of the the sections
-		int w = 0;
-		for (std::vector<std::vector<std::string>> columns : sections) {
-			w = int(columns.size()) + 2;
-			sectionWidths.push_back(w);
-			tilemaps.push_back(Tilemap(this->_height * w));
-		}
-		
+
+		w = int(sections.at(i).size()) + 2;
+		sectionWidths.push_back(w);
+		tilemaps.push_back(Tilemap(this->_height * w));
 	}
 
 	for (int i = 0; i < this->_height; i++) {
@@ -636,23 +646,41 @@ std::vector<Level> Level::splitLevel()
 		}
 	}
 
-	int tileID = 60;
-	sf::Sprite spriteTile;
-	spriteTile.setTexture(this->_data->assetManager.getTexturesheet(TILES).getTexture(tileID));
-	AssetManager::rescale(spriteTile, ZOOM_FACTOR);
+	//need to make sure that the last column has a finish flag on it
+	int tileID = 33;
+	sf::Sprite flagSprite;
+	flagSprite.setTexture(this->_data->assetManager.getTexturesheet(TILES).getTexture(tileID));
+	AssetManager::rescale(flagSprite, ZOOM_FACTOR);
+	for (int i = 0; i < int(tilemaps.size()); i++) {
+		for (int y = 0; y < this->_height; y++) {
+			//change the width and height scaling
+			if (tilemaps.at(i).at(y*sectionWidths.at(i) + (sectionWidths.at(i) - 2)).getTileID() == 0) {
+				sf::Vector2f pos((sectionWidths.at(i) - 2)*TILE_SIZE, y*TILE_SIZE);
+				tilemaps.at(i).at(y*sectionWidths.at(i) + (sectionWidths.at(i) - 2)) = Tile(tileID, flagSprite, Tile::getIfSolid(tileID));
+				break;
+			}else if(tilemaps.at(i).at(y*sectionWidths.at(i) + (sectionWidths.at(i) - 2)).getTileID() == 33){
+				break;
+			}
+		}
+	}
+
+
+	tileID = 60;
+	sf::Sprite bufferSprite;
+	bufferSprite.setTexture(this->_data->assetManager.getTexturesheet(TILES).getTexture(tileID));
+	AssetManager::rescale(bufferSprite, ZOOM_FACTOR);
 
 	for (int i = 0; i < int(tilemaps.size()); i++) {
 		for (int y = 0; y < this->_height; y++) {
 			//change the width and height scaling
 			sf::Vector2f pos(0*TILE_SIZE, y*TILE_SIZE);
-			spriteTile.setPosition(pos);
-			tilemaps.at(i).at(y*sectionWidths.at(i) + 0) = Tile(tileID, spriteTile, Tile::getIfSolid(tileID));
+			bufferSprite.setPosition(pos);
+			tilemaps.at(i).at(y*sectionWidths.at(i) + 0) = Tile(tileID, bufferSprite, Tile::getIfSolid(tileID));
 
-			sf::Vector2f pos((sectionWidths.at(i)-1)*TILE_SIZE, y*TILE_SIZE);
-			spriteTile.setPosition(pos);
-			tilemaps.at(i).at(y*sectionWidths.at(i) + (sectionWidths.at(i) - 1)) = Tile(tileID, spriteTile, Tile::getIfSolid(tileID));
+			pos = sf::Vector2f((sectionWidths.at(i)-1)*TILE_SIZE, y*TILE_SIZE);
+			bufferSprite.setPosition(pos);
+			tilemaps.at(i).at(y*sectionWidths.at(i) + (sectionWidths.at(i) - 1)) = Tile(tileID, bufferSprite, Tile::getIfSolid(tileID));
 		}
-
 		splitLevels.push_back(Level(_data, tilemaps.at(i), sectionWidths.at(i), this->_height, "Resources/temp/level", 10.0f));
 	}
 	return splitLevels;
@@ -668,7 +696,7 @@ std::vector <std::vector<std::vector<std::string>>> Level::chromeosomeToSections
 	bool sectionStart = false;
 	bool columnStart = false;
 	for (std::string& s : this->_chromeosome) {
-		if (s == "CS" && columnStart) {
+		if ((s == "CS" || s == "SS") && columnStart) {
 			break;
 		}
 		else if (s == "CS") {
@@ -680,7 +708,7 @@ std::vector <std::vector<std::vector<std::string>>> Level::chromeosomeToSections
 	}
 
 	int numOfSections = 0;
-	for (int i = this->_height + 1; i < int(this->_chromeosome.size() - (this->_height + 1)); i++) {
+	for (int i = 0; i < int(this->_chromeosome.size()); i++) {
 		std::string& s = this->_chromeosome.at(i);
 		if (s == "SS") {
 			numOfSections++;
@@ -707,15 +735,21 @@ std::vector<std::string> Level::sectionsToChromeosome(std::vector<std::vector<st
 	for (std::vector<std::vector<std::string>>& columns : sections) {
 		for (std::vector<std::string>& column : columns) {
 			for (std::string s : column) {
-				if (s == "32" || s == "33") {
+				if (s == "32") {
 					this->_chromeosome.push_back("SS");
 					break;
 				}
 			}
-
+			bool sectionEnd = false;
 			this->_chromeosome.push_back("CS");
 			for (std::string& s : column) {
 				this->_chromeosome.push_back(s);
+				if (s == "33") {
+					sectionEnd = true;
+				}
+			}
+			if (sectionEnd) {
+				this->_chromeosome.push_back("SS");
 			}
 		}
 	}
@@ -730,17 +764,24 @@ std::vector<std::string> Level::levelToChromeosome()
 	for (int x = 0; x < this->_width; x++) {
 		for (int y = 0; y < this->_height; y++) {
 			Tile& tile = this->_tilemap.at(y*this->_width + x);
-			if (tile.getTileID() == 32 || tile.getTileID() == 33) {
+			if (tile.getTileID() == 32) {
 				this->_chromeosome.push_back("SS");
 				break;
 			}
 		}
 		this->_chromeosome.push_back("CS");
+		bool sectionEnd = false;
 		for (int y = 0; y < this->_height; y++) {
 			Tile& tile = this->_tilemap.at(y*this->_width + x);
 			std::string tileString = std::to_string(tile.getTileID());;
 			tileString = (tile.getTileID() < 10) ? "0" + tileString : tileString;
 			this->_chromeosome.push_back(tileString);
+			if (tileString == "33") {
+				sectionEnd = true;
+			}
+		}
+		if (sectionEnd) {
+			this->_chromeosome.push_back("SS");
 		}
 	}
 	return this->_chromeosome;
@@ -749,6 +790,14 @@ std::vector<std::string> Level::levelToChromeosome()
 
 void Level::sectionsToLevel(std::vector<std::vector<std::vector<std::string>>> sections)
 {
+
+	this->_height = sections.back().back().size();
+	int newWidth = 0;
+	for (int i = 0; i < int(sections.size()); i++) {
+		newWidth += sections.at(i).size();
+	}
+	this->_width = newWidth;
+
 	this->_tilemap.clear();
 	for (int i = 0; i < this->_height; i++) {
 		int pw = 0;
@@ -764,7 +813,6 @@ void Level::sectionsToLevel(std::vector<std::vector<std::vector<std::string>>> s
 				this->_tilemap.push_back(Tile(tileID, spriteTile, Tile::getIfSolid(tileID)));
 				pw++;
 			}
-			
 		}
 	}
 	_checkpoint.clear();

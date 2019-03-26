@@ -251,9 +251,9 @@ void GeneticAlgo<T>::mutate(Level & level)
 	//shift up and down, swap columns, invert level, add new mutated level into the mix etc.
 	//lets mutate this level here#
 
-	if (Noise::randomFloat(0.0f, 1.0f) >= this->_mutationRate) {
+	if (Noise::randomFloat(0.0f, 1.0f) >= 0.00f) {
 
-		int randSection = Noise::randomInt(1, int(sections.size() - 1));
+		int randSection = Noise::randomInt(1, int(sections.size() - 2)) - 1;
 
 		//shuffle the sections
 
@@ -263,17 +263,34 @@ void GeneticAlgo<T>::mutate(Level & level)
 
 		//add section
 
-		int randW = Noise::randomInt(5, 20);
-		Level newSection = Level(Noise::GenHeightMap(sf::Vector2i(randW, randH), randH-1, 2, 1), level._data, "Resources/temp/level", 10.0f);
-		
+		int randW = Noise::randomInt(7, 10);
+		Level newSection = Level(Noise::GenHeightMap(sf::Vector2i(randW, level.getHeight()), level.getHeight()-2 , 2, 1), level.getGameData(), "Resources/temp/level", 10.0f);
+
 		std::vector<Level> subLevelSections = level.splitLevel();
+		std::vector<Level> newLevelVector = std::vector<Level>(int(subLevelSections.size() + 1));
+		for (int i = 0, j = 0; i < int(subLevelSections.size()); i++, j++) {
+			if (randSection == j) {
+				newLevelVector.at(j) = newSection;
+				i--;
+			}
+			else {
+				newLevelVector.at(j) = subLevelSections.at(i);
+			}
+		}
 
-		Level temp = subLevelSections.at(0);
+		for (int i = 0; i < int(newLevelVector.size()); i++) {
+			newLevelVector.at(i).displayTilemap();
+			std::cout << "\n";
+		}
 
-			
-		for(int i = 0; i < sections )
+		Level temp = newLevelVector.at(0);
 
-
+		for (int i = 1; i < int(newLevelVector.size()); i++) {
+			//newLevelVector.at(i).displayTilemap();
+			//std::cout << "\n";
+			temp = Level(temp, newLevelVector.at(i), "Resources/temp/level" + std::to_string(i));
+		}
+		sections = temp.chromeosomeToSections();
 		/*
 		float random = Noise::randomFloat(0.0f, 1.0f);
 		if (random < 0.25) {
@@ -324,6 +341,8 @@ void GeneticAlgo<T>::mutate(Level & level)
 	
 	//convert back to chromeosome then back to the level;
 	level.sectionsToLevel(sections);
+	level.displayTilemap();
+	std::cout << "\n";
 }
 
 template<class T>
