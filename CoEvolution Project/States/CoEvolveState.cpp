@@ -38,9 +38,13 @@ void CoEvolveState::init()
 	CreateDirectory(newFolder.c_str(), NULL);
 
 
-
-	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_1, LEVEL_1_TIME));
-	_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_3, LEVEL_1_TIME));
+	for (int i = 0; i < 5; i++) {
+		_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_1, LEVEL_1_TIME));
+		_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_2, LEVEL_1_TIME));
+		_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_3, LEVEL_1_TIME));
+		_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_4, LEVEL_1_TIME));
+		_levelPopulation.push_back(Level(_data, VALIDATION_LEVEL_5, LEVEL_1_TIME));
+	}
 	/*
 	_levelPopulation.push_back(Level(_data, TRAINING_LEVEL_PATH"lvl-0", LEVEL_1_TIME));
 	_levelPopulation.push_back(Level(_data, TRAINING_LEVEL_PATH"lvl-1", LEVEL_1_TIME));
@@ -53,7 +57,7 @@ void CoEvolveState::init()
 	*/
 
 
-	_levelGA = GeneticAlgo<Level>(_levelPopulation, 0.9f, std::vector<std::string>());
+	_levelGA = GeneticAlgo<Level>(_levelPopulation, 0.90f, std::vector<std::string>());
 
 	_info.setFont(this->_data->assetManager.getFont("Menu Font"));
 	_info.setCharacterSize(20);
@@ -279,26 +283,35 @@ void CoEvolveState::draw(float dt)
 			}
 
 			std::vector<Level>& galevels = this->_levelGA.getPopulation();
+			
 			for (int i = 0; i < int(this->_levelPopulation.size()); i++)
 			{
 				float fitness = float(playersPassedLevel.at(i)) / int(this->_playerPopulation.size());
 				if (fitness == 0.0f) {
 					fitness = 1.0f;
+				}else if (fitness <= 0.10f) {
+					fitness += 0.50f;
 				}
 				galevels.at(i).setFitness(100.0f - (fitness * 100.0f));
 			}
+			
 
 			this->_levelGA.evalutePopulation();
 			this->_levelGA.nextGeneration();
 			this->_levelPopulation = this->_levelGA.getPopulation();
-			//this->_levelGA.savePopulation("coevo/training-", _token, "levels");
-
 			this->_networkGA.evalutePopulation();
 			this->_networkGA.nextGeneration();
 
-			this->_networkGA.savePopulation("coevo/training-", this->_token, "networks");
+			std::string newFolder = "Resources/coevo/training-" + _token;
+			newFolder = "Resources/coevo/training-" + _token + "/networks/gen-"+std::to_string(this->_networkGA.getGeneration());
+			CreateDirectory(newFolder.c_str(), NULL);
+			newFolder = "Resources/coevo/training-" + _token + "/levels/gen-" + std::to_string(this->_levelGA.getGeneration());
+			CreateDirectory(newFolder.c_str(), NULL);
+
+
+			this->_networkGA.savePopulation("coevo/training-", this->_token, "networks/gen-" + std::to_string(this->_networkGA.getGeneration()));
 			this->_networkGA.writeGAData("coevo/training-", this->_token, "networks");
-			this->_levelGA.savePopulation("coevo/training-", this->_token, "levels");
+			this->_levelGA.savePopulation("coevo/training-", this->_token, "levels/gen-" + std::to_string(this->_levelGA.getGeneration()));
 			this->_levelGA.writeGAData("coevo/training-", this->_token, "levels");
 
 

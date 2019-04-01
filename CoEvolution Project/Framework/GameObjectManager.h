@@ -2,7 +2,6 @@
 #include <vector>
 #include <map>
 #include "IEntity.h"
-#include "Tile.h"
 
 enum ObjectLayer {
 	BACKGROUND_LAYER, LEVEL_LAYER, COIN_LAYER, PLAYER_LAYER, ENEMEY_LAYER, TOP_LAYER

@@ -301,37 +301,50 @@ void Level::createLevelFromHeightMap(HMap map)
 
 void Level::stichLevels(Level & lvlA, Level & lvlB)
 {
-	this->_height = std::max(lvlA.getHeight(), lvlB.getHeight());
 	this->_width = lvlA.getWidth() + lvlB.getWidth() - 3; //accounting for the stiching process.
 	Tilemap& tilemapA = lvlA.getTileMap();
 	Tilemap& tilemapB = lvlB.getTileMap();
 
 	int yposA = 0;
-	for (int y = lvlA.getWidth() - 2; y < int(tilemapA.size()); y += lvlA.getWidth()) {
-		Tile& tile = tilemapA.at(y);
+	for (int y = 0; y < int(lvlA.getHeight()); y++) {
+		Tile& tile = tilemapA.at(y*lvlA.getWidth() + (lvlA.getWidth() - 2));
 		if (tile.getTileID() == FINISH_LINE_TILE) {
-			yposA = (y + 2) / lvlA.getWidth();
+			yposA = y;
 			break;
 		}
 	}
 	int yposB = 0;
-	for (int y = 1; y < lvlB.getHeight()*lvlB.getWidth(); y += lvlB.getWidth()) {
-		Tile& tile = tilemapB.at(y);
+	for (int y = 0; y < int(lvlB.getHeight()); y++) {
+		Tile& tile = tilemapB.at(y*lvlB.getWidth() + 1);
 		if (tile.getTileID() == CHECKPOINT_TILE) {
-			yposB = (y + lvlB.getWidth() - 1) / lvlB.getWidth();
+			yposB = y;
 			break;
 		}
 	}
 
 	int flagYPosDelta = yposA - yposB;//if its negative then add air to that number of air rows to the top 
-	bool partAShift = (flagYPosDelta < 0) ? true : false;
-	flagYPosDelta = std::abs(flagYPosDelta);
-	this->_height += flagYPosDelta;
+	bool partAShift = false;
 
+
+	int newHeight = 0;
+	if (flagYPosDelta > 0) {
+		//shift lvlb down by that amount
+		newHeight = lvlB.getHeight() + flagYPosDelta;
+		this->_height = std::max(newHeight, lvlA.getHeight());
+	}
+	else {
+		partAShift = true;
+		flagYPosDelta = std::abs(flagYPosDelta);
+		newHeight = lvlA.getHeight() + flagYPosDelta;
+		this->_height = std::max(newHeight, lvlB.getHeight());
+	}
+
+	
 
 	//given these two levels can we put them together to make a bigger one
 
 	std::vector<std::string> tileData = std::vector<std::string>(this->_height*this->_width);
+
 	for (std::string& td : tileData) {
 		td = "61";
 	}
@@ -619,10 +632,16 @@ std::vector<Level> Level::splitLevel()
 	std::vector<Tilemap> tilemaps = std::vector<Tilemap>();
 	std::vector<int> sectionWidths = std::vector<int>();
 	int w = 0;
+	int addiationalColumns = 3;
 	for (int i = 1; i < int(sections.size() - 1); i++) {
 		//need to get the width of the the sections
 
-		w = int(sections.at(i).size()) + 2;
+		if (i == int(sections.size() - 2)) {
+			addiationalColumns--;
+		}
+
+		w = int(sections.at(i).size()) + addiationalColumns;
+		
 		sectionWidths.push_back(w);
 		tilemaps.push_back(Tilemap(this->_height * w));
 	}
@@ -646,26 +665,27 @@ std::vector<Level> Level::splitLevel()
 		}
 	}
 
-	//need to make sure that the last column has a finish flag on it
-	int tileID = 33;
-	sf::Sprite flagSprite;
-	flagSprite.setTexture(this->_data->assetManager.getTexturesheet(TILES).getTexture(tileID));
-	AssetManager::rescale(flagSprite, ZOOM_FACTOR);
-	for (int i = 0; i < int(tilemaps.size()); i++) {
-		for (int y = 0; y < this->_height; y++) {
-			//change the width and height scaling
-			if (tilemaps.at(i).at(y*sectionWidths.at(i) + (sectionWidths.at(i) - 2)).getTileID() == 0) {
-				sf::Vector2f pos((sectionWidths.at(i) - 2)*TILE_SIZE, y*TILE_SIZE);
-				tilemaps.at(i).at(y*sectionWidths.at(i) + (sectionWidths.at(i) - 2)) = Tile(tileID, flagSprite, Tile::getIfSolid(tileID));
-				break;
-			}else if(tilemaps.at(i).at(y*sectionWidths.at(i) + (sectionWidths.at(i) - 2)).getTileID() == 33){
-				break;
-			}
+	//copy the start of the next section to the end of the last section if it is no the last section
+
+	for (int i = 0; i < this->_height; i++) {
+		int sectionNum = 0;
+		for (int s = 1; s < int(sections.size() - 2); s++) {
+			std::vector<std::string>& firstColumn = sections.at(s+1).at(0);
+			//need the buffer vecotor
+			int tileID = std::stoi(firstColumn.at(i));
+			if (tileID == 32) tileID = 33;
+			sf::Sprite spriteTile;
+			spriteTile.setTexture(this->_data->assetManager.getTexturesheet(TILES).getTexture(tileID));
+			AssetManager::rescale(spriteTile, ZOOM_FACTOR);
+			sf::Vector2f pos((sectionWidths.at(sectionNum) - 2)*TILE_SIZE, i*TILE_SIZE);
+			spriteTile.setPosition(pos);
+
+			tilemaps.at(sectionNum).at(i*sectionWidths.at(sectionNum) + (sectionWidths.at(sectionNum)-2)) = Tile(tileID, spriteTile, Tile::getIfSolid(tileID));
+			sectionNum++;
 		}
 	}
 
-
-	tileID = 60;
+	int tileID = 60;
 	sf::Sprite bufferSprite;
 	bufferSprite.setTexture(this->_data->assetManager.getTexturesheet(TILES).getTexture(tileID));
 	AssetManager::rescale(bufferSprite, ZOOM_FACTOR);
@@ -824,6 +844,8 @@ void Level::sectionsToLevel(std::vector<std::vector<std::vector<std::string>>> s
 			}
 		}
 	}
+
+	this->sectionsToChromeosome(sections);
 }
 
 void Level::writeTileData(std::string path, std::string token, std::string subfolder, std::string filename)

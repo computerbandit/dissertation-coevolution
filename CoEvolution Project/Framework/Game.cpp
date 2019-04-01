@@ -43,7 +43,5 @@ void Game::run()
 		}
 		interpolation = accumulator / dt;
 		this->_data->stateMachine.getAvtiveState()->draw(interpolation);
-
-		
 	}
 }

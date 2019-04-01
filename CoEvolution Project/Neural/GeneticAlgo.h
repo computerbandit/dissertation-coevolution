@@ -2,6 +2,7 @@
 #include <vector>
 #include <map>
 #include <algorithm>
+#include <random>
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -246,103 +247,129 @@ void GeneticAlgo<T>::mutate(Level & level)
 	//this needs to be a list of the inner columns so that the integrity of the level is maintained
 
 	std::vector<std::vector<std::vector<std::string>>> sections = level.chromeosomeToSections();
+	std::vector<Level> subLevelSections = level.splitLevel();
 	int w = level.getWidth();
 
 	//shift up and down, swap columns, invert level, add new mutated level into the mix etc.
 	//lets mutate this level here#
-
-	if (Noise::randomFloat(0.0f, 1.0f) >= 0.00f) {
+	
+	//top level mutations, sub section position and additional sections
+	if (Noise::randomFloat(0.0f, 1.0f) >= this->_mutationRate) {
 
 		int randSection = Noise::randomInt(1, int(sections.size() - 2)) - 1;
+		float randMutation = Noise::randomFloat(0.0f, 1.0f);
 
-		//shuffle the sections
+		if (randMutation >= 0.75f) {
+			//add a random new section to the level in a random location
+			int randW = Noise::randomInt(7, 10);
+			Level newSection = Level(Noise::GenHeightMap(sf::Vector2i(randW, level.getHeight()), level.getHeight() - 2, 2, 1), level.getGameData(), "Resources/temp/level", 10.0f);
 
-		//swap sections position
-
-		//delete section
-
-		//add section
-
-		int randW = Noise::randomInt(7, 10);
-		Level newSection = Level(Noise::GenHeightMap(sf::Vector2i(randW, level.getHeight()), level.getHeight()-2 , 2, 1), level.getGameData(), "Resources/temp/level", 10.0f);
-
-		std::vector<Level> subLevelSections = level.splitLevel();
-		std::vector<Level> newLevelVector = std::vector<Level>(int(subLevelSections.size() + 1));
-		for (int i = 0, j = 0; i < int(subLevelSections.size()); i++, j++) {
-			if (randSection == j) {
-				newLevelVector.at(j) = newSection;
-				i--;
+			std::vector<Level> newLevelVector = std::vector<Level>(int(subLevelSections.size() + 1));
+			for (int i = 0, j = 0; i < int(subLevelSections.size()); i++, j++) {
+				if (randSection == j) {
+					newLevelVector.at(j) = newSection;
+					i--;
+				}
+				else {
+					newLevelVector.at(j) = subLevelSections.at(i);
+				}
 			}
-			else {
-				newLevelVector.at(j) = subLevelSections.at(i);
+			Level temp = newLevelVector.at(0);
+			for (int i = 1; i < int(newLevelVector.size()); i++) {
+				temp = Level(temp, newLevelVector.at(i), "Resources/temp/level" + std::to_string(i));
 			}
+			sections = temp.chromeosomeToSections();
+		}
+		else if (randMutation >= 0.50f) {
+			//shuffle the sections
+			auto rng = std::default_random_engine{};
+			std::shuffle(std::begin(subLevelSections), std::end(subLevelSections), rng);
+			Level temp = subLevelSections.at(0);
+			for (int i = 1; i < int(subLevelSections.size()); i++) {
+				temp = Level(temp, subLevelSections.at(i), "Resources/temp/level" + std::to_string(i));
+			}
+			sections = temp.chromeosomeToSections();
+		}
+		else if (randMutation >= 0.25f) {
+			//swap sections position
+			int randA = Noise::randomInt(0, int(subLevelSections.size() - 1));
+			int randB = Noise::randomInt(0, int(subLevelSections.size() - 1));
+			std::iter_swap(subLevelSections.begin() + randA, subLevelSections.begin() + randB);
+
+			Level temp = subLevelSections.at(0);
+			for (int i = 1; i < int(subLevelSections.size()); i++) {
+				temp = Level(temp, subLevelSections.at(i), "Resources/temp/level" + std::to_string(i));
+			}
+			sections = temp.chromeosomeToSections();
+
+		}
+		else if (randMutation >= 0.00f) {
+			//delete section
+			if (int(subLevelSections.size()) >= 3) {
+				int randDelete = Noise::randomInt(0, int(subLevelSections.size() - 1));
+				subLevelSections.erase(subLevelSections.begin() + randDelete);
+			}
+			Level temp = subLevelSections.at(0);
+			for (int i = 1; i < int(subLevelSections.size()); i++) {
+				temp = Level(temp, subLevelSections.at(i), "Resources/temp/level" + std::to_string(i));
+			}
+			sections = temp.chromeosomeToSections();
 		}
 
-		for (int i = 0; i < int(newLevelVector.size()); i++) {
-			newLevelVector.at(i).displayTilemap();
-			std::cout << "\n";
-		}
+		if (Noise::randomFloat(0.0f, 1.0f) >= this->_mutationRate) {
+			int randSection = Noise::randomInt(1, int(sections.size() - 2));
+			//given a random section 
+			std::vector<std::vector<std::string>>& columns = sections.at(randSection);
+			//take a section and then find a columnn to mutate
+			float random = Noise::randomFloat(0.0f, 1.0f);
+			if (random < 0.25) {
+				//swap a column with another
+				int randA = Noise::randomInt(2, int(columns.size()) - 2);
+				int randB = Noise::randomInt(2, int(columns.size()) - 2);
+				std::vector<std::string> temp = columns.at(randA);
+				columns.at(randA) = columns.at(randB);
+				columns.at(randB) = temp;
+			}
+			else if (random < 0.90) {
+				//toggle column to pit visa versa
+				//convert a colum to a pit
+				int randA = Noise::randomInt(2, int(columns.size()) - 2);
+				std::vector<std::string>& column = columns.at(randA);
+				int reachedTop = false;
 
-		Level temp = newLevelVector.at(0);
+				bool isPit = (column.at(int(column.size() - 1)) == "61");
+				int prevHeight = 0;
+				if (isPit) {
+					for (int i = 0; i < int(columns.at(randA - 1).size() - 1); i++) {
+						if (columns.at(randA - 1).at(i) == "61") {
+							prevHeight++;
+						}
+						else {
+							break;
+						}
 
-		for (int i = 1; i < int(newLevelVector.size()); i++) {
-			//newLevelVector.at(i).displayTilemap();
-			//std::cout << "\n";
-			temp = Level(temp, newLevelVector.at(i), "Resources/temp/level" + std::to_string(i));
-		}
-		sections = temp.chromeosomeToSections();
-		/*
-		float random = Noise::randomFloat(0.0f, 1.0f);
-		if (random < 0.25) {
-			//swap a column with another
-			int randA = Noise::randomInt(3, w - 3);
-			int randB = Noise::randomInt(3, w - 3);
-			std::vector<std::string> temp = columns.at(randA);
-			columns.at(randA) = columns.at(randB);
-			columns.at(randB) = temp;
-		}
-		else if (random < 0.90) {
-			//toggle column to pit visa versa
-			//convert a colum to a pit
-			//make sure that it doesn't remove the checkpoint, or it can who cares I'm not your dad. can't tell you what to do.
-			int randA = Noise::randomInt(3, w - 3);
-			std::vector<std::string>& column = columns.at(randA);
-			int reachedTop = false;
-
-			bool isPit = (column.at(int(column.size() - 1)) == "61");
-			int prevHeight = 0;
-			if (isPit) {
-				for (int i = 0; i < int(columns.at(randA-1).size() - 1); i++) {
-					if (columns.at(randA - 1).at(i) == "61") {
-						prevHeight++;
 					}
-					else {
-						break;
+				}
+				for (int i = 0; i < int(column.size() - 1); i++) {
+
+					if (!isPit) {
+						column.at(i) = "61";
 					}
-
-				}
-			}
-			for (int i = 0; i < int(column.size() - 1); i++) {
-
-				if (!isPit) {
-					column.at(i) = "61";
-				}
-				else if(i >= prevHeight) {
-					column.at(i) = "00";
+					else if (i >= prevHeight) {
+						column.at(i) = "00";
+					}
 				}
 			}
 		}
-		else if (random < 0.90) {
-			
-		}
-		*/
-
 	}
 	
 	//convert back to chromeosome then back to the level;
 	level.sectionsToLevel(sections);
+	/*
 	level.displayTilemap();
 	std::cout << "\n";
+	*/
+
 }
 
 template<class T>
@@ -361,9 +388,59 @@ CrossoverProduct<T> GeneticAlgo<T>::crossover(Level & A, Level & B)
 		newB = Level(B, A, "Resources/temp/level");
 	}
 	else {
+		//split both levels then cross over
 
+		std::vector<Level> levelASections = A.splitLevel();
+		std::vector<Level> levelBSections = B.splitLevel();
+
+		std::vector<Level> newLevelASections = std::vector<Level>();
+		std::vector<Level> newLevelBSections = std::vector<Level>();
+		int maxSections = std::max(levelBSections.size(), levelASections.size());
+		int parentToggle = false;
+
+		for (int i = 0; i < maxSections; i++) {
+			if (!parentToggle) {
+				if (i < int(levelASections.size())) {
+					newLevelASections.push_back(levelASections.at(i));
+				}
+				parentToggle = true;
+			}
+			else {
+				if (i < int(levelBSections.size())) {
+					newLevelASections.push_back(levelBSections.at(i));
+				}
+				parentToggle = false;
+			}
+		}
+		parentToggle = false;
+		for (int i = 0; i < maxSections; i++) {
+			if (!parentToggle) {
+				if (i < int(levelBSections.size())) {
+					newLevelBSections.push_back(levelBSections.at(i));
+				}
+				parentToggle = true;
+			}
+			else {
+				if (i < int(levelASections.size())) {
+					newLevelBSections.push_back(levelASections.at(i));
+				}
+				parentToggle = false;
+			}
+		}
+
+		Level tempA = newLevelASections.at(0);
+		for (int i = 1; i < int(newLevelASections.size()); i++) {
+			tempA = Level(tempA, newLevelASections.at(i), "Resources/temp/level" + std::to_string(i));
+		}
+
+		newA = tempA;
+		Level tempB = newLevelBSections.at(0);
+		for (int i = 1; i < int(newLevelBSections.size()); i++) {
+			tempB = Level(tempB, newLevelBSections.at(i), "Resources/temp/level" + std::to_string(i));
+		}
+
+		newB = tempB;
 	}
-
 	return CrossoverProduct<T>(newA, newB);
 }
 
