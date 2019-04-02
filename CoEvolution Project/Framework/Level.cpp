@@ -14,7 +14,7 @@ Level::Level(GameDataRef data, std::string fileName, float time) : _data(data), 
 	this->_height = 0;
 	loadLevelFromTextFile(_fileName);
 	loadEntitiesFromTextFile(_fileName);
-	this->setChromeosome(levelToChromeosome());
+	this->setChromosome(levelToChromosome());
 
 }
 
@@ -29,7 +29,7 @@ Level::Level(GameDataRef data, Tilemap tilemap, float width, float height, std::
 			}
 		}
 	}
-	this->setChromeosome(levelToChromeosome());
+	this->setChromosome(levelToChromosome());
 }
 
 Level::Level(HMap map, GameDataRef data, std::string fileName, float time) : _data(data), _fileName(fileName)
@@ -39,7 +39,7 @@ Level::Level(HMap map, GameDataRef data, std::string fileName, float time) : _da
 	this->createLevelFromHeightMap(map);
 	loadLevelFromTextFile(_fileName);
 	loadEntitiesFromTextFile(_fileName);
-	this->setChromeosome(levelToChromeosome());
+	this->setChromosome(levelToChromosome());
 }
 
 Level::Level(Level lvlA, Level lvlB, std::string fileName): _fileName(fileName), _data(lvlA._data)
@@ -50,7 +50,7 @@ Level::Level(Level lvlA, Level lvlB, std::string fileName): _fileName(fileName),
 	stichLevels(lvlA, lvlB);
 	loadLevelFromTextFile(_fileName);
 	loadEntitiesFromTextFile(_fileName);
-	this->setChromeosome(levelToChromeosome());
+	this->setChromosome(levelToChromosome());
 }
 
 void Level::loadLevelFromTextFile(std::string fileName = "")
@@ -339,8 +339,6 @@ void Level::stichLevels(Level & lvlA, Level & lvlB)
 		this->_height = std::max(newHeight, lvlB.getHeight());
 	}
 
-	
-
 	//given these two levels can we put them together to make a bigger one
 
 	std::vector<std::string> tileData = std::vector<std::string>(this->_height*this->_width);
@@ -627,7 +625,7 @@ const sf::Vector2f & Level::getFinishFlagPosition() const
 //given this level return an array of the sub levels that make it up;
 std::vector<Level> Level::splitLevel()
 {
-	std::vector<std::vector<std::vector<std::string>>> sections = this->chromeosomeToSections();
+	std::vector<std::vector<std::vector<std::string>>> sections = this->chromosomeToSections();
 	std::vector<Level> splitLevels = std::vector<Level>();
 	std::vector<Tilemap> tilemaps = std::vector<Tilemap>();
 	std::vector<int> sectionWidths = std::vector<int>();
@@ -706,7 +704,7 @@ std::vector<Level> Level::splitLevel()
 	return splitLevels;
 }
 
-std::vector <std::vector<std::vector<std::string>>> Level::chromeosomeToSections()
+std::vector <std::vector<std::vector<std::string>>> Level::chromosomeToSections()
 {
 	std::vector <std::vector<std::vector<std::string>>> sections = std::vector <std::vector<std::vector<std::string>>>();
 
@@ -715,7 +713,7 @@ std::vector <std::vector<std::vector<std::string>>> Level::chromeosomeToSections
 	//get the height of the columns
 	bool sectionStart = false;
 	bool columnStart = false;
-	for (std::string& s : this->_chromeosome) {
+	for (std::string& s : this->_chromosome) {
 		if ((s == "CS" || s == "SS") && columnStart) {
 			break;
 		}
@@ -728,8 +726,8 @@ std::vector <std::vector<std::vector<std::string>>> Level::chromeosomeToSections
 	}
 
 	int numOfSections = 0;
-	for (int i = 0; i < int(this->_chromeosome.size()); i++) {
-		std::string& s = this->_chromeosome.at(i);
+	for (int i = 0; i < int(this->_chromosome.size()); i++) {
+		std::string& s = this->_chromosome.at(i);
 		if (s == "SS") {
 			numOfSections++;
 			sections.push_back(std::vector<std::vector<std::string>>());
@@ -747,64 +745,64 @@ std::vector <std::vector<std::vector<std::string>>> Level::chromeosomeToSections
 	return sections;
 }
 
-std::vector<std::string> Level::sectionsToChromeosome(std::vector<std::vector<std::vector<std::string>>> sections)
+std::vector<std::string> Level::sectionsToChromosome(std::vector<std::vector<std::vector<std::string>>> sections)
 {
-	this->_chromeosome.clear();
-	this->_chromeosome.push_back("SS");
-	//convert the columns back to a chromeosome
+	this->_chromosome.clear();
+	this->_chromosome.push_back("SS");
+	//convert the columns back to a chromosome
 	for (std::vector<std::vector<std::string>>& columns : sections) {
 		for (std::vector<std::string>& column : columns) {
 			for (std::string s : column) {
 				if (s == "32") {
-					this->_chromeosome.push_back("SS");
+					this->_chromosome.push_back("SS");
 					break;
 				}
 			}
 			bool sectionEnd = false;
-			this->_chromeosome.push_back("CS");
+			this->_chromosome.push_back("CS");
 			for (std::string& s : column) {
-				this->_chromeosome.push_back(s);
+				this->_chromosome.push_back(s);
 				if (s == "33") {
 					sectionEnd = true;
 				}
 			}
 			if (sectionEnd) {
-				this->_chromeosome.push_back("SS");
+				this->_chromosome.push_back("SS");
 			}
 		}
 	}
 
-	return this->_chromeosome;
+	return this->_chromosome;
 }
 
-std::vector<std::string> Level::levelToChromeosome()
+std::vector<std::string> Level::levelToChromosome()
 {
-	this->_chromeosome.clear();
-	this->_chromeosome.push_back("SS");
+	this->_chromosome.clear();
+	this->_chromosome.push_back("SS");
 	for (int x = 0; x < this->_width; x++) {
 		for (int y = 0; y < this->_height; y++) {
 			Tile& tile = this->_tilemap.at(y*this->_width + x);
 			if (tile.getTileID() == 32) {
-				this->_chromeosome.push_back("SS");
+				this->_chromosome.push_back("SS");
 				break;
 			}
 		}
-		this->_chromeosome.push_back("CS");
+		this->_chromosome.push_back("CS");
 		bool sectionEnd = false;
 		for (int y = 0; y < this->_height; y++) {
 			Tile& tile = this->_tilemap.at(y*this->_width + x);
 			std::string tileString = std::to_string(tile.getTileID());;
 			tileString = (tile.getTileID() < 10) ? "0" + tileString : tileString;
-			this->_chromeosome.push_back(tileString);
+			this->_chromosome.push_back(tileString);
 			if (tileString == "33") {
 				sectionEnd = true;
 			}
 		}
 		if (sectionEnd) {
-			this->_chromeosome.push_back("SS");
+			this->_chromosome.push_back("SS");
 		}
 	}
-	return this->_chromeosome;
+	return this->_chromosome;
 }
 
 
@@ -845,7 +843,7 @@ void Level::sectionsToLevel(std::vector<std::vector<std::vector<std::string>>> s
 		}
 	}
 
-	this->sectionsToChromeosome(sections);
+	this->sectionsToChromosome(sections);
 }
 
 void Level::writeTileData(std::string path, std::string token, std::string subfolder, std::string filename)

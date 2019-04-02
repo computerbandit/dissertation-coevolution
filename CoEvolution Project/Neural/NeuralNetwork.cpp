@@ -37,7 +37,7 @@ NeuralNetwork::NeuralNetwork(std::vector<int> topology) {
 		_layer.push_back(m);
 	}
 	
-	 this->setChromeosome(this->matricesToChromesome());
+	 this->setChromosome(this->matricesToChromesome());
 }
 
 
@@ -82,12 +82,12 @@ NeuralNetwork::NeuralNetwork(std::string filePath)
 	}
 }
 
-NeuralNetwork::NeuralNetwork(std::vector<int> topology, std::vector<std::string> chromeosome, std::vector<std::string> extraData): _extraData(extraData)
+NeuralNetwork::NeuralNetwork(std::vector<int> topology, std::vector<std::string> chromosome, std::vector<std::string> extraData): _extraData(extraData)
 {
-	this->setChromeosome(chromeosome);
+	this->setChromosome(chromosome);
 
 	this->_networkId = newNetworkId();
-	_layer = NeuralNetwork::chromeosomeToMatrices(topology, _chromeosome);
+	_layer = NeuralNetwork::chromosomeToMatrices(topology, _chromosome);
 }
 
 std::string NeuralNetwork::toString() const
@@ -183,16 +183,16 @@ void NeuralNetwork::saveNetwork(std::string path, std::string token, std::string
 
 std::vector<std::string> NeuralNetwork::matricesToChromesome() const
 {
-	std::vector<std::string> chromeosome = std::vector<std::string>();
+	std::vector<std::string> chromosome = std::vector<std::string>();
 	
 	for (Matrix m : this->_layer) {
 		for (std::vector<float> row : m) {
 			for (float weight : row) {
-				chromeosome.push_back(std::to_string(weight));
+				chromosome.push_back(std::to_string(weight));
 			}
 		}
 	}
-	return chromeosome;
+	return chromosome;
 }
 
 
@@ -241,16 +241,16 @@ void NeuralNetwork::setExtraData(std::vector<std::string> extraData)
 
 
 
-std::vector<Matrix> NeuralNetwork::chromeosomeToMatrices(std::vector<int> topology, std::vector<std::string> chromeosome)
+std::vector<Matrix> NeuralNetwork::chromosomeToMatrices(std::vector<int> topology, std::vector<std::string> chromosome)
 {
 	std::vector<Matrix> layers = std::vector<Matrix>();
-	int chromeosomeNum = 0;
+	int chromosomeNum = 0;
 	for (int i = 1; i < (int)topology.size(); i++) {
 		Matrix m = Matrix();
 		for (int j = 0; j < topology.at(i - 1); j++) {
 			std::vector<float> row = std::vector<float>();
 			for (int k = 0; k < topology.at(i); k++) {
-				row.push_back(std::stof(chromeosome.at(chromeosomeNum++)));
+				row.push_back(std::stof(chromosome.at(chromosomeNum++)));
 			}
 			m.push_back(row);
 		}

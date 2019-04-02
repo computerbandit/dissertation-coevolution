@@ -35,7 +35,7 @@ private:
 	GeneticAlgo<NeuralNetwork> _ga;
 	std::vector<NNControlledPlayer> _playerPopulation;
 	std::vector<NNControlledPlayer*> _populationChunk;
-	int _chunkSize = 100;
+	int _chunkSize = 10000;
 	int _chunkIndex = 0;
 	bool _lastChunk = false;
 	bool _displayTraining = true;

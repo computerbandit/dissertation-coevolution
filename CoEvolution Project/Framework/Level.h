@@ -33,12 +33,12 @@ public:
 	
 	std::vector<Level> splitLevel();
 
-	std::vector<std::vector<std::vector<std::string>>> chromeosomeToSections();
-	std::vector<std::string> sectionsToChromeosome(std::vector<std::vector<std::vector<std::string>>> sections);
+	std::vector<std::vector<std::vector<std::string>>> chromosomeToSections();
+	std::vector<std::string> sectionsToChromosome(std::vector<std::vector<std::vector<std::string>>> sections);
 
-	//convert the current tilemap the a chromeosome
-	std::vector<std::string> levelToChromeosome();
-	//convert a chromeosome to a tilemap for the level
+	//convert the current tilemap the a chromosome
+	std::vector<std::string> levelToChromosome();
+	//convert a chromosome to a tilemap for the level
 	void sectionsToLevel(std::vector<std::vector<std::vector<std::string>>> sections);
 
 	void writeTileData(std::string path, std::string token, std::string subfolder, std::string filename);
@@ -50,7 +50,6 @@ public:
 	inline std::vector<sf::Vector2f>& getCheckpoint() { return _checkpoint; }
 	inline GameDataRef getGameData() { return _data; }
 private:
-
 	void loadLevelFromTextFile(std::string fileName);
 	void loadEntitiesFromTextFile(std::string fileName);
 	void writeTileData(std::vector<std::string> tileData);
@@ -82,7 +81,6 @@ public:
 	static void ouputHeightMap(HMap& map);
 	static float randomFloat(float min, float max);
 	static int randomInt(int min, int max);
-private:
 	
 };
 

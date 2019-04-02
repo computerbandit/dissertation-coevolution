@@ -7,7 +7,7 @@
 #include "../Framework/DEFINITIONS.h"
 
 #define DEFUALT_TRAINING_POPULATION_SIZE 120
-#define STARTING_TRAINING_MUTATION_RATE 0.99f
+#define STARTING_TRAINING_MUTATION_RATE 0.90f
 #define TRAINING_MUTATION_RATE 0.90f
 #define DEFUALT_TRAINING_TIME_TO_LIVE 1000.0f
 #define PASS_PERCENT_NEEDED (1.0f/DEFUALT_TRAINING_POPULATION_SIZE)
@@ -33,19 +33,7 @@ void TrainNetworkState::init()
 	CreateDirectory(newFolder.c_str(), NULL);
 
 
-	_levels.push_back(Level(_data, TRAINING_LEVEL_PATH"lvl-1", 10.0f));
-	//_levels.push_back(Level(_data, TRAINING_LEVEL_PATH"lvl-1", 10.0f));
-	//_levels.push_back(Level(_data, TRAINING_LEVEL_PATH"lvl-2", 10.0f));
-
-	//load the levels in the order to play them;
-	//_levels.push_back(Level(_data, TRAINING_LEVEL_1, LEVEL_1_TIME));
-	//_levels.push_back(Level(_data, TRAINING_LEVEL_2, LEVEL_2_TIME));
-	//_levels.push_back(Level(_data, TRAINING_LEVEL_3, LEVEL_3_TIME));
-	//_levels.push_back(Level(_data, TRAINING_LEVEL_4, LEVEL_4_TIME));
-	//_levels.push_back(Level(_data, TRAINING_LEVEL_5, LEVEL_5_TIME));
-	//_levels.push_back(Level(_data, TRAINING_LEVEL_6, LEVEL_6_TIME));
-	//_levels.push_back(Level(_data, TRAINING_LEVEL_7, LEVEL_7_TIME));
-	//_levels.push_back(Level(_data, TRAINING_LEVEL_8, LEVEL_8_TIME));
+	_levels.push_back(Level(_data, TRAINING_LEVEL_PATH"lvl-2", 10.0f));
 
 	_info.setFont(this->_data->assetManager.getFont("Menu Font"));
 	_info.setCharacterSize(20);
@@ -57,7 +45,7 @@ void TrainNetworkState::init()
 		levelNames.push_back(l.getFileName());
 	}
 
-	_ga = GeneticAlgo<NeuralNetwork>(NeuralNetwork::generatePopulation(DEFUALT_TRAINING_POPULATION_SIZE, { INPUT_LAYER_SIZE, 6 , 2 }), STARTING_TRAINING_MUTATION_RATE, levelNames);
+	_ga = GeneticAlgo<NeuralNetwork>(NeuralNetwork::generatePopulation(DEFUALT_TRAINING_POPULATION_SIZE, { INPUT_LAYER_SIZE, 2 }), STARTING_TRAINING_MUTATION_RATE, levelNames);
 
 	_playerPopulation = std::vector<NNControlledPlayer>();
 	std::vector<NeuralNetwork>& gapop = _ga.getPopulation();
@@ -162,6 +150,7 @@ void TrainNetworkState::update(float dt)
 		if (nnplayer->isAlive() && !nnplayer->isFinished()) {
 			//need to get a set of inputs from the ray cast info from each of the players
 			nnplayer->getNetworkController()->run(nnplayer->controllersViewOfLevel());
+
 			output = nnplayer->getNetworkController()->getOutput();
 			//given the outputs of the network 
 
@@ -186,7 +175,6 @@ void TrainNetworkState::update(float dt)
 			}
 		}
 	}
-
 	//updating all nncontrolled player objects in the game
 	this->_data->gameObjectManager.update(dt);
 	//find the nnplayer that has made the most progess if we are displaying then set th cameras postition to the best controller

@@ -69,7 +69,7 @@ void CoEvolveState::init()
 		levelNames.push_back(l.getFileName());
 	}
 
-	_networkGA = GeneticAlgo<NeuralNetwork>(NeuralNetwork::generatePopulation(DEFUALT_TRAINING_POPULATION_SIZE, { INPUT_LAYER_SIZE, 2 }), STARTING_TRAINING_MUTATION_RATE, std::vector<std::string>());
+	_networkGA = GeneticAlgo<NeuralNetwork>(NeuralNetwork::generatePopulation(DEFUALT_TRAINING_POPULATION_SIZE, { INPUT_LAYER_SIZE, 6 , 2 }), STARTING_TRAINING_MUTATION_RATE, std::vector<std::string>());
 
 	_playerPopulation = std::vector<NNControlledPlayer>();
 	std::vector<NeuralNetwork>& gapop = _networkGA.getPopulation();

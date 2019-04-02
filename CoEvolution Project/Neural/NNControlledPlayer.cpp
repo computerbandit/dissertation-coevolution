@@ -79,16 +79,16 @@ std::vector<float> NNControlledPlayer::controllersViewOfLevel() const
 	//assign the value of the tile to a number for the controllers perception
 	for (int i = 0; i < (int)tilesInArea.size(); i++) {
 		if (tilesInArea.at(i)->isSolid()) {
-			value = 100.0f;
+			value = 10.0f;
 		}
 		else {
 			switch (tilesInArea.at(i)->getTileID())
 			{
 			case BOTTOMOFLEVEL_TILE:
-				value = 0.0f;
+				value = -10.0f;
 				break;
 			case SPIKE_TILE:
-				value = -50.0f;
+				value = -10.0f;
 				break;
 			case CHECKPOINT_TILE:
 				value = 0.0f;

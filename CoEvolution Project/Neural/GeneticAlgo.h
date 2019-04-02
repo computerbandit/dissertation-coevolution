@@ -243,10 +243,10 @@ template <class T>
 void GeneticAlgo<T>::mutate(Level & level)
 {
 	//what ways can we mutate the level
-	//TODO: so we need to split up the chromeosome into a sd array of the columns
+	//TODO: so we need to split up the chromosome into a sd array of the columns
 	//this needs to be a list of the inner columns so that the integrity of the level is maintained
 
-	std::vector<std::vector<std::vector<std::string>>> sections = level.chromeosomeToSections();
+	std::vector<std::vector<std::vector<std::string>>> sections = level.chromosomeToSections();
 	std::vector<Level> subLevelSections = level.splitLevel();
 	int w = level.getWidth();
 
@@ -278,7 +278,7 @@ void GeneticAlgo<T>::mutate(Level & level)
 			for (int i = 1; i < int(newLevelVector.size()); i++) {
 				temp = Level(temp, newLevelVector.at(i), "Resources/temp/level" + std::to_string(i));
 			}
-			sections = temp.chromeosomeToSections();
+			sections = temp.chromosomeToSections();
 		}
 		else if (randMutation >= 0.50f) {
 			//shuffle the sections
@@ -288,7 +288,7 @@ void GeneticAlgo<T>::mutate(Level & level)
 			for (int i = 1; i < int(subLevelSections.size()); i++) {
 				temp = Level(temp, subLevelSections.at(i), "Resources/temp/level" + std::to_string(i));
 			}
-			sections = temp.chromeosomeToSections();
+			sections = temp.chromosomeToSections();
 		}
 		else if (randMutation >= 0.25f) {
 			//swap sections position
@@ -300,7 +300,7 @@ void GeneticAlgo<T>::mutate(Level & level)
 			for (int i = 1; i < int(subLevelSections.size()); i++) {
 				temp = Level(temp, subLevelSections.at(i), "Resources/temp/level" + std::to_string(i));
 			}
-			sections = temp.chromeosomeToSections();
+			sections = temp.chromosomeToSections();
 
 		}
 		else if (randMutation >= 0.00f) {
@@ -313,7 +313,7 @@ void GeneticAlgo<T>::mutate(Level & level)
 			for (int i = 1; i < int(subLevelSections.size()); i++) {
 				temp = Level(temp, subLevelSections.at(i), "Resources/temp/level" + std::to_string(i));
 			}
-			sections = temp.chromeosomeToSections();
+			sections = temp.chromosomeToSections();
 		}
 
 		if (Noise::randomFloat(0.0f, 1.0f) >= this->_mutationRate) {
@@ -363,7 +363,7 @@ void GeneticAlgo<T>::mutate(Level & level)
 		}
 	}
 	
-	//convert back to chromeosome then back to the level;
+	//convert back to chromosome then back to the level;
 	level.sectionsToLevel(sections);
 	/*
 	level.displayTilemap();
@@ -377,8 +377,8 @@ CrossoverProduct<T> GeneticAlgo<T>::crossover(Level & A, Level & B)
 {
 	Level newA = A;
 	Level newB = B;
-	newA.setChromeosome(A.levelToChromeosome());
-	newB.setChromeosome(B.levelToChromeosome());
+	newA.setChromosome(A.levelToChromosome());
+	newB.setChromosome(B.levelToChromosome());
 
 
 	//stich the levels together small change to merge two level together to make it longer
@@ -449,7 +449,7 @@ template <class T>
 void GeneticAlgo<T>::mutate(NeuralNetwork & network)
 {
 	//given the matrices that make up the network, change the values connecting each layer slightly.
-	//convert the matrices into a chromeosome and the alter the values that way.
+	//convert the matrices into a chromosome and the alter the values that way.
 	//
 	std::vector<Matrix> layers = network.getLayers();
 
@@ -472,23 +472,23 @@ void GeneticAlgo<T>::mutate(NeuralNetwork & network)
 template <class T>
 CrossoverProduct<T> GeneticAlgo<T>::crossover(NeuralNetwork & A, NeuralNetwork & B)
 {
-	std::vector<std::string> chromeosomeA = A.matricesToChromesome();
-	std::vector<std::string> chromeosomeB = B.matricesToChromesome();
+	std::vector<std::string> chromosomeA = A.matricesToChromesome();
+	std::vector<std::string> chromosomeB = B.matricesToChromesome();
 
-	int connections = (int)chromeosomeA.size();
+	int connections = (int)chromosomeA.size();
 
-	std::vector<std::string> newChromeosomeA = std::vector<std::string>(connections);
-	std::vector<std::string> newChromeosomeB = std::vector<std::string>(connections);
+	std::vector<std::string> newchromosomeA = std::vector<std::string>(connections);
+	std::vector<std::string> newchromosomeB = std::vector<std::string>(connections);
 
 
 	if (NeuralNetwork::randomFloat(0.0f, 1.0f) >= 0.90f) {
-		//int numOfCrossoverPoints = NeuralNetwork::randomInt((chromeosomeA.size()-1)/4, (chromeosomeA.size() - 1) / 2);
-		//int numOfCrossoverPoints = NeuralNetwork::randomInt(10, (chromeosomeA.size() - 1) / 2);
+		//int numOfCrossoverPoints = NeuralNetwork::randomInt((chromosomeA.size()-1)/4, (chromosomeA.size() - 1) / 2);
+		//int numOfCrossoverPoints = NeuralNetwork::randomInt(10, (chromosomeA.size() - 1) / 2);
 
 		int numOfCrossoverPoints = 1;
 		std::vector<int> crossoverPoints = std::vector<int>();
-		crossoverPoints.push_back(int(std::floor((chromeosomeA.size() - 1) / 2)));
-		//randomly selects random points on the chromeosome and then sorts them
+		crossoverPoints.push_back(int(std::floor((chromosomeA.size() - 1) / 2)));
+		//randomly selects random points on the chromosome and then sorts them
 		/*
 		for (int i = 0; i < numOfCrossoverPoints; i++) {
 			crossoverPoints[i] = NeuralNetwork::randomInt(0, (connections - 1) < 0 ? connections : (connections - 1));
@@ -497,48 +497,48 @@ CrossoverProduct<T> GeneticAlgo<T>::crossover(NeuralNetwork & A, NeuralNetwork &
 		crossoverPoints.erase(std::unique(crossoverPoints.begin(), crossoverPoints.end()), crossoverPoints.end());
 		*/
 
-		//perform the corssover on the chromeosomes
+		//perform the corssover on the chromosomes
 		//child A
 		bool parentToggle = false;
 		int index = 0;
 		//1% change to average the wieghts
 
 		if (NeuralNetwork::randomFloat(0.0f, 1.0f) >= 0.90f) {
-			for (int i = 0; i < (int)chromeosomeA.size(); i++) {
-				float sum = (std::stof(chromeosomeB[i]) + std::stof(chromeosomeA[i])) / 2.0f;
-				newChromeosomeA[i] = std::to_string(sum);
-				newChromeosomeB[i] = std::to_string(sum);
+			for (int i = 0; i < (int)chromosomeA.size(); i++) {
+				float sum = (std::stof(chromosomeB[i]) + std::stof(chromosomeA[i])) / 2.0f;
+				newchromosomeA[i] = std::to_string(sum);
+				newchromosomeB[i] = std::to_string(sum);
 			}
 		}
 		else {
-			for (int i = 0; i < (int)chromeosomeA.size(); i++) {
+			for (int i = 0; i < (int)chromosomeA.size(); i++) {
 				if (i == crossoverPoints[index]) {
 					parentToggle = !parentToggle;
 					index = (index + 1) % crossoverPoints.size();
 				}
 				if (parentToggle) {
-					newChromeosomeA[i] = chromeosomeB[i];
-					newChromeosomeB[i] = chromeosomeA[i];
+					newchromosomeA[i] = chromosomeB[i];
+					newchromosomeB[i] = chromosomeA[i];
 				}
 				else {
-					newChromeosomeA[i] = chromeosomeA[i];
-					newChromeosomeB[i] = chromeosomeB[i];
+					newchromosomeA[i] = chromosomeA[i];
+					newchromosomeB[i] = chromosomeB[i];
 				}
 			}
 		}
 	}
 	else {
 		if (NeuralNetwork::randomFloat(0.0f, 1.0f) >= 0.50f) {
-			newChromeosomeA = chromeosomeA;
-			newChromeosomeB = chromeosomeA;
+			newchromosomeA = chromosomeA;
+			newchromosomeB = chromosomeA;
 		}
 		else {
-			newChromeosomeA = chromeosomeB;
-			newChromeosomeB = chromeosomeB;
+			newchromosomeA = chromosomeB;
+			newchromosomeB = chromosomeB;
 		}
 	}
 
-	return CrossoverProduct<T>(NeuralNetwork(A.getTopology(), newChromeosomeA, A.getExtraData()), NeuralNetwork(B.getTopology(), newChromeosomeB, B.getExtraData()));;
+	return CrossoverProduct<T>(NeuralNetwork(A.getTopology(), newchromosomeA, A.getExtraData()), NeuralNetwork(B.getTopology(), newchromosomeB, B.getExtraData()));;
 }
 
 template <class T>
