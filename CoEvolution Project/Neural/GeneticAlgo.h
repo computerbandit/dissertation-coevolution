@@ -457,7 +457,7 @@ void GeneticAlgo<T>::mutate(NeuralNetwork & network)
 		for (std::vector<float>& layer : m) {
 			for (float& w : layer) {
 				if (NeuralNetwork::randomFloat(0.0f, 1.0f) >= this->_mutationRate) {
-					w += NeuralNetwork::randomFloatNromalDist(0.0f, 0.4f);
+					w += NeuralNetwork::randomFloatNromalDist(0.0f, 0.3f);
 					if (w > 1.0f || w < -1.0f) {
 						w = std::max(-1.0f, std::min(w, 1.0f));
 					}

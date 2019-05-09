@@ -202,6 +202,7 @@
     <Font Include="Resources\fonts\Menu_Font.ttf" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\coevo\training-1554213715 [Good Example 2]\levels\gen-100\0.tilemap" />
     <None Include="Resources\level\validationlevels\lvl-2.tilemap" />
     <None Include="Resources\level\validationlevels\lvl-3.tilemap" />
     <None Include="Resources\level\validationlevels\lvl-4.tilemap" />

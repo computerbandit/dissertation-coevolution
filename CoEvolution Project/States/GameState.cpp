@@ -16,13 +16,17 @@ void GameState::init()
 	//load the levels in to the level vector
 
 
-	Level A = Level(Noise::GenHeightMap(sf::Vector2i(10, 9), 8, 2, 1), _data, GAME_LEVEL_PATH"lvl-1", 15.0f);
-	//Level B = Level(A, Level(Noise::GenHeightMap(sf::Vector2i(10, 4), 3, 2, 1), _data, GAME_LEVEL_PATH"lvl-2", 15.0f), "templevel");
-	//Level C = Level(A, B, "templevel");
-	_levels.clear();
-	_levels.push_back(Level(Noise::GenHeightMap(sf::Vector2i(10, 9), 8, 2, 1), _data, GAME_LEVEL_PATH"lvl-1", 15.0f));
-	_levels.push_back(Level(_data, VALIDATION_LEVEL_5, 15.0f));
-	_levels.push_back(Level(_levels.at(0), _levels.at(1), "test"));
+	_levels.push_back(Level(_data, TRAINING_LEVEL_PATH"lvl-0", 15.0f));
+	_levels.push_back(Level(_data, TRAINING_LEVEL_PATH"lvl-1", 15.0f));
+	_levels.push_back(Level(_data, TRAINING_LEVEL_PATH"lvl-2", 15.0f));
+	_levels.push_back(Level(_data, TRAINING_LEVEL_PATH"lvl-3", 15.0f));
+	_levels.push_back(Level(_data, TRAINING_LEVEL_PATH"lvl-4", 15.0f));
+	_levels.push_back(Level(_data, VALIDATION_LEVEL_PATH"lvl-1", 15.0f));
+	_levels.push_back(Level(_data, VALIDATION_LEVEL_PATH"lvl-2", 15.0f));
+	_levels.push_back(Level(_data, VALIDATION_LEVEL_PATH"lvl-3", 15.0f));
+	_levels.push_back(Level(_data, VALIDATION_LEVEL_PATH"lvl-4", 15.0f));
+	_levels.push_back(Level(_data, GAME_LEVEL_PATH"0", 15.0f));
+	
 
 
 	

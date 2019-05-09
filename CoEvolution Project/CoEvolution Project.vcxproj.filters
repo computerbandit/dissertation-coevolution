@@ -215,5 +215,6 @@
     <None Include="Resources\level\validationlevels\lvl-6.tilemap" />
     <None Include="Resources\level\validationlevels\lvl-8.tilemap" />
     <None Include="Resources\level\validationlevels\lvl-9.tilemap" />
+    <None Include="Resources\coevo\training-1554213715 [Good Example 2]\levels\gen-100\0.tilemap" />
   </ItemGroup>
 </Project>
