@@ -2,7 +2,6 @@
 #include <vector>
 #include <map>
 #include "IEntity.h"
-#include "Tile.h"
 
 enum ObjectLayer {
 	BACKGROUND_LAYER, LEVEL_LAYER, COIN_LAYER, PLAYER_LAYER, ENEMEY_LAYER, TOP_LAYER
@@ -21,13 +20,13 @@ public:
 	void draw(float dt);
 	void update(float dt);
 
-	template <typename T> std::vector<T*> collisionCheck(sf::FloatRect hitBox, ObjectLayer layer);
+	template <class T> std::vector<T*> collisionCheck(sf::FloatRect hitBox, ObjectLayer layer);
 
 private:
 	std::map<ObjectLayer, std::vector<IEntity*>> _entities;
 };
 
-template<typename T>
+template<class T>
 inline std::vector<T*> GameObjectManager::collisionCheck(sf::FloatRect hitBox, ObjectLayer layer)
 {
 	std::vector<T*> entitesInArea = std::vector<T*>();

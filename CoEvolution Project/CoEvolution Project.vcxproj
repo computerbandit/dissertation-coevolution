@@ -135,8 +135,8 @@
     <ClCompile Include="Framework\Camera.cpp" />
     <ClCompile Include="Framework\GameObjectManager.cpp" />
     <ClCompile Include="Framework\Game.cpp" />
-    <ClCompile Include="Neural\NeuralNetworkGA.cpp" />
     <ClCompile Include="Neural\NNControlledPlayer.cpp" />
+    <ClCompile Include="States\CoEvolveState.cpp" />
     <ClCompile Include="States\GameState.cpp" />
     <ClCompile Include="Framework\InputManager.cpp" />
     <ClCompile Include="Framework\Level.cpp" />
@@ -162,7 +162,9 @@
     <ClInclude Include="Framework\GameObjectManager.h" />
     <ClInclude Include="Framework\Game.h" />
     <ClInclude Include="Framework\GUI\Button.h" />
-    <ClInclude Include="Neural\NeuralNetworkGA.h" />
+    <ClInclude Include="Neural\IFitness.h" />
+    <ClInclude Include="Neural\GeneticAlgo.h" />
+    <ClInclude Include="States\CoEvolveState.h" />
     <ClInclude Include="States\GameState.h" />
     <ClInclude Include="Framework\IEntity.h" />
     <ClInclude Include="Framework\InputManager.h" />
@@ -200,6 +202,7 @@
     <Font Include="Resources\fonts\Menu_Font.ttf" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Resources\coevo\training-1554213715 [Good Example 2]\levels\gen-100\0.tilemap" />
     <None Include="Resources\level\validationlevels\lvl-2.tilemap" />
     <None Include="Resources\level\validationlevels\lvl-3.tilemap" />
     <None Include="Resources\level\validationlevels\lvl-4.tilemap" />

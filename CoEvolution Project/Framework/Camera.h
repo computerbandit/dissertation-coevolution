@@ -14,7 +14,7 @@ public:
 	void setSize(sf::Vector2f wh);
 	void zoom(float zoomfactor);
 	void resetZoom();
-	void update(sf::Vector2f point);
+	void update(sf::Vector2f point, sf::Vector2f damp);
 
 	const sf::FloatRect getCameraBox();
 

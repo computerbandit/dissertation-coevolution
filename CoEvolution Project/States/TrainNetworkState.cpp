@@ -29,23 +29,11 @@ void TrainNetworkState::init()
 {
 	this->_levels = std::vector<Level>();
 	this->_token = std::to_string(time(0));
-	std::string newFolder =  "Resources\\networks\\training-" + _token;
+	std::string newFolder =  "Resources/networks/training-" + _token;
 	CreateDirectory(newFolder.c_str(), NULL);
 
 
-	_levels.push_back(Level(_data, TRAINING_LEVEL_PATH"lvl-1", 10.0f));
-	//_levels.push_back(Level(_data, TRAINING_LEVEL_PATH"lvl-1", 10.0f));
-	//_levels.push_back(Level(_data, TRAINING_LEVEL_PATH"lvl-2", 10.0f));
-
-	//load the levels in the order to play them;
-	//_levels.push_back(Level(_data, TRAINING_LEVEL_1, LEVEL_1_TIME));
-	//_levels.push_back(Level(_data, TRAINING_LEVEL_2, LEVEL_2_TIME));
-	//_levels.push_back(Level(_data, TRAINING_LEVEL_3, LEVEL_3_TIME));
-	//_levels.push_back(Level(_data, TRAINING_LEVEL_4, LEVEL_4_TIME));
-	//_levels.push_back(Level(_data, TRAINING_LEVEL_5, LEVEL_5_TIME));
-	//_levels.push_back(Level(_data, TRAINING_LEVEL_6, LEVEL_6_TIME));
-	//_levels.push_back(Level(_data, TRAINING_LEVEL_7, LEVEL_7_TIME));
-	//_levels.push_back(Level(_data, TRAINING_LEVEL_8, LEVEL_8_TIME));
+	_levels.push_back(Level(_data, TRAINING_LEVEL_PATH"lvl-2", 10.0f));
 
 	_info.setFont(this->_data->assetManager.getFont("Menu Font"));
 	_info.setCharacterSize(20);
@@ -57,7 +45,7 @@ void TrainNetworkState::init()
 		levelNames.push_back(l.getFileName());
 	}
 
-	_ga = NeuralNetworkGA(NeuralNetwork::generatePopulation(DEFUALT_TRAINING_POPULATION_SIZE, { INPUT_LAYER_SIZE , 2 }), STARTING_TRAINING_MUTATION_RATE, levelNames);
+	_ga = GeneticAlgo<NeuralNetwork>(NeuralNetwork::generatePopulation(DEFUALT_TRAINING_POPULATION_SIZE, { INPUT_LAYER_SIZE, 2 }), STARTING_TRAINING_MUTATION_RATE, levelNames);
 
 	_playerPopulation = std::vector<NNControlledPlayer>();
 	std::vector<NeuralNetwork>& gapop = _ga.getPopulation();
@@ -120,7 +108,7 @@ void TrainNetworkState::handleEvents()
 			switch (event.key.code)
 			{
 			case sf::Keyboard::S:
-				this->_ga.saveGAData(this->_token);
+				this->_ga.writeGAData("networks/training-", this->_token, "");
 				std::cout << "GA DATA Saved!" << std::endl;
 				break;
 			case sf::Keyboard::D:
@@ -162,6 +150,7 @@ void TrainNetworkState::update(float dt)
 		if (nnplayer->isAlive() && !nnplayer->isFinished()) {
 			//need to get a set of inputs from the ray cast info from each of the players
 			nnplayer->getNetworkController()->run(nnplayer->controllersViewOfLevel());
+
 			output = nnplayer->getNetworkController()->getOutput();
 			//given the outputs of the network 
 
@@ -186,7 +175,6 @@ void TrainNetworkState::update(float dt)
 			}
 		}
 	}
-
 	//updating all nncontrolled player objects in the game
 	this->_data->gameObjectManager.update(dt);
 	//find the nnplayer that has made the most progess if we are displaying then set th cameras postition to the best controller
@@ -199,18 +187,18 @@ void TrainNetworkState::draw(float dt)
 	NNControlledPlayer* bestController = getBestController();
 
 	if (bestController != nullptr) {
-		if (bestController->getNetworkController()->getFitnessScore() > 1.0f) {
+		if (bestController->getNetworkController()->getFitness() > 1.0f) {
 			_ttl = DEFUALT_TRAINING_TIME_TO_LIVE;
 			this->_ga.setMutationRate(TRAINING_MUTATION_RATE);
 		}
 		if (this->_displayTraining) {
 			bestController->setColor(sf::Color::Red);
-			this->_data->camera.update(bestController->getSpriteCenterPosition());
+			this->_data->camera.update(bestController->getSpriteCenterPosition(), sf::Vector2f(10,10));
 		}
 	}
 	else {
 		if (this->_displayTraining) {
-			this->_data->camera.update(this->_levels.at(this->_currentLevel).getCheckpoint(0));
+			this->_data->camera.update(this->_levels.at(this->_currentLevel).getCheckpoint(0), sf::Vector2f(10,10));
 		}
 	}
 
@@ -234,10 +222,10 @@ void TrainNetworkState::draw(float dt)
 
 			//find the best controller
 
-			int nnPassed = this->_ga.numberOfNNAboveFitness(100.0f);
+			int nnPassed = this->_ga.numberOfPopAboveFitness(100.0f);
 			NNControlledPlayer& bestController = this->_playerPopulation.front();
 
-			_info.setString("Controller View Size: " + std::to_string(INPUT_LAYER_SIZE) + "\nPopulation Size:" + std::to_string(this->_playerPopulation.size()) + "\nGeneration [" + std::to_string(this->_ga.getGeneration()) + "] \nAverage Fitness: " + std::to_string(this->_ga.averageFitness()) + "\nBest Fitness: " + std::to_string(bestController.getNetworkController()->getFitnessScore()) + "\nPPC: " + std::to_string(nnPassed) + " of " + std::to_string((int)(PASS_PERCENT_NEEDED*DEFUALT_TRAINING_POPULATION_SIZE)));
+			_info.setString("Controller View Size: " + std::to_string(INPUT_LAYER_SIZE) + "\nPopulation Size:" + std::to_string(this->_playerPopulation.size()) + "\nGeneration [" + std::to_string(this->_ga.getGeneration()) + "] \nAverage Fitness: " + std::to_string(this->_ga.averageFitness()) + "\nBest Fitness: " + std::to_string(bestController.getNetworkController()->getFitness()) + "\nPPC: " + std::to_string(nnPassed) + " of " + std::to_string((int)(PASS_PERCENT_NEEDED*DEFUALT_TRAINING_POPULATION_SIZE)));
 
 
 			if (((float)nnPassed / (int)_playerPopulation.size()) >= PASS_PERCENT_NEEDED) {
@@ -285,8 +273,8 @@ void TrainNetworkState::draw(float dt)
 				}
 			}
 			else {
-				this->_ga.savePopulation(this->_token);
-				this->_ga.saveGAData(this->_token);
+				this->_ga.savePopulation("networks/training-", this->_token, "");
+				this->_ga.writeGAData("networks/training-", this->_token, "");
 				std::cout << "Player has beaten the game, well done!\n" << std::endl;
 				//here we can the push the validation set onto the state machine
 				this->_data->stateMachine.pushState(StateRef(new ValidationState(this->_data, this->_token, DEFUALT_TRAINING_POPULATION_SIZE* (10.0f/100.0f))), true);

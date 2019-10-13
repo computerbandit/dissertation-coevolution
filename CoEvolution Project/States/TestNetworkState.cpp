@@ -31,7 +31,7 @@ void TestNetworkState::init()
 	std::cout << "\n Enter name of the network file: ";
 	std::cin >> fileName;
 	this->_data->window.requestFocus();
-	_player = new NNControlledPlayer(this->_data, &_levels, sf::Vector2f(TILE_SIZE / 2, TILE_SIZE / 2), new NeuralNetwork("Resources\\networks\\" + fileName + ".net"));
+	_player = new NNControlledPlayer(this->_data, &_levels, sf::Vector2f(TILE_SIZE / 2, TILE_SIZE / 2), new NeuralNetwork("Resources/" + fileName + ".net"));
 
 	this->_data->gameObjectManager.addEntity(_player, PLAYER_LAYER);
 
@@ -122,7 +122,7 @@ void TestNetworkState::draw(float dt)
 {
 	this->_data->window.clear(sf::Color(234, 212, 170, 255));
 	if (this->_player != nullptr) {
-		this->_data->camera.update(_player->getSpriteCenterPosition());
+		this->_data->camera.update(_player->getSpriteCenterPosition(), sf::Vector2f(10,10));
 	}
 	this->_levels.at(this->_currentLevel).draw();
 	this->_data->gameObjectManager.draw(dt);

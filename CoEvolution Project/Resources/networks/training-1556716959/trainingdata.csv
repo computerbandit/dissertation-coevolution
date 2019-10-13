@@ -1,0 +1,6 @@
+Training Levels:,Resources/level/trainlevels/lvl-2,
+Gen Num , Highest Fitness, Average Fitness, Population Size: 120
+0 , 0.000000 , 0.000000 , 0
+1 , 49.475285 , 1.811830 , 0
+2 , 92.469521 , 8.435005 , 0
+3 , 100.000000 , 19.137182 , 1

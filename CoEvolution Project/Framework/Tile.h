@@ -37,6 +37,7 @@
 class Tile {
 public:
 
+	Tile() {}
 	Tile(int tileID, sf::Sprite sprite, bool solid);
 	~Tile() {}
 

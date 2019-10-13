@@ -40,11 +40,11 @@ void Camera::resetZoom()
 	this->_zoom = 1.0f;
 }
 
-void Camera::update(sf::Vector2f point)
+void Camera::update(sf::Vector2f point, sf::Vector2f damp)
 {
 	//camera gets locked when going backwards so that when the player respawns the cam goes to the char faster
-	float dampx = (point.x - (_view.getCenter().x - _view.getSize().x / 4));
-	float dampy = (point.y - (_view.getCenter().y + (1 * _view.getSize().y / 10))) / 200;
+	float dampx = (point.x - (_view.getCenter().x - (_view.getSize().x / 4.0f))) / damp.x;
+	float dampy = (point.y - (_view.getCenter().y - (_view.getSize().y / 8.0f))) / damp.y;
 
 	if (dampx >= 0) {
 		dampx /= 30;

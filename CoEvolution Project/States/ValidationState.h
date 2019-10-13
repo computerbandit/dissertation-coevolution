@@ -31,6 +31,10 @@ private:
 	sf::Clock _checkProgressClock;
 	float _ttl;
 
-	void nextNetwork();
-	void saveValiData(std::string token);
+	void saveValiData(std::string path, std::string token, std::string subfolder);
+
+
+	bool areAllDead();
+	
+
 };
